@@ -41,7 +41,7 @@ const Index = () => {
         <div className="container max-w-6xl mx-auto flex items-center justify-between h-14 px-4">
           <div className="flex items-center gap-2.5">
             <Briefcase className="h-5 w-5 text-primary" />
-            <h1 className="text-lg font-semibold">JobTracker</h1>
+            <h1 className="text-lg font-semibold">Young Algy</h1>
           </div>
           <div className="flex items-center gap-2">
             {/* View toggle */}

@@ -3,10 +3,17 @@ import { StatusBadge } from "./StatusBadge";
 import { Job } from "@/lib/types";
 import { MapPin, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface JobTableProps {
   jobs: Job[];
   onDelete: (id: string) => void;
+}
+
+function ScoreBadge({ score }: { score?: number | null }) {
+  if (score == null) return <span className="text-muted-foreground">—</span>;
+  const color = score >= 80 ? "bg-success text-success-foreground" : score >= 50 ? "bg-warning text-warning-foreground" : "bg-secondary text-secondary-foreground";
+  return <Badge className={`${color} text-xs font-semibold`}>{score}</Badge>;
 }
 
 export function JobTable({ jobs, onDelete }: JobTableProps) {
@@ -21,7 +28,6 @@ export function JobTable({ jobs, onDelete }: JobTableProps) {
 
   return (
     <>
-      {/* Desktop table */}
       <div className="hidden md:block">
         <Table>
           <TableHeader>
@@ -30,8 +36,9 @@ export function JobTable({ jobs, onDelete }: JobTableProps) {
               <TableHead>Position</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Salary</TableHead>
+              <TableHead>Score</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Applied</TableHead>
+              <TableHead>Date</TableHead>
               <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
@@ -46,6 +53,7 @@ export function JobTable({ jobs, onDelete }: JobTableProps) {
                   </span>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{job.salary || "—"}</TableCell>
+                <TableCell><ScoreBadge score={job.score} /></TableCell>
                 <TableCell><StatusBadge status={job.status} /></TableCell>
                 <TableCell className="text-sm text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</TableCell>
                 <TableCell>
@@ -59,7 +67,6 @@ export function JobTable({ jobs, onDelete }: JobTableProps) {
         </Table>
       </div>
 
-      {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {jobs.map((job) => (
           <div key={job.id} className="bg-card border rounded-lg p-4 space-y-2">
@@ -68,7 +75,10 @@ export function JobTable({ jobs, onDelete }: JobTableProps) {
                 <p className="font-semibold">{job.company}</p>
                 <p className="text-sm text-muted-foreground">{job.position}</p>
               </div>
-              <StatusBadge status={job.status} />
+              <div className="flex items-center gap-2">
+                <ScoreBadge score={job.score} />
+                <StatusBadge status={job.status} />
+              </div>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>

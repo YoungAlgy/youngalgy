@@ -66,7 +66,14 @@ export function KanbanBoard({ jobs, onStatusChange, onDelete }: KanbanBoardProps
                               <p className="text-sm font-semibold truncate text-foreground">{job.company}</p>
                               <p className="text-xs text-muted-foreground truncate">{job.position}</p>
                             </div>
-                            <StatusBadge status={job.status} />
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {job.score != null && (
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${job.score >= 80 ? "bg-success text-success-foreground" : job.score >= 50 ? "bg-warning text-warning-foreground" : "bg-secondary text-secondary-foreground"}`}>
+                                  {job.score}
+                                </span>
+                              )}
+                              <StatusBadge status={job.status} />
+                            </div>
                           </div>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">

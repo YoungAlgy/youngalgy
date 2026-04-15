@@ -2,18 +2,23 @@ import { useState, useMemo } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StatsCards } from "@/components/StatsCards";
 import { JobTable } from "@/components/JobTable";
+import { KanbanBoard } from "@/components/KanbanBoard";
 import { AddJobDialog } from "@/components/AddJobDialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Briefcase, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Briefcase, Search, LayoutList, Columns3 } from "lucide-react";
 import { sampleJobs } from "@/lib/sample-data";
 import { Job, JobStatus } from "@/lib/types";
+
+type ViewMode = "table" | "kanban";
 
 const Index = () => {
   const [jobs, setJobs] = useState<Job[]>(sampleJobs);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [view, setView] = useState<ViewMode>("table");
 
   const filtered = useMemo(() => {
     return jobs.filter((j) => {
@@ -25,6 +30,9 @@ const Index = () => {
 
   const handleAdd = (job: Job) => setJobs((prev) => [job, ...prev]);
   const handleDelete = (id: string) => setJobs((prev) => prev.filter((j) => j.id !== id));
+  const handleStatusChange = (id: string, status: JobStatus) => {
+    setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status } : j)));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,7 +43,30 @@ const Index = () => {
             <Briefcase className="h-5 w-5 text-primary" />
             <h1 className="text-lg font-semibold">JobTracker</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            {/* View toggle */}
+            <div className="flex items-center rounded-md border bg-muted p-0.5">
+              <Button
+                variant={view === "table" ? "default" : "ghost"}
+                size="sm"
+                className="h-7 px-2.5 gap-1.5 text-xs"
+                onClick={() => setView("table")}
+              >
+                <LayoutList className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Table</span>
+              </Button>
+              <Button
+                variant={view === "kanban" ? "default" : "ghost"}
+                size="sm"
+                className="h-7 px-2.5 gap-1.5 text-xs"
+                onClick={() => setView("kanban")}
+              >
+                <Columns3 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Board</span>
+              </Button>
+            </div>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -72,10 +103,14 @@ const Index = () => {
           <AddJobDialog onAdd={handleAdd} />
         </div>
 
-        {/* Job list */}
-        <Card className="border shadow-sm overflow-hidden">
-          <JobTable jobs={filtered} onDelete={handleDelete} />
-        </Card>
+        {/* Content */}
+        {view === "table" ? (
+          <Card className="border shadow-sm overflow-hidden">
+            <JobTable jobs={filtered} onDelete={handleDelete} />
+          </Card>
+        ) : (
+          <KanbanBoard jobs={filtered} onStatusChange={handleStatusChange} onDelete={handleDelete} />
+        )}
       </main>
     </div>
   );

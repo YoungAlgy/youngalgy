@@ -1,17 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Briefcase, Code2, Database, Brain, TrendingUp, Users,
-  Globe, ArrowRight, Sparkles, BarChart3, FileText, Clock,
+  Brain, TrendingUp, Users, Sparkles,
+  Clock, Database, Layers, GraduationCap,
+  Mail, Linkedin, MapPin,
 } from "lucide-react";
 
+const NAV_ITEMS = [
+  { label: "About", href: "#about" },
+  { label: "Skills", href: "#skills" },
+  { label: "Experience", href: "#experience" },
+  { label: "Projects", href: "#projects" },
+  { label: "Contact", href: "#contact" },
+];
+
 const stats = [
-  { icon: Briefcase, value: "1,000+", label: "Jobs Tracked" },
-  { icon: Globe, value: "10", label: "Sources" },
-  { icon: FileText, value: "300+", label: "Cover Letters" },
   { icon: Clock, value: "12+", label: "Years Experience" },
+  { icon: Database, value: "700K+", label: "Records Managed" },
+  { icon: Layers, value: "4", label: "Projects Built" },
+  { icon: GraduationCap, value: "B.A.", label: "Psychology, USF" },
 ];
 
 const skills = [
@@ -48,17 +56,30 @@ const projects = [
   { icon: Sparkles, title: "Money Mitch", desc: "Artist management platform with analytics and content tools" },
 ];
 
+const scrollTo = (href: string) => {
+  const el = document.querySelector(href);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+};
+
 const Landing = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background scroll-smooth">
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-6xl mx-auto flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-2.5">
-            <Briefcase className="h-5 w-5 text-primary" />
-            <span className="text-lg font-semibold">Young Algy</span>
-          </div>
+          <span className="text-lg font-semibold text-foreground">Alexander Holmes</span>
+          <nav className="hidden md:flex items-center gap-6">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.href}
+                onClick={() => scrollTo(item.href)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
           <ThemeToggle />
         </div>
       </header>
@@ -66,10 +87,11 @@ const Landing = () => {
       <main className="container max-w-6xl mx-auto px-4 py-12 space-y-20">
         {/* Hero */}
         <section className="text-center space-y-6 py-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
-            <Sparkles className="h-4 w-4" />
-            Open to Opportunities
-          </div>
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Tampa, FL &nbsp;|&nbsp;
+            <a href="mailto:alex@avahealth.co" className="text-primary hover:underline">alex@avahealth.co</a>
+          </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground">
             Alexander Holmes
           </h1>
@@ -77,7 +99,6 @@ const Landing = () => {
             Full-Stack Developer & Healthcare Recruiter
           </p>
 
-          {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto pt-8">
             {stats.map((s) => (
               <Card key={s.label} className="p-4 text-center border bg-card">
@@ -90,18 +111,18 @@ const Landing = () => {
         </section>
 
         {/* About */}
-        <section className="space-y-4 max-w-3xl mx-auto">
+        <section id="about" className="space-y-4 max-w-3xl mx-auto scroll-mt-20">
           <h2 className="text-2xl font-bold text-foreground">About</h2>
           <p className="text-muted-foreground leading-relaxed">
-            I'm a full-stack developer with 12+ years of experience building scalable web applications, 
-            CRM platforms, and AI-powered automation tools. I specialize in React, Node.js, Python, and 
-            cloud infrastructure. Currently focused on AI-driven job search automation and healthcare 
+            I'm a full-stack developer with 12+ years of experience building scalable web applications,
+            CRM platforms, and AI-powered automation tools. I specialize in React, Node.js, Python, and
+            cloud infrastructure. Currently focused on AI-driven job search automation and healthcare
             technology solutions.
           </p>
         </section>
 
         {/* Skills */}
-        <section className="space-y-4">
+        <section id="skills" className="space-y-4 scroll-mt-20">
           <h2 className="text-2xl font-bold text-foreground">Skills</h2>
           <div className="flex flex-wrap gap-3">
             {skills.map((skill) => (
@@ -116,7 +137,7 @@ const Landing = () => {
         </section>
 
         {/* Experience */}
-        <section className="space-y-6">
+        <section id="experience" className="space-y-6 scroll-mt-20">
           <h2 className="text-2xl font-bold text-foreground">Experience</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {experiences.map((exp) => (
@@ -139,7 +160,7 @@ const Landing = () => {
         </section>
 
         {/* Projects */}
-        <section className="space-y-6">
+        <section id="projects" className="space-y-6 scroll-mt-20">
           <h2 className="text-2xl font-bold text-foreground">Projects</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {projects.map((p) => (
@@ -156,13 +177,51 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="text-center py-8">
-          <Button size="lg" className="gap-2 text-base" onClick={() => navigate("/dashboard")}>
-            View Dashboard <ArrowRight className="h-4 w-4" />
-          </Button>
+        {/* Contact */}
+        <section id="contact" className="space-y-6 scroll-mt-20 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-foreground">Contact</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Card className="p-5 border bg-card flex items-center gap-3">
+              <Mail className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground">Email</p>
+                <a href="mailto:alex@avahealth.co" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  alex@avahealth.co
+                </a>
+              </div>
+            </Card>
+            <Card className="p-5 border bg-card flex items-center gap-3">
+              <Linkedin className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground">LinkedIn</p>
+                <a href="https://linkedin.com/in/youngalgy" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  linkedin.com/in/youngalgy
+                </a>
+              </div>
+            </Card>
+            <Card className="p-5 border bg-card flex items-center gap-3">
+              <MapPin className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground">Location</p>
+                <p className="text-sm font-medium text-foreground">Tampa, FL</p>
+              </div>
+            </Card>
+          </div>
         </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t bg-card/50 py-6">
+        <div className="container max-w-6xl mx-auto px-4 flex items-center justify-between text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} Alexander Holmes</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
+          >
+            Dashboard
+          </button>
+        </div>
+      </footer>
     </div>
   );
 };

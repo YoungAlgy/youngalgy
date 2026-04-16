@@ -1,4 +1,4 @@
-import { Briefcase, PhoneCall, Trophy, XCircle, Bookmark } from "lucide-react";
+import { Briefcase, Star, FileText, Send } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/lib/types";
 
@@ -8,15 +8,14 @@ interface StatsCardsProps {
 
 export function StatsCards({ jobs }: StatsCardsProps) {
   const stats = [
-    { label: "Total", value: jobs.length, icon: Briefcase, color: "text-primary" },
-    { label: "Applied", value: jobs.filter(j => j.status === "applied").length, icon: Bookmark, color: "text-info" },
-    { label: "Interviews", value: jobs.filter(j => j.status === "interview").length, icon: PhoneCall, color: "text-warning" },
-    { label: "Offers", value: jobs.filter(j => j.status === "offer").length, icon: Trophy, color: "text-success" },
-    { label: "Rejected", value: jobs.filter(j => j.status === "rejected").length, icon: XCircle, color: "text-destructive" },
+    { label: "Total Opportunities", value: jobs.length, icon: Briefcase, color: "text-primary" },
+    { label: "Score 7+", value: jobs.filter(j => j.score != null && j.score >= 7).length, icon: Star, color: "text-warning" },
+    { label: "Cover Letters", value: jobs.filter(j => j.coverLetter).length, icon: FileText, color: "text-success" },
+    { label: "Applied", value: jobs.filter(j => j.status === "applied").length, icon: Send, color: "text-info" },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {stats.map((stat) => (
         <Card key={stat.label} className="border shadow-sm">
           <CardContent className="p-4 flex items-center gap-3">

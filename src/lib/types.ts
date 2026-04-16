@@ -23,11 +23,16 @@ export interface Job {
   position: string;
   location: string;
   salary?: string;
+  salaryRaw?: number | null;
   status: JobStatus;
   appliedDate: string;
   notes?: string;
   url?: string;
   score?: number | null;
+  source?: string | null;
+  botType?: string | null;
+  coverLetter?: string | null;
+  proposal?: string | null;
 }
 
 export const STATUS_CONFIG: Record<JobStatus, { label: string; className: string }> = {
@@ -46,6 +51,11 @@ const STATUS_MAP: Record<string, JobStatus> = {
   rejected: "rejected",
 };
 
+export function formatSalary(value: number | null | undefined): string | undefined {
+  if (value == null) return undefined;
+  return `$${value.toLocaleString("en-US")}`;
+}
+
 export function mapOpportunityToJob(opp: Opportunity): Job {
   const rawStatus = (opp.status || "saved").toLowerCase();
   const status: JobStatus = STATUS_MAP[rawStatus] || "saved";
@@ -55,11 +65,16 @@ export function mapOpportunityToJob(opp: Opportunity): Job {
     company: opp.company,
     position: opp.title,
     location: opp.location || "Unknown",
-    salary: opp.salary_low ? `$${(opp.salary_low / 1000).toFixed(0)}k` : undefined,
+    salary: formatSalary(opp.salary_low),
+    salaryRaw: opp.salary_low,
     status,
     appliedDate: opp.created_at,
     url: opp.url || undefined,
     score: opp.score,
     notes: opp.reasoning || undefined,
+    source: opp.source,
+    botType: opp.bot_type,
+    coverLetter: opp.cover_letter,
+    proposal: opp.proposal,
   };
 }

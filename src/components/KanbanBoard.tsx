@@ -1,7 +1,7 @@
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Job, JobStatus, STATUS_CONFIG } from "@/lib/types";
 import { StatusBadge } from "./StatusBadge";
-import { MapPin, Trash2 } from "lucide-react";
+import { MapPin, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const COLUMNS: JobStatus[] = ["saved", "applied", "interview", "offer", "rejected"];
@@ -14,10 +14,9 @@ function daysSince(dateStr: string): number {
 interface KanbanBoardProps {
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
-  onDelete: (id: string) => void;
 }
 
-export function KanbanBoard({ jobs, onStatusChange, onDelete }: KanbanBoardProps) {
+export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
   const columns = COLUMNS.map((status) => ({
     status,
     config: STATUS_CONFIG[status],
@@ -68,11 +67,14 @@ export function KanbanBoard({ jobs, onStatusChange, onDelete }: KanbanBoardProps
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
                               {job.score != null && (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${job.score >= 80 ? "bg-success text-success-foreground" : job.score >= 50 ? "bg-warning text-warning-foreground" : "bg-secondary text-secondary-foreground"}`}>
+                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
+                                  job.score >= 9 ? "bg-success text-success-foreground" :
+                                  job.score >= 7 ? "bg-warning text-warning-foreground" :
+                                  "bg-secondary text-secondary-foreground"
+                                }`}>
                                   {job.score}
                                 </span>
                               )}
-                              <StatusBadge status={job.status} />
                             </div>
                           </div>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -82,16 +84,18 @@ export function KanbanBoard({ jobs, onStatusChange, onDelete }: KanbanBoardProps
                             </span>
                             <span>{daysSince(job.appliedDate)}d ago</span>
                           </div>
-                          <div className="flex justify-end">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                              onClick={() => onDelete(job.id)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          {job.url && (
+                            <div className="flex justify-end">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 text-xs gap-1"
+                                onClick={() => window.open(job.url, "_blank")}
+                              >
+                                Apply <ExternalLink className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </Draggable>

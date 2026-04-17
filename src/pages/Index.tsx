@@ -103,11 +103,11 @@ const Index = () => {
       </header>
 
       <main className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <StatsCards jobs={jobs} />
+        <StatsCards />
 
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-            <div className="relative flex-1 w-full sm:max-w-xs">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="relative w-full sm:max-w-xs sm:flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search title or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
@@ -165,7 +165,7 @@ const Index = () => {
           </div>
         ) : view === "table" ? (
           <Card className="border shadow-sm overflow-hidden">
-            <JobTable jobs={filtered} />
+            <JobTable jobs={filtered} onStatusChange={handleStatusChange} />
           </Card>
         ) : (
           <KanbanBoard jobs={filtered} onStatusChange={handleStatusChange} />

@@ -69,7 +69,7 @@ export function JobTable({ jobs, onStatusChange }: JobTableProps) {
               <TableHead>Score</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead className="w-20">Action</TableHead>
+              <TableHead className="w-44">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -93,17 +93,30 @@ export function JobTable({ jobs, onStatusChange }: JobTableProps) {
                     <TableCell><ScoreBadge score={job.score} /></TableCell>
                     <TableCell><StatusBadge status={job.status} /></TableCell>
                     <TableCell className="text-sm text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      {job.url && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs gap-1"
-                          onClick={(e) => { e.stopPropagation(); window.open(job.url, "_blank"); }}
-                        >
-                          Apply <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      )}
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1.5">
+                        {job.url && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => window.open(job.url, "_blank")}
+                          >
+                            Apply <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        )}
+                        {job.status !== "applied" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            disabled={updatingId === job.id}
+                            onClick={() => markApplied(job)}
+                          >
+                            <CheckCircle2 className="h-3 w-3" /> Mark
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                   {isExpanded && hasDetails && (
@@ -154,13 +167,26 @@ export function JobTable({ jobs, onStatusChange }: JobTableProps) {
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
                 <span>{job.salary || ""}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</span>
-                {job.url && (
-                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => window.open(job.url, "_blank")}>
-                    Apply <ExternalLink className="h-3 w-3" />
-                  </Button>
-                )}
+                <div className="flex items-center gap-1.5">
+                  {job.status !== "applied" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs gap-1"
+                      disabled={updatingId === job.id}
+                      onClick={() => markApplied(job)}
+                    >
+                      <CheckCircle2 className="h-3 w-3" /> Mark
+                    </Button>
+                  )}
+                  {job.url && (
+                    <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => window.open(job.url, "_blank")}>
+                      Apply <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
               </div>
               {isExpanded && hasDetails && (
                 <div className="pt-2 border-t space-y-3">

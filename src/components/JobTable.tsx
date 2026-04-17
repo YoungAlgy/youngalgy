@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "./StatusBadge";
-import { Job } from "@/lib/types";
-import { MapPin, ExternalLink, ChevronDown, ChevronRight } from "lucide-react";
+import { Job, JobStatus } from "@/lib/types";
+import { MapPin, ExternalLink, ChevronDown, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 function ScoreBadge({ score }: { score?: number | null }) {
   if (score == null) return <span className="text-muted-foreground">—</span>;
@@ -17,10 +19,30 @@ function ScoreBadge({ score }: { score?: number | null }) {
 
 interface JobTableProps {
   jobs: Job[];
+  onStatusChange?: (id: string, status: JobStatus) => void;
 }
 
-export function JobTable({ jobs }: JobTableProps) {
+export function JobTable({ jobs, onStatusChange }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  async function markApplied(job: Job) {
+    if (job.status === "applied" || updatingId === job.id) return;
+    setUpdatingId(job.id);
+    const previous = job.status;
+    onStatusChange?.(job.id, "applied");
+    const { error } = await supabase
+      .from("opportunities")
+      .update({ status: "applied" })
+      .eq("id", job.id);
+    setUpdatingId(null);
+    if (error) {
+      onStatusChange?.(job.id, previous);
+      toast.error("Failed to mark as applied");
+    } else {
+      toast.success(`Marked ${job.company} as applied`);
+    }
+  }
 
   if (jobs.length === 0) {
     return (

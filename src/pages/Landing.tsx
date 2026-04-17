@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  Brain, TrendingUp, Users, Sparkles,
+  TrendingUp, Users, Sparkles, LineChart,
   Clock, Database, Layers, GraduationCap,
-  Mail, Linkedin, MapPin,
+  Mail, Linkedin, MapPin, Menu, X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -37,9 +39,9 @@ const experiences = [
   },
   {
     title: "Universe XYZ",
-    role: "NFT Platform Developer",
-    description: "Developed NFT marketplace and auction platform that helped raise $2M+ for charity through digital art sales.",
-    highlights: ["$2M+ Charity", "Solidity", "Web3"],
+    role: "Project Manager",
+    description: "Led digital collectible drops raising $5M+ for charity, including Lobby Lobsters at $4.4M. Managed cross-functional engineering, creative, and community teams through marketplace launch.",
+    highlights: ["$5M+ Charity", "Solidity", "Web3"],
   },
   {
     title: "Money Mitch",
@@ -50,10 +52,10 @@ const experiences = [
 ];
 
 const projects = [
-  { icon: Brain, title: "AI Job Pipeline", desc: "Automated job discovery, scoring, and cover letter generation across 10+ sources" },
   { icon: Users, title: "Ava Health CRM", desc: "Healthcare provider CRM with 700K records and outreach automation" },
   { icon: TrendingUp, title: "Trading Bots", desc: "Algorithmic trading systems with real-time market analysis" },
   { icon: Sparkles, title: "Money Mitch", desc: "Artist management platform with analytics and content tools" },
+  { icon: LineChart, title: "Trading Systems", desc: "Algorithmic trading bots running on live capital with real-time dashboards, backtesting, and regime detection." },
 ];
 
 const scrollTo = (href: string) => {

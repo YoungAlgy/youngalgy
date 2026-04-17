@@ -14,6 +14,7 @@ export interface Opportunity {
   reasoning: string | null;
   cover_letter: string | null;
   proposal: string | null;
+  notes: string | null;
   created_at: string;
 }
 
@@ -71,7 +72,7 @@ export function mapOpportunityToJob(opp: Opportunity): Job {
     appliedDate: opp.created_at,
     url: opp.url || undefined,
     score: opp.score,
-    notes: opp.reasoning || undefined,
+    notes: opp.notes ?? opp.reasoning ?? undefined,
     source: opp.source,
     botType: opp.bot_type,
     coverLetter: opp.cover_letter,

@@ -112,7 +112,7 @@ const Index = () => {
               <Input placeholder="Search title or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-full sm:w-[140px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -125,7 +125,7 @@ const Index = () => {
               </SelectContent>
             </Select>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-full sm:w-[140px]">
                 <SelectValue placeholder="Source" />
               </SelectTrigger>
               <SelectContent>
@@ -136,7 +136,7 @@ const Index = () => {
               </SelectContent>
             </Select>
             <Select value={botTypeFilter} onValueChange={setBotTypeFilter}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-full sm:w-[140px]">
                 <SelectValue placeholder="Bot Type" />
               </SelectTrigger>
               <SelectContent>
@@ -147,7 +147,7 @@ const Index = () => {
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-full sm:w-[140px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>

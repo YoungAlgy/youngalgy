@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  Brain, TrendingUp, Users, Sparkles,
+  TrendingUp, Users, Sparkles, LineChart,
   Clock, Database, Layers, GraduationCap,
-  Mail, Linkedin, MapPin,
+  Mail, Linkedin, MapPin, Menu, X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -37,9 +39,9 @@ const experiences = [
   },
   {
     title: "Universe XYZ",
-    role: "NFT Platform Developer",
-    description: "Developed NFT marketplace and auction platform that helped raise $2M+ for charity through digital art sales.",
-    highlights: ["$2M+ Charity", "Solidity", "Web3"],
+    role: "Project Manager",
+    description: "Led digital collectible drops raising $5M+ for charity, including Lobby Lobsters at $4.4M. Managed cross-functional engineering, creative, and community teams through marketplace launch.",
+    highlights: ["$5M+ Charity", "Solidity", "Web3"],
   },
   {
     title: "Money Mitch",
@@ -50,10 +52,10 @@ const experiences = [
 ];
 
 const projects = [
-  { icon: Brain, title: "AI Job Pipeline", desc: "Automated job discovery, scoring, and cover letter generation across 10+ sources" },
   { icon: Users, title: "Ava Health CRM", desc: "Healthcare provider CRM with 700K records and outreach automation" },
   { icon: TrendingUp, title: "Trading Bots", desc: "Algorithmic trading systems with real-time market analysis" },
   { icon: Sparkles, title: "Money Mitch", desc: "Artist management platform with analytics and content tools" },
+  { icon: LineChart, title: "Trading Systems", desc: "Algorithmic trading bots running on live capital with real-time dashboards, backtesting, and regime detection." },
 ];
 
 const scrollTo = (href: string) => {
@@ -63,6 +65,12 @@ const scrollTo = (href: string) => {
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const handleNavClick = (href: string) => {
+    setMobileNavOpen(false);
+    scrollTo(href);
+  };
 
   return (
     <div className="min-h-screen bg-background scroll-smooth">
@@ -80,8 +88,34 @@ const Landing = () => {
               </button>
             ))}
           </nav>
-          <ThemeToggle />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-9 w-9"
+              onClick={() => setMobileNavOpen((o) => !o)}
+              aria-label="Toggle navigation"
+            >
+              {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
+        {mobileNavOpen && (
+          <nav className="md:hidden border-t bg-card">
+            <div className="container max-w-6xl mx-auto px-4 py-2 flex flex-col">
+              {NAV_ITEMS.map((item) => (
+                <button
+                  key={item.href}
+                  onClick={() => handleNavClick(item.href)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 text-left"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
       </header>
 
       <main className="container max-w-6xl mx-auto px-4 py-12 space-y-20">
@@ -96,7 +130,7 @@ const Landing = () => {
             Alexander Holmes
           </h1>
           <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto">
-            Full-Stack Developer & Healthcare Recruiter
+            Sales, Customer Success & Talent Professional
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto pt-8">
@@ -114,10 +148,7 @@ const Landing = () => {
         <section id="about" className="space-y-4 max-w-3xl mx-auto scroll-mt-20">
           <h2 className="text-2xl font-bold text-foreground">About</h2>
           <p className="text-muted-foreground leading-relaxed">
-            I'm a full-stack developer with 12+ years of experience building scalable web applications,
-            CRM platforms, and AI-powered automation tools. I specialize in React, Node.js, Python, and
-            cloud infrastructure. Currently focused on AI-driven job search automation and healthcare
-            technology solutions.
+            Relationship-driven sales, customer success, and recruiting professional with 12+ years of experience placing healthcare providers at Ava Health and building the tools the team uses. Psychology background from USF, I read people, I move product, and I build the systems that make it repeatable.
           </p>
         </section>
 

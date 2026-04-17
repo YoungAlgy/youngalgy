@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "./StatusBadge";
-import { Job } from "@/lib/types";
-import { MapPin, ExternalLink, ChevronDown, ChevronRight } from "lucide-react";
+import { Job, JobStatus } from "@/lib/types";
+import { MapPin, ExternalLink, ChevronDown, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 function ScoreBadge({ score }: { score?: number | null }) {
   if (score == null) return <span className="text-muted-foreground">—</span>;
@@ -17,10 +19,30 @@ function ScoreBadge({ score }: { score?: number | null }) {
 
 interface JobTableProps {
   jobs: Job[];
+  onStatusChange?: (id: string, status: JobStatus) => void;
 }
 
-export function JobTable({ jobs }: JobTableProps) {
+export function JobTable({ jobs, onStatusChange }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  async function markApplied(job: Job) {
+    if (job.status === "applied" || updatingId === job.id) return;
+    setUpdatingId(job.id);
+    const previous = job.status;
+    onStatusChange?.(job.id, "applied");
+    const { error } = await supabase
+      .from("opportunities")
+      .update({ status: "applied" })
+      .eq("id", job.id);
+    setUpdatingId(null);
+    if (error) {
+      onStatusChange?.(job.id, previous);
+      toast.error("Failed to mark as applied");
+    } else {
+      toast.success(`Marked ${job.company} as applied`);
+    }
+  }
 
   if (jobs.length === 0) {
     return (
@@ -47,7 +69,7 @@ export function JobTable({ jobs }: JobTableProps) {
               <TableHead>Score</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead className="w-20">Action</TableHead>
+              <TableHead className="w-44">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,17 +93,30 @@ export function JobTable({ jobs }: JobTableProps) {
                     <TableCell><ScoreBadge score={job.score} /></TableCell>
                     <TableCell><StatusBadge status={job.status} /></TableCell>
                     <TableCell className="text-sm text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      {job.url && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs gap-1"
-                          onClick={(e) => { e.stopPropagation(); window.open(job.url, "_blank"); }}
-                        >
-                          Apply <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      )}
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1.5">
+                        {job.url && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => window.open(job.url, "_blank")}
+                          >
+                            Apply <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        )}
+                        {job.status !== "applied" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            disabled={updatingId === job.id}
+                            onClick={() => markApplied(job)}
+                          >
+                            <CheckCircle2 className="h-3 w-3" /> Mark
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                   {isExpanded && hasDetails && (
@@ -132,13 +167,26 @@ export function JobTable({ jobs }: JobTableProps) {
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
                 <span>{job.salary || ""}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</span>
-                {job.url && (
-                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => window.open(job.url, "_blank")}>
-                    Apply <ExternalLink className="h-3 w-3" />
-                  </Button>
-                )}
+                <div className="flex items-center gap-1.5">
+                  {job.status !== "applied" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs gap-1"
+                      disabled={updatingId === job.id}
+                      onClick={() => markApplied(job)}
+                    >
+                      <CheckCircle2 className="h-3 w-3" /> Mark
+                    </Button>
+                  )}
+                  {job.url && (
+                    <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => window.open(job.url, "_blank")}>
+                      Apply <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
               </div>
               {isExpanded && hasDetails && (
                 <div className="pt-2 border-t space-y-3">

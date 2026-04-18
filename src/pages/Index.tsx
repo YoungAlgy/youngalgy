@@ -19,6 +19,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
 import { exportOpportunitiesCsv } from "@/lib/csv";
+import { logError } from "@/lib/log";
 import { toast } from "sonner";
 
 type ViewMode = "table" | "kanban" | "company";

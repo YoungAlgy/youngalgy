@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { supabase } from "@/lib/supabase";
+import { logError } from "@/lib/log";
 import { PieChart as PieIcon } from "lucide-react";
 
 interface Slice { name: string; value: number; }
@@ -17,7 +18,7 @@ export function SourcePieChart() {
         .from("opportunities")
         .select("source")
         .eq("bot_type", "manual");
-      if (error) { console.error(error); return; }
+      if (error) { logError("source pie chart"); return; }
       const counts: Record<string, number> = {};
       (rows ?? []).forEach((r: { source: string | null }) => {
         const k = (r.source || "unknown").toLowerCase();

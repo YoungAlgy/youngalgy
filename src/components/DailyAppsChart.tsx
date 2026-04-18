@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { supabase } from "@/lib/supabase";
+import { logError } from "@/lib/log";
 import { TrendingUp } from "lucide-react";
 
 interface Point { date: string; label: string; count: number; }
@@ -21,7 +22,7 @@ export function DailyAppsChart() {
         .eq("status", "applied")
         .gte("created_at", since.toISOString());
 
-      if (error) { console.error(error); return; }
+      if (error) { logError("daily apps chart"); return; }
 
       // Build 14-day skeleton
       const buckets: Record<string, number> = {};

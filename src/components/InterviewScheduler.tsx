@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { logError } from "@/lib/log";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ export function InterviewScheduler() {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) {
-      console.error("Load interviews failed:", error);
+      logError("load interviews");
     } else {
       setRows((data as Interview[]) || []);
     }

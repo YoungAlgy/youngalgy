@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { supabase } from "@/lib/supabase";
+import { logError } from "@/lib/log";
 import { DollarSign } from "lucide-react";
 
 interface Bucket { band: string; count: number; }
@@ -25,7 +26,7 @@ export function SalaryHistogram() {
         .select("salary_low")
         .eq("bot_type", "manual")
         .gt("salary_low", 0);
-      if (error) { console.error(error); return; }
+      if (error) { logError("salary histogram"); return; }
       const buckets = BANDS.map((b) => ({ band: b.label, count: 0 }));
       (rows ?? []).forEach((r: { salary_low: number | null }) => {
         const v = r.salary_low ?? 0;

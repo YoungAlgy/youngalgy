@@ -69,15 +69,16 @@ const Index = () => {
 
   const fetchJobs = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
+    // Explicit column list — never select('*') so we don't over-fetch sensitive fields by accident.
     const { data, error } = await supabase
       .from("opportunities")
-      .select("*")
+      .select("id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at")
       .eq("bot_type", "manual")
       .order("score", { ascending: false })
       .limit(500);
 
     if (error) {
-      console.error("Failed to fetch opportunities:", error);
+      logError("fetch opportunities");
       if (!silent) setLoading(false);
       return;
     }

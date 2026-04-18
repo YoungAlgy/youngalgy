@@ -1,5 +1,11 @@
 import { supabase } from "./supabase";
 
+const PREFERRED_ORDER = [
+  "id", "company", "title", "status", "source", "bot_type",
+  "location", "salary_low", "score", "url", "notes", "reasoning",
+  "cover_letter", "proposal", "created_at",
+];
+
 function toCsvCell(val: unknown): string {
   if (val === null || val === undefined) return "";
   const s = typeof val === "object" ? JSON.stringify(val) : String(val);
@@ -15,17 +21,19 @@ export async function exportOpportunitiesCsv() {
   if (error) throw error;
   const rows = data ?? [];
   if (rows.length === 0) {
-    const blob = new Blob(["(no rows)"], { type: "text/csv" });
-    triggerDownload(blob);
+    triggerDownload(new Blob(["(no rows)"], { type: "text/csv" }));
     return;
   }
-  const headers = Object.keys(rows[0]);
+  const allKeys = Object.keys(rows[0]);
+  const headers = [
+    ...PREFERRED_ORDER.filter((k) => allKeys.includes(k)),
+    ...allKeys.filter((k) => !PREFERRED_ORDER.includes(k)),
+  ];
   const lines = [
     headers.join(","),
     ...rows.map((r: Record<string, unknown>) => headers.map((h) => toCsvCell(r[h])).join(",")),
   ];
-  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-  triggerDownload(blob);
+  triggerDownload(new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }));
 }
 
 function triggerDownload(blob: Blob) {

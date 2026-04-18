@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { StatusBadge } from "./StatusBadge";
-import { Job, JobStatus } from "@/lib/types";
-import { MapPin, ExternalLink, ChevronDown, ChevronRight, CheckCircle2, Mail } from "lucide-react";
+import { Job, STATUS_CONFIG } from "@/lib/types";
+import { MapPin, ExternalLink, ChevronDown, ChevronRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { StatusSelect } from "./StatusSelect";
 
 const CONTACT_EMAIL = "alex@avahealth.co";
 
@@ -36,32 +36,13 @@ function DaysBadge({ date }: { date: string }) {
 
 interface JobTableProps {
   jobs: Job[];
-  onStatusChange?: (id: string, status: JobStatus) => void;
+  onStatusChange?: (id: string, status: Job["status"]) => void;
   onNotesChange?: (id: string, notes: string) => void;
 }
 
 export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [notesOpenId, setNotesOpenId] = useState<string | null>(null);
-
-  async function markApplied(job: Job) {
-    if (job.status === "applied" || updatingId === job.id) return;
-    setUpdatingId(job.id);
-    const previous = job.status;
-    onStatusChange?.(job.id, "applied");
-    const { error } = await supabase
-      .from("opportunities")
-      .update({ status: "applied" })
-      .eq("id", job.id);
-    setUpdatingId(null);
-    if (error) {
-      onStatusChange?.(job.id, previous);
-      toast.error("Failed to mark as applied");
-    } else {
-      toast.success(`Marked ${job.company} as applied`);
-    }
-  }
 
   async function copyEmail() {
     try {
@@ -98,16 +79,17 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
               <TableHead>Status</TableHead>
               <TableHead>Days</TableHead>
               <TableHead className="min-w-[180px]">Notes</TableHead>
-              <TableHead className="w-52">Actions</TableHead>
+              <TableHead className="w-32">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {jobs.map((job) => {
               const isExpanded = expandedId === job.id;
               const hasDetails = job.coverLetter || job.proposal;
+              const tint = STATUS_CONFIG[job.status].rowTint;
               return (
                 <>
-                  <TableRow key={job.id} className="group">
+                  <TableRow key={job.id} className={`group ${tint}`}>
                     <TableCell className="pr-0 cursor-pointer" onClick={() => hasDetails && toggle(job.id)}>
                       {hasDetails && (isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />)}
                     </TableCell>
@@ -120,7 +102,13 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{job.salary || "—"}</TableCell>
                     <TableCell><ScoreBadge score={job.score} /></TableCell>
-                    <TableCell><StatusBadge status={job.status} /></TableCell>
+                    <TableCell>
+                      <StatusSelect
+                        id={job.id}
+                        value={job.status}
+                        onChanged={(s) => onStatusChange?.(job.id, s)}
+                      />
+                    </TableCell>
                     <TableCell><DaysBadge date={job.appliedDate} /></TableCell>
                     <TableCell>
                       <NotesCell
@@ -141,17 +129,6 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                             onClick={() => window.open(job.url, "_blank")}
                           >
                             Apply <ExternalLink className="h-3 w-3" />
-                          </Button>
-                        )}
-                        {job.status !== "applied" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs gap-1"
-                            disabled={updatingId === job.id}
-                            onClick={() => markApplied(job)}
-                          >
-                            <CheckCircle2 className="h-3 w-3" /> Mark
                           </Button>
                         )}
                         <Button
@@ -198,17 +175,15 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
         {jobs.map((job) => {
           const isExpanded = expandedId === job.id;
           const hasDetails = job.coverLetter || job.proposal;
+          const tint = STATUS_CONFIG[job.status].rowTint;
           return (
-            <div key={job.id} className="bg-card border rounded-lg p-4 space-y-2">
+            <div key={job.id} className={`bg-card border rounded-lg p-4 space-y-2 ${tint}`}>
               <div className="flex items-start justify-between" onClick={() => hasDetails && toggle(job.id)}>
                 <div>
                   <p className="font-semibold">{job.company}</p>
                   <p className="text-sm text-muted-foreground">{job.position}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <ScoreBadge score={job.score} />
-                  <StatusBadge status={job.status} />
-                </div>
+                <ScoreBadge score={job.score} />
               </div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
@@ -218,6 +193,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                 <DaysBadge date={job.appliedDate} />
                 <span className="text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</span>
               </div>
+              <StatusSelect id={job.id} value={job.status} onChanged={(s) => onStatusChange?.(job.id, s)} />
               <NotesCell
                 job={job}
                 open={notesOpenId === job.id}
@@ -226,17 +202,6 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                 onSaved={(v) => onNotesChange?.(job.id, v)}
               />
               <div className="flex items-center justify-end gap-1.5">
-                {job.status !== "applied" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-xs gap-1"
-                    disabled={updatingId === job.id}
-                    onClick={() => markApplied(job)}
-                  >
-                    <CheckCircle2 className="h-3 w-3" /> Mark
-                  </Button>
-                )}
                 {job.url && (
                   <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => window.open(job.url, "_blank")}>
                     Apply <ExternalLink className="h-3 w-3" />

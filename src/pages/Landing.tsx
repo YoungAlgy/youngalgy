@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 
 const stats = [
   { icon: Clock, value: "12+", label: "Years Experience" },
-  { icon: Database, value: "700K+", label: "Records Managed" },
+  { icon: Database, value: "850K+", label: "Records Managed" },
   { icon: Layers, value: "4", label: "Projects Built" },
   { icon: GraduationCap, value: "B.A.", label: "Psychology, USF" },
 ];

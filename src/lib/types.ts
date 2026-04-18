@@ -1,4 +1,22 @@
-export type JobStatus = "applied" | "interview" | "offer" | "rejected" | "saved";
+export type JobStatus =
+  | "saved"
+  | "applied"
+  | "phone_screen"
+  | "interview"
+  | "offer"
+  | "rejected"
+  | "ghosted"
+  | "withdrew";
+
+export const ALL_STATUSES: JobStatus[] = [
+  "applied",
+  "phone_screen",
+  "interview",
+  "offer",
+  "rejected",
+  "ghosted",
+  "withdrew",
+];
 
 export interface Opportunity {
   id: string;
@@ -36,21 +54,35 @@ export interface Job {
   proposal?: string | null;
 }
 
-export const STATUS_CONFIG: Record<JobStatus, { label: string; className: string }> = {
-  saved: { label: "Saved", className: "bg-secondary text-secondary-foreground" },
-  applied: { label: "Applied", className: "bg-info text-info-foreground" },
-  interview: { label: "Interview", className: "bg-warning text-warning-foreground" },
-  offer: { label: "Offer", className: "bg-success text-success-foreground" },
-  rejected: { label: "Rejected", className: "bg-destructive text-destructive-foreground" },
+export const STATUS_CONFIG: Record<JobStatus, { label: string; className: string; rowTint: string }> = {
+  saved:        { label: "Saved",        className: "bg-secondary text-secondary-foreground",     rowTint: "" },
+  applied:      { label: "Applied",      className: "bg-info text-info-foreground",               rowTint: "" },
+  phone_screen: { label: "Phone Screen", className: "bg-blue-500 text-white",                     rowTint: "bg-blue-500/10" },
+  interview:    { label: "Interview",    className: "bg-purple-500 text-white",                   rowTint: "bg-purple-500/10" },
+  offer:        { label: "Offer",        className: "bg-success text-success-foreground",         rowTint: "bg-green-500/10" },
+  rejected:     { label: "Rejected",     className: "bg-destructive text-destructive-foreground", rowTint: "bg-red-500/10" },
+  ghosted:      { label: "Ghosted",      className: "bg-gray-500 text-white",                     rowTint: "bg-gray-500/10" },
+  withdrew:     { label: "Withdrew",     className: "bg-amber-500 text-white",                    rowTint: "bg-amber-500/10" },
 };
 
 const STATUS_MAP: Record<string, JobStatus> = {
   saved: "saved",
   applied: "applied",
+  phone_screen: "phone_screen",
+  "phone screen": "phone_screen",
+  phonescreen: "phone_screen",
   interview: "interview",
   offer: "offer",
   rejected: "rejected",
+  ghosted: "ghosted",
+  withdrew: "withdrew",
+  withdrawn: "withdrew",
 };
+
+export function normalizeStatus(raw: string | null | undefined): JobStatus {
+  if (!raw) return "applied";
+  return STATUS_MAP[raw.toLowerCase()] || "applied";
+}
 
 export function formatSalary(value: number | null | undefined): string | undefined {
   if (value == null) return undefined;
@@ -58,9 +90,6 @@ export function formatSalary(value: number | null | undefined): string | undefin
 }
 
 export function mapOpportunityToJob(opp: Opportunity): Job {
-  const rawStatus = (opp.status || "saved").toLowerCase();
-  const status: JobStatus = STATUS_MAP[rawStatus] || "saved";
-
   return {
     id: opp.id,
     company: opp.company,
@@ -68,7 +97,7 @@ export function mapOpportunityToJob(opp: Opportunity): Job {
     location: opp.location || "Unknown",
     salary: formatSalary(opp.salary_low),
     salaryRaw: opp.salary_low,
-    status,
+    status: normalizeStatus(opp.status),
     appliedDate: opp.created_at,
     url: opp.url || undefined,
     score: opp.score,

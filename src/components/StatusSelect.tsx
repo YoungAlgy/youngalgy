@@ -37,7 +37,7 @@ export function StatusSelect({ id, value, onChanged }: Props) {
 
   return (
     <Select value={current} onValueChange={handleChange} disabled={pending}>
-      <SelectTrigger className="h-7 text-xs w-[130px]">
+      <SelectTrigger className={`h-8 text-xs w-[140px] border-2 ${STATUS_CONFIG[current].rowTint}`}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

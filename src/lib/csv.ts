@@ -2,8 +2,8 @@ import { supabase } from "./supabase";
 
 const PREFERRED_ORDER = [
   "id", "company", "title", "status", "source", "bot_type",
-  "location", "salary_low", "score", "url", "notes", "reasoning",
-  "cover_letter", "proposal", "created_at",
+  "location", "is_remote", "salary_low", "salary_text", "score",
+  "url", "notes", "reasoning", "cover_letter", "proposal", "created_at",
 ];
 
 function toCsvCell(val: unknown): string {

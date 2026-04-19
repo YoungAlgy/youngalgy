@@ -1,15 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Job, STATUS_CONFIG } from "@/lib/types";
-import { MapPin, ExternalLink, ChevronDown, ChevronRight, Mail } from "lucide-react";
+import { MapPin, ExternalLink, ChevronDown, ChevronRight, Mail, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { StatusSelect } from "./StatusSelect";
+import { daysSince, hoursSince, formatRelativeDate } from "@/lib/dates";
 
-const CONTACT_EMAIL = "alex@avahealth.co";
+const CONTACT_EMAIL = "youngalgy@gmail.com";
+
+const SCORE_TOOLTIP =
+  "Score 10 = perfect fit (strategy + salary + role + remote). 9 = strong fit with one soft constraint. 8 = decent fit, worth applying. Below 8 isn't shown.";
+
+// Strategy pivot — anything older than this with a "senior/sr/enterprise AE" title is pre-pivot.
+const PIVOT_DATE = new Date("2026-04-18T00:00:00Z").getTime();
+const PRE_PIVOT_RX = /\b(senior|sr\.?|enterprise ae)\b/i;
+
+function isPrePivot(job: Job): boolean {
+  return new Date(job.appliedDate).getTime() < PIVOT_DATE && PRE_PIVOT_RX.test(job.position);
+}
 
 function ScoreBadge({ score }: { score?: number | null }) {
   if (score == null) return <span className="text-muted-foreground">—</span>;
@@ -20,18 +33,13 @@ function ScoreBadge({ score }: { score?: number | null }) {
   return <Badge className={`${color} text-xs font-semibold`}>{score}</Badge>;
 }
 
-function daysSince(dateStr: string): number {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
-}
-
 function DaysBadge({ date }: { date: string }) {
   const d = daysSince(date);
   const cls =
     d < 7 ? "bg-success text-success-foreground" :
     d <= 14 ? "bg-warning text-warning-foreground" :
     "bg-destructive text-destructive-foreground";
-  return <Badge className={`${cls} text-xs font-semibold`}>{d}d</Badge>;
+  return <Badge className={`${cls} text-xs font-semibold whitespace-nowrap`}>{formatRelativeDate(date)}</Badge>;
 }
 
 interface JobTableProps {
@@ -43,6 +51,12 @@ interface JobTableProps {
 export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [notesOpenId, setNotesOpenId] = useState<string | null>(null);
+
+  // Hide Location column when every visible row is Remote. On-site rows keep it visible.
+  const allRemote = useMemo(
+    () => jobs.length > 0 && jobs.every((j) => /remote/i.test(j.location ?? "")),
+    [jobs],
+  );
 
   async function copyEmail() {
     try {
@@ -73,9 +87,18 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
               <TableHead className="w-8"></TableHead>
               <TableHead>Company</TableHead>
               <TableHead>Position</TableHead>
-              <TableHead>Location</TableHead>
+              {!allRemote && <TableHead>Location</TableHead>}
               <TableHead>Salary</TableHead>
-              <TableHead>Score</TableHead>
+              <TableHead>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex items-center gap-1 cursor-help">
+                      Score <Info className="h-3 w-3 text-muted-foreground" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">{SCORE_TOOLTIP}</TooltipContent>
+                </Tooltip>
+              </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Days</TableHead>
               <TableHead className="min-w-[180px]">Notes</TableHead>
@@ -87,19 +110,41 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
               const isExpanded = expandedId === job.id;
               const hasDetails = job.coverLetter || job.proposal;
               const tint = STATUS_CONFIG[job.status].rowTint;
+              const fresh = hoursSince(job.appliedDate) < 4;
+              const prePivot = isPrePivot(job);
+              const remoteOnly = /remote/i.test(job.location ?? "");
               return (
                 <>
                   <TableRow key={job.id} className={`group ${tint}`}>
                     <TableCell className="pr-0 cursor-pointer" onClick={() => hasDetails && toggle(job.id)}>
                       {hasDetails && (isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />)}
                     </TableCell>
-                    <TableCell className="font-medium">{job.company}</TableCell>
-                    <TableCell>{job.position}</TableCell>
-                    <TableCell>
-                      <span className="flex items-center gap-1 text-muted-foreground text-sm">
-                        <MapPin className="h-3 w-3" /> {job.location}
+                    <TableCell className="font-medium">
+                      <span className="inline-flex items-center gap-2">
+                        {fresh && (
+                          <span
+                            className="inline-block h-2 w-2 rounded-full bg-success animate-pulse"
+                            title="New this session"
+                          />
+                        )}
+                        {job.company}
                       </span>
                     </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-0.5">
+                        <span>{job.position}</span>
+                        {allRemote ? null : remoteOnly ? (
+                          <Badge variant="secondary" className="text-[10px] w-fit">Remote</Badge>
+                        ) : null}
+                      </div>
+                    </TableCell>
+                    {!allRemote && (
+                      <TableCell>
+                        <span className="flex items-center gap-1 text-muted-foreground text-sm">
+                          <MapPin className="h-3 w-3" /> {job.location}
+                        </span>
+                      </TableCell>
+                    )}
                     <TableCell className="text-sm text-muted-foreground">{job.salary || "—"}</TableCell>
                     <TableCell><ScoreBadge score={job.score} /></TableCell>
                     <TableCell>
@@ -111,13 +156,20 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                     </TableCell>
                     <TableCell><DaysBadge date={job.appliedDate} /></TableCell>
                     <TableCell>
-                      <NotesCell
-                        job={job}
-                        open={notesOpenId === job.id}
-                        onOpen={() => setNotesOpenId(job.id)}
-                        onClose={() => setNotesOpenId(null)}
-                        onSaved={(v) => onNotesChange?.(job.id, v)}
-                      />
+                      <div className="flex flex-col gap-1">
+                        {prePivot && (
+                          <Badge variant="secondary" className="text-[10px] w-fit bg-muted text-muted-foreground">
+                            Pre-pivot
+                          </Badge>
+                        )}
+                        <NotesCell
+                          job={job}
+                          open={notesOpenId === job.id}
+                          onOpen={() => setNotesOpenId(job.id)}
+                          onClose={() => setNotesOpenId(null)}
+                          onSaved={(v) => onNotesChange?.(job.id, v)}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
@@ -145,7 +197,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                   </TableRow>
                   {isExpanded && hasDetails && (
                     <TableRow key={`${job.id}-detail`}>
-                      <TableCell colSpan={10} className="bg-muted/30 p-4">
+                      <TableCell colSpan={allRemote ? 9 : 10} className="bg-muted/30 p-4">
                         <div className="grid gap-4 md:grid-cols-2 max-w-4xl">
                           {job.coverLetter && (
                             <div className="space-y-1">
@@ -176,22 +228,31 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
           const isExpanded = expandedId === job.id;
           const hasDetails = job.coverLetter || job.proposal;
           const tint = STATUS_CONFIG[job.status].rowTint;
+          const fresh = hoursSince(job.appliedDate) < 4;
+          const prePivot = isPrePivot(job);
+          const remoteOnly = /remote/i.test(job.location ?? "");
           return (
             <div key={job.id} className={`bg-card border rounded-lg p-4 space-y-2 ${tint}`}>
               <div className="flex items-start justify-between" onClick={() => hasDetails && toggle(job.id)}>
-                <div>
-                  <p className="font-semibold">{job.company}</p>
+                <div className="min-w-0">
+                  <p className="font-semibold flex items-center gap-2">
+                    {fresh && <span className="inline-block h-2 w-2 rounded-full bg-success animate-pulse" />}
+                    {job.company}
+                  </p>
                   <p className="text-sm text-muted-foreground">{job.position}</p>
                 </div>
                 <ScoreBadge score={job.score} />
               </div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
-                <span>{job.salary || ""}</span>
+                {!allRemote && (
+                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
+                )}
+                {allRemote && remoteOnly && <span />}
+                <span>{job.salary || "—"}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-2 flex-wrap text-xs">
                 <DaysBadge date={job.appliedDate} />
-                <span className="text-muted-foreground">{new Date(job.appliedDate).toLocaleDateString()}</span>
+                {prePivot && <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground">Pre-pivot</Badge>}
               </div>
               <StatusSelect id={job.id} value={job.status} onChanged={(s) => onStatusChange?.(job.id, s)} />
               <NotesCell

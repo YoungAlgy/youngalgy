@@ -2,25 +2,28 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
+// Default to dark mode on first visit (no system preference fallback).
+function initialDark(): boolean {
+  if (typeof window === "undefined") return true;
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") return true;
+  if (saved === "light") return false;
+  return true; // first visit → dark
+}
+
 export function ThemeToggle() {
-  const [dark, setDark] = useState(() => {
-    if (typeof window !== "undefined") {
-      return document.documentElement.classList.contains("dark");
+  const [dark, setDark] = useState<boolean>(() => {
+    const v = initialDark();
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", v);
     }
-    return false;
+    return v;
   });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
     localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-      setDark(true);
-    }
-  }, []);
 
   return (
     <Button variant="outline" size="icon" onClick={() => setDark(!dark)} className="rounded-full">

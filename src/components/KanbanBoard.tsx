@@ -1,34 +1,41 @@
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Job, JobStatus, STATUS_CONFIG } from "@/lib/types";
-import { StatusBadge } from "./StatusBadge";
-import { MapPin, ExternalLink } from "lucide-react";
+import { MapPin, ExternalLink, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { formatRelativeDate } from "@/lib/dates";
 
-const COLUMNS: JobStatus[] = ["saved", "applied", "interview", "offer", "rejected"];
-
-function daysSince(dateStr: string): number {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
-}
+const COLUMNS: JobStatus[] = ["applied", "phone_screen", "interview", "offer", "rejected"];
 
 interface KanbanBoardProps {
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
+  onEdit?: (job: Job) => void;
 }
 
-export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
+export function KanbanBoard({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
   const columns = COLUMNS.map((status) => ({
     status,
     config: STATUS_CONFIG[status],
     jobs: jobs.filter((j) => j.status === status),
   }));
 
-  const handleDragEnd = (result: DropResult) => {
+  async function handleDragEnd(result: DropResult) {
     if (!result.destination) return;
     const jobId = result.draggableId;
     const newStatus = result.destination.droppableId as JobStatus;
+    const job = jobs.find((j) => j.id === jobId);
+    if (!job || job.status === newStatus) return;
     onStatusChange(jobId, newStatus);
-  };
+    const { error } = await supabase.from("opportunities").update({ status: newStatus }).eq("id", jobId);
+    if (error) {
+      onStatusChange(jobId, job.status); // revert
+      toast.error("Failed to update status");
+    } else {
+      toast.success(`Status → ${STATUS_CONFIG[newStatus].label}`);
+    }
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -36,7 +43,7 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
         {columns.map((col) => (
           <div key={col.status} className="flex-shrink-0 w-64 flex flex-col">
             <div className="flex items-center gap-2 mb-3 px-1">
-              <span className={`inline-block w-2.5 h-2.5 rounded-full ${col.config.className}`} />
+              <span className={`inline-block w-2.5 h-2.5 rounded-full ${col.config.className.split(" ")[0]}`} />
               <h3 className="text-sm font-semibold text-foreground">{col.config.label}</h3>
               <span className="text-xs text-muted-foreground ml-auto">{col.jobs.length}</span>
             </div>
@@ -56,7 +63,7 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`rounded-md border bg-card p-3 space-y-2 shadow-sm transition-shadow ${
+                          className={`group rounded-md border bg-card p-3 space-y-2 shadow-sm transition-shadow ${
                             snapshot.isDragging ? "shadow-lg ring-2 ring-primary/20" : ""
                           }`}
                         >
@@ -65,7 +72,7 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                               <p className="text-sm font-semibold truncate text-foreground">{job.company}</p>
                               <p className="text-xs text-muted-foreground truncate">{job.position}</p>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="flex items-center gap-1 shrink-0">
                               {job.score != null && (
                                 <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
                                   job.score >= 9 ? "bg-success text-success-foreground" :
@@ -78,14 +85,28 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                             </div>
                           </div>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              <span className="truncate max-w-[100px]">{job.location}</span>
+                            <span className="flex items-center gap-1 min-w-0">
+                              <MapPin className="h-3 w-3 shrink-0" />
+                              <span className="truncate">{job.location}</span>
                             </span>
-                            <span>{daysSince(job.appliedDate)}d ago</span>
+                            <span className="shrink-0">{formatRelativeDate(job.appliedDate)}</span>
                           </div>
-                          {job.url && (
-                            <div className="flex justify-end">
+                          <div className="text-xs text-muted-foreground">
+                            {job.salary || "—"}
+                          </div>
+                          <div className="flex justify-end gap-1.5">
+                            {onEdit && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => onEdit(job)}
+                                title="Edit"
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                            )}
+                            {job.url && (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -94,8 +115,8 @@ export function KanbanBoard({ jobs, onStatusChange }: KanbanBoardProps) {
                               >
                                 Apply <ExternalLink className="h-3 w-3" />
                               </Button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       )}
                     </Draggable>

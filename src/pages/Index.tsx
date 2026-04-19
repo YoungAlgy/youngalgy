@@ -9,14 +9,16 @@ import { DailyAppsChart } from "@/components/DailyAppsChart";
 import { PipelineFunnel } from "@/components/PipelineFunnel";
 import { SourcePieChart } from "@/components/SourcePieChart";
 import { SalaryHistogram } from "@/components/SalaryHistogram";
-import { LinkedInQuotaWidget } from "@/components/LinkedInQuotaWidget";
 import { RejectionLog } from "@/components/RejectionLog";
 import { FilterBar, Filters, DEFAULT_FILTERS } from "@/components/FilterBar";
+import { EditJobDrawer } from "@/components/EditJobDrawer";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Search, LayoutList, Columns3, Loader2, ArrowLeft, Download, Building2 } from "lucide-react";
+import {
+  Briefcase, Search, LayoutList, Columns3, Loader2, ArrowLeft, Download, Building2,
+} from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
@@ -24,7 +26,7 @@ import { exportOpportunitiesCsv } from "@/lib/csv";
 import { logError } from "@/lib/log";
 import { toast } from "sonner";
 
-type ViewMode = "table" | "kanban" | "company";
+type ViewMode = "kanban" | "table" | "company";
 type SortKey = "score" | "date" | "salary" | "days";
 
 const REFRESH_MS = 30_000;
@@ -52,9 +54,20 @@ function paramsFromFilters(f: Filters, search: string, view: ViewMode, sortBy: S
   if (f.salaryMin > 0) p.set("salaryMin", String(f.salaryMin));
   if (f.hasUrl) p.set("hasUrl", "1");
   if (search) p.set("q", search);
-  if (view !== "table") p.set("view", view);
+  // Default view is kanban — only encode when overridden.
+  if (view !== "kanban") p.set("view", view);
   if (sortBy !== "score") p.set("sort", sortBy);
   return p;
+}
+
+function SectionHeading({ title, hint }: { title: string; hint?: string }) {
+  return (
+    <div className="flex items-baseline gap-3 pt-2">
+      <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">{title}</h2>
+      {hint && <span className="text-xs text-muted-foreground/70">{hint}</span>}
+      <span className="flex-1 h-px bg-border" />
+    </div>
+  );
 }
 
 const Index = () => {
@@ -65,13 +78,14 @@ const Index = () => {
   const [filters, setFilters] = useState<Filters>(filtersFromParams(searchParams));
   const [funnelStage, setFunnelStage] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortKey>((searchParams.get("sort") as SortKey) || "score");
-  const [view, setView] = useState<ViewMode>((searchParams.get("view") as ViewMode) || "table");
+  // Default view = Board (kanban). Honor URL override.
+  const [view, setView] = useState<ViewMode>((searchParams.get("view") as ViewMode) || "kanban");
   const [exporting, setExporting] = useState(false);
+  const [editJob, setEditJob] = useState<Job | null>(null);
   const navigate = useNavigate();
 
   const fetchJobs = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
-    // Explicit column list — never select('*') so we don't over-fetch sensitive fields by accident.
     const { data, error } = await supabase
       .from("opportunities")
       .select("id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at")
@@ -131,7 +145,6 @@ const Index = () => {
       return matchesSearch && matchesStatus && matchesSource && matchesDate && matchesSalary && matchesUrl && matchesFunnel;
     });
 
-    // Stable secondary sort: newest first within tied buckets.
     const byDateDesc = (a: Job, b: Job) =>
       new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
     result.sort((a, b) => {
@@ -143,7 +156,7 @@ const Index = () => {
         const diff = (b.salaryRaw ?? 0) - (a.salaryRaw ?? 0);
         return diff !== 0 ? diff : byDateDesc(a, b);
       }
-      if (sortBy === "days") return byDateDesc(b, a); // oldest first when sorting by days since
+      if (sortBy === "days") return byDateDesc(b, a);
       return byDateDesc(a, b);
     });
 
@@ -158,6 +171,10 @@ const Index = () => {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, notes } : j)));
   };
 
+  const handleEditSaved = (id: string, patch: Partial<Job>) => {
+    setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...patch } : j)));
+  };
+
   async function handleExport() {
     setExporting(true);
     try {
@@ -170,6 +187,20 @@ const Index = () => {
       setExporting(false);
     }
   }
+
+  const ViewToggle = (
+    <div className="inline-flex items-center rounded-md border bg-muted p-0.5">
+      <Button variant={view === "kanban" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("kanban")}>
+        <Columns3 className="h-3.5 w-3.5" /> Board
+      </Button>
+      <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("table")}>
+        <LayoutList className="h-3.5 w-3.5" /> By Job
+      </Button>
+      <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("company")}>
+        <Building2 className="h-3.5 w-3.5" /> By Company
+      </Button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -193,87 +224,95 @@ const Index = () => {
               <Download className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Export CSV</span>
             </Button>
-            <div className="hidden sm:flex items-center rounded-md border bg-muted p-0.5">
-              <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-7 px-2.5 gap-1.5 text-xs" onClick={() => setView("table")}>
-                <LayoutList className="h-3.5 w-3.5" /><span className="hidden md:inline">By Job</span>
-              </Button>
-              <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-7 px-2.5 gap-1.5 text-xs" onClick={() => setView("company")}>
-                <Building2 className="h-3.5 w-3.5" /><span className="hidden md:inline">By Company</span>
-              </Button>
-              <Button variant={view === "kanban" ? "default" : "ghost"} size="sm" className="h-7 px-2.5 gap-1.5 text-xs" onClick={() => setView("kanban")}>
-                <Columns3 className="h-3.5 w-3.5" /><span className="hidden md:inline">Board</span>
-              </Button>
-            </div>
             <ThemeToggle />
           </div>
         </div>
       </header>
 
-      <main className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <StatsCards />
+      <main className="container max-w-6xl mx-auto px-4 py-6 space-y-8">
+        {/* SECTION: Snapshot */}
+        <section className="space-y-4">
+          <SectionHeading title="Snapshot" hint="Top-of-funnel + recent rejections" />
+          <StatsCards />
+          <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+            <PipelineFunnel onStageClick={setFunnelStage} activeStage={funnelStage} />
+            <RejectionLog />
+          </div>
+        </section>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <PipelineFunnel onStageClick={setFunnelStage} activeStage={funnelStage} />
-          <LinkedInQuotaWidget />
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-2">
+        {/* SECTION: In Motion */}
+        <section className="space-y-4">
+          <SectionHeading title="In Motion" hint="Active interviews" />
           <InterviewScheduler />
-          <RejectionLog />
-        </div>
+        </section>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <DailyAppsChart />
-          <SourcePieChart />
-        </div>
-
-        <SalaryHistogram />
-
-        <FilterBar
-          filters={filters}
-          setFilters={setFilters}
-          availableSources={sources}
-          onClear={() => setFilters(DEFAULT_FILTERS)}
-        />
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative w-full sm:max-w-xs sm:flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search title or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+        {/* SECTION: Trends */}
+        <section className="space-y-4">
+          <SectionHeading title="Trends" hint="Daily volume, source mix, salary spread" />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <DailyAppsChart />
+            <SourcePieChart />
           </div>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-            <SelectTrigger className="w-full sm:w-[160px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="score">Sort: Score</SelectItem>
-              <SelectItem value="date">Sort: Date</SelectItem>
-              <SelectItem value="salary">Sort: Salary</SelectItem>
-              <SelectItem value="days">Sort: Days Since</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="sm:hidden flex items-center rounded-md border bg-muted p-0.5">
-            <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-7 flex-1 text-xs" onClick={() => setView("table")}>By Job</Button>
-            <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-7 flex-1 text-xs" onClick={() => setView("company")}>By Company</Button>
-          </div>
-        </div>
+          <SalaryHistogram />
+        </section>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        {/* SECTION: All Applications */}
+        <section className="space-y-4">
+          <SectionHeading title="All Applications" hint="Filter, search, edit" />
+
+          <FilterBar
+            filters={filters}
+            setFilters={setFilters}
+            availableSources={sources}
+            onClear={() => setFilters(DEFAULT_FILTERS)}
+          />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground mr-1">View:</span>
+            {ViewToggle}
           </div>
-        ) : view === "table" ? (
-          <Card className="border shadow-sm overflow-hidden">
-            <JobTable jobs={filtered} onStatusChange={handleStatusChange} onNotesChange={handleNotesChange} />
-          </Card>
-        ) : view === "company" ? (
-          <Card className="border shadow-sm overflow-hidden">
-            <CompanyTable jobs={filtered} />
-          </Card>
-        ) : (
-          <KanbanBoard jobs={filtered} onStatusChange={handleStatusChange} />
-        )}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative w-full sm:max-w-xs sm:flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search title or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+            </div>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+              <SelectTrigger className="w-full sm:w-[160px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="score">Sort: Score</SelectItem>
+                <SelectItem value="date">Sort: Date</SelectItem>
+                <SelectItem value="salary">Sort: Salary</SelectItem>
+                <SelectItem value="days">Sort: Days Since</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : view === "kanban" ? (
+            <KanbanBoard jobs={filtered} onStatusChange={handleStatusChange} onEdit={setEditJob} />
+          ) : view === "table" ? (
+            <Card className="border shadow-sm overflow-hidden">
+              <JobTable jobs={filtered} onStatusChange={handleStatusChange} onNotesChange={handleNotesChange} onEdit={setEditJob} />
+            </Card>
+          ) : (
+            <Card className="border shadow-sm overflow-hidden">
+              <CompanyTable jobs={filtered} onEdit={setEditJob} />
+            </Card>
+          )}
+        </section>
       </main>
+
+      <EditJobDrawer
+        job={editJob}
+        onClose={() => setEditJob(null)}
+        onSaved={handleEditSaved}
+      />
     </div>
   );
 };

@@ -6,14 +6,13 @@ import { Button } from "@/components/ui/button";
 import {
   TrendingUp, Users, Sparkles, LineChart,
   Clock, Database, Layers, GraduationCap,
-  Mail, Linkedin, MapPin, Menu, X,
+  Mail, Linkedin, MapPin, Menu, X, Download, Github,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
-  { label: "Experience", href: "#experience" },
-  { label: "Projects", href: "#projects" },
+  { label: "Work", href: "#work" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -30,32 +29,43 @@ const skills = [
   "SEO", "Trading Bots",
 ];
 
-const experiences = [
+interface WorkItem {
+  title: string;
+  role: string;
+  description: string;
+  highlights: string[];
+  icon: typeof Users;
+}
+
+const work: WorkItem[] = [
   {
-    title: "Ava Health CRM",
-    role: "Full-Stack Developer",
-    description: "Built a healthcare CRM platform managing 700K+ medical providers with advanced search, outreach automation, and analytics.",
-    highlights: ["700K+ Providers", "React + Node", "PostgreSQL"],
-  },
-  {
-    title: "Universe XYZ",
-    role: "Project Manager",
-    description: "Led digital collectible drops raising $5M+ for charity, including Lobby Lobsters at $4.4M. Managed cross-functional engineering, creative, and community teams through marketplace launch.",
-    highlights: ["$5M+ Charity", "Solidity", "Web3"],
+    title: "Ava Health CRM (Current)",
+    role: "Full-Stack + Sales Operations",
+    description: "Healthcare CRM platform managing 850K+ medical providers with advanced search, outreach automation, and analytics. Built and shipped the tools the team uses daily.",
+    highlights: ["850K+ Providers", "React + Node", "PostgreSQL", "Supabase"],
+    icon: Users,
   },
   {
     title: "Money Mitch",
     role: "Artist Management & Tech",
-    description: "Managed digital presence and built tech tools for artist management including analytics dashboards and content distribution.",
+    description: "Artist management platform for musician Mitch. Built analytics dashboards, content distribution tooling, and SEO dashboards to grow audience and revenue.",
     highlights: ["Artist Mgmt", "Analytics", "SEO"],
+    icon: Sparkles,
   },
-];
-
-const projects = [
-  { icon: Users, title: "Ava Health CRM", desc: "Healthcare provider CRM with 700K records and outreach automation" },
-  { icon: TrendingUp, title: "Trading Bots", desc: "Algorithmic trading systems with real-time market analysis" },
-  { icon: Sparkles, title: "Money Mitch", desc: "Artist management platform with analytics and content tools" },
-  { icon: LineChart, title: "Trading Systems", desc: "Algorithmic trading bots running on live capital with real-time dashboards, backtesting, and regime detection." },
+  {
+    title: "Universe XYZ — Lobby Lobsters",
+    role: "Project Manager",
+    description: "Led digital collectible drops raising $5M+ for charity, including Lobby Lobsters at $4.4M. Managed cross-functional engineering, creative, and community teams through marketplace launch.",
+    highlights: ["$5M+ Charity", "Solidity", "Web3"],
+    icon: TrendingUp,
+  },
+  {
+    title: "Trading Bots",
+    role: "Quant / Systems Builder",
+    description: "Algorithmic trading systems (Kalman filter, HMM regime detection, VWAP) running on live Alpaca capital. Real-time dashboards, backtesting, and Python pipelines.",
+    highlights: ["Python", "Alpaca", "Backtesting"],
+    icon: LineChart,
+  },
 ];
 
 const scrollTo = (href: string) => {
@@ -121,17 +131,32 @@ const Landing = () => {
       <main className="container max-w-6xl mx-auto px-4 py-12 space-y-20">
         {/* Hero */}
         <section className="text-center space-y-6 py-12">
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2 flex-wrap">
             <MapPin className="h-4 w-4" />
             Tampa, FL &nbsp;|&nbsp;
-            <a href="mailto:alex@avahealth.co" className="text-primary hover:underline">alex@avahealth.co</a>
+            <a href="mailto:youngalgy@gmail.com" className="text-primary hover:underline">youngalgy@gmail.com</a>
           </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground">
             Alexander Holmes
           </h1>
-          <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto">
-            Sales, Customer Success & Talent Professional
-          </p>
+          <div className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto space-y-1">
+            <p>Sales, Customer Success &amp; Talent pro who ships the tools.</p>
+            <p>12+ years placing talent + building the systems that scale the work.</p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            {/* TODO: drop Alexander_Holmes_Resume.pdf into /public for this link to resolve */}
+            <Button asChild size="lg" className="gap-2">
+              <a href="/Alexander_Holmes_Resume.pdf" download>
+                <Download className="h-4 w-4" /> Download Resume (PDF)
+              </a>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="gap-2">
+              <a href="mailto:youngalgy@gmail.com">
+                <Mail className="h-4 w-4" /> Email Me
+              </a>
+            </Button>
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto pt-8">
             {stats.map((s) => (
@@ -155,6 +180,7 @@ const Landing = () => {
         {/* Skills */}
         <section id="skills" className="space-y-4 scroll-mt-20">
           <h2 className="text-2xl font-bold text-foreground">Skills</h2>
+          <p className="text-sm text-muted-foreground">Tools I reach for daily</p>
           <div className="flex flex-wrap gap-3">
             {skills.map((skill) => (
               <span
@@ -167,19 +193,24 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* Experience */}
-        <section id="experience" className="space-y-6 scroll-mt-20">
-          <h2 className="text-2xl font-bold text-foreground">Experience</h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            {experiences.map((exp) => (
-              <Card key={exp.title} className="p-6 border bg-card space-y-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">{exp.title}</h3>
-                  <p className="text-sm text-primary font-medium">{exp.role}</p>
+        {/* Experience & Projects (merged) */}
+        <section id="work" className="space-y-6 scroll-mt-20">
+          <h2 className="text-2xl font-bold text-foreground">Experience &amp; Projects</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {work.map((w) => (
+              <Card key={w.title} className="p-6 border bg-card space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="p-2.5 rounded-lg bg-primary/10 shrink-0">
+                    <w.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold text-foreground">{w.title}</h3>
+                    <p className="text-sm text-primary font-medium">{w.role}</p>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{exp.description}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{w.description}</p>
                 <div className="flex flex-wrap gap-2">
-                  {exp.highlights.map((h) => (
+                  {w.highlights.map((h) => (
                     <span key={h} className="text-xs px-2 py-1 rounded bg-primary/10 text-primary font-medium">
                       {h}
                     </span>
@@ -190,43 +221,34 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* Projects */}
-        <section id="projects" className="space-y-6 scroll-mt-20">
-          <h2 className="text-2xl font-bold text-foreground">Projects</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {projects.map((p) => (
-              <Card key={p.title} className="p-6 border bg-card flex gap-4 items-start">
-                <div className="p-2.5 rounded-lg bg-primary/10 shrink-0">
-                  <p.icon className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">{p.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{p.desc}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-
         {/* Contact */}
-        <section id="contact" className="space-y-6 scroll-mt-20 max-w-3xl mx-auto">
+        <section id="contact" className="space-y-6 scroll-mt-20 max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-foreground">Contact</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="p-5 border bg-card flex items-center gap-3">
               <Mail className="h-5 w-5 text-primary shrink-0" />
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Email</p>
-                <a href="mailto:alex@avahealth.co" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                  alex@avahealth.co
+                <a href="mailto:youngalgy@gmail.com" className="text-sm font-medium text-foreground hover:text-primary transition-colors break-all">
+                  youngalgy@gmail.com
                 </a>
               </div>
             </Card>
             <Card className="p-5 border bg-card flex items-center gap-3">
               <Linkedin className="h-5 w-5 text-primary shrink-0" />
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">LinkedIn</p>
                 <a href="https://linkedin.com/in/youngalgy" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                   linkedin.com/in/youngalgy
+                </a>
+              </div>
+            </Card>
+            <Card className="p-5 border bg-card flex items-center gap-3">
+              <Github className="h-5 w-5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">GitHub</p>
+                <a href="https://github.com/youngalgy" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  github.com/youngalgy
                 </a>
               </div>
             </Card>

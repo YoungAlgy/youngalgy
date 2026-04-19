@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { logError } from "@/lib/log";
 import { Filter } from "lucide-react";
 
 interface Stage {
   key: string;
   label: string;
   count: number;
-  color: string;
+  /** Tailwind bg color class for the bar fill. */
+  fill: string;
 }
 
 interface Props {
@@ -15,14 +17,16 @@ interface Props {
   activeStage?: string | null;
 }
 
+const BASE: Omit<Stage, "count">[] = [
+  { key: "applied",      label: "Submitted",    fill: "bg-blue-500" },
+  { key: "phone_screen", label: "Phone Screen", fill: "bg-cyan-500" },
+  { key: "interview",    label: "Interview",    fill: "bg-purple-500" },
+  { key: "offer",        label: "Offer",        fill: "bg-green-500" },
+  { key: "hired",        label: "Hired",        fill: "bg-emerald-600" },
+];
+
 export function PipelineFunnel({ onStageClick, activeStage }: Props) {
-  const [stages, setStages] = useState<Stage[]>([
-    { key: "applied",      label: "Submitted",    count: 0, color: "bg-info" },
-    { key: "phone_screen", label: "Phone Screen", count: 0, color: "bg-blue-500" },
-    { key: "interview",    label: "Interview",    count: 0, color: "bg-purple-500" },
-    { key: "offer",        label: "Offer",        count: 0, color: "bg-success" },
-    { key: "hired",        label: "Hired",        count: 0, color: "bg-emerald-600" },
-  ]);
+  const [stages, setStages] = useState<Stage[]>(BASE.map((s) => ({ ...s, count: 0 })));
 
   useEffect(() => {
     async function load() {
@@ -35,12 +39,16 @@ export function PipelineFunnel({ onStageClick, activeStage }: Props) {
         supabase.from("opportunities").select("id", { count: "exact", head: true }).eq("bot_type", "manual").eq("status", "hired"),
       ]);
 
+      if (submittedRes.error || phoneRes.error || oppIntRes.error || intTblRes.error || offerRes.error || hiredRes.error) {
+        logError("pipeline funnel");
+      }
+
       setStages([
-        { key: "applied",      label: "Submitted",    count: submittedRes.count ?? 0, color: "bg-info" },
-        { key: "phone_screen", label: "Phone Screen", count: phoneRes.count ?? 0,     color: "bg-blue-500" },
-        { key: "interview",    label: "Interview",    count: Math.max(oppIntRes.count ?? 0, intTblRes.count ?? 0), color: "bg-purple-500" },
-        { key: "offer",        label: "Offer",        count: offerRes.count ?? 0,     color: "bg-success" },
-        { key: "hired",        label: "Hired",        count: hiredRes.count ?? 0,     color: "bg-emerald-600" },
+        { ...BASE[0], count: submittedRes.count ?? 0 },
+        { ...BASE[1], count: phoneRes.count ?? 0 },
+        { ...BASE[2], count: Math.max(oppIntRes.count ?? 0, intTblRes.count ?? 0) },
+        { ...BASE[3], count: offerRes.count ?? 0 },
+        { ...BASE[4], count: hiredRes.count ?? 0 },
       ]);
     }
     load();
@@ -62,24 +70,36 @@ export function PipelineFunnel({ onStageClick, activeStage }: Props) {
           </button>
         )}
       </div>
-      <div className="flex items-end gap-2 h-32">
-        {stages.map((stage) => {
-          const heightPct = (stage.count / max) * 100;
-          const widthPct = 100 - (stages.indexOf(stage) * 10);
+
+      {/* Vertical stack of horizontal tapering bars (mobile + desktop, reads as a funnel). */}
+      <div className="space-y-1.5">
+        {stages.map((stage, idx) => {
+          // Width tapers down each stage proportionally to its count vs the top stage.
+          const pct = Math.max((stage.count / max) * 100, 6);
           const isActive = activeStage === stage.key;
           return (
             <button
               key={stage.key}
               onClick={() => onStageClick?.(isActive ? null : stage.key)}
-              className="flex-1 flex flex-col items-center gap-1 group"
+              className="w-full flex items-center gap-3 group"
               title={`Filter to ${stage.label}`}
             >
-              <span className="text-xs font-semibold">{stage.count}</span>
-              <div
-                className={`${stage.color} rounded-t transition-all ${isActive ? "ring-2 ring-foreground" : "group-hover:opacity-80"}`}
-                style={{ height: `${Math.max(heightPct, 8)}%`, width: `${widthPct}%` }}
-              />
-              <span className="text-[10px] text-muted-foreground text-center">{stage.label}</span>
+              <span className="w-24 sm:w-28 text-xs text-muted-foreground text-right shrink-0">
+                {stage.label}
+              </span>
+              <div className="flex-1 flex items-center justify-center">
+                <div
+                  className={`${stage.fill} h-7 sm:h-8 rounded transition-all flex items-center justify-end px-3 text-xs font-semibold text-white ${
+                    isActive ? "ring-2 ring-foreground" : "group-hover:opacity-90"
+                  }`}
+                  style={{ width: `${pct}%` }}
+                >
+                  {stage.count > 0 && stage.count}
+                </div>
+              </div>
+              <span className="w-8 text-xs font-semibold tabular-nums text-right shrink-0">
+                {stage.count}
+              </span>
             </button>
           );
         })}

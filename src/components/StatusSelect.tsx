@@ -10,6 +10,18 @@ interface Props {
   onChanged?: (status: JobStatus) => void;
 }
 
+// Visible solid-color trigger per status. Kept here (not in types.ts) because it's a UI-only concern.
+const TRIGGER_CLASS: Record<JobStatus, string> = {
+  saved:        "bg-secondary text-secondary-foreground border-border",
+  applied:      "bg-info/15 text-foreground border-info/40",
+  phone_screen: "bg-blue-500/15 text-foreground border-blue-500/50",
+  interview:    "bg-purple-500/15 text-foreground border-purple-500/50",
+  offer:        "bg-success/20 text-foreground border-success/50",
+  rejected:     "bg-destructive/15 text-foreground border-destructive/50",
+  ghosted:      "bg-gray-500/15 text-foreground border-gray-500/50",
+  withdrew:     "bg-amber-500/15 text-foreground border-amber-500/50",
+};
+
 export function StatusSelect({ id, value, onChanged }: Props) {
   const [pending, setPending] = useState(false);
   const [current, setCurrent] = useState<JobStatus>(value);
@@ -37,7 +49,7 @@ export function StatusSelect({ id, value, onChanged }: Props) {
 
   return (
     <Select value={current} onValueChange={handleChange} disabled={pending}>
-      <SelectTrigger className={`h-8 text-xs w-[140px] border-2 ${STATUS_CONFIG[current].rowTint}`}>
+      <SelectTrigger className={`h-8 text-xs w-[140px] border-2 font-medium ${TRIGGER_CLASS[current]}`}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

@@ -257,13 +257,15 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTab
               />
               <div className="flex items-center justify-end gap-1.5">
                 {job.url && (
-                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => window.open(job.url, "_blank")}>
-                    Apply <ExternalLink className="h-3 w-3" />
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank")} title="Open posting">
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 )}
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={copyEmail}>
-                  <Mail className="h-3.5 w-3.5" />
-                </Button>
+                {onEdit && (
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(job)} title="Edit">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
               {isExpanded && hasDetails && (
                 <div className="pt-2 border-t space-y-3">

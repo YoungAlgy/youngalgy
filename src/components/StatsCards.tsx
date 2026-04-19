@@ -68,6 +68,7 @@ export function StatsCards() {
     },
   ];
 
+  // Mobile: 2 cols × 3 rows. ≥sm: 3 cols. ≥lg: 6 cols.
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {stats.map((stat) => (

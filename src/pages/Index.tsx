@@ -9,6 +9,8 @@ import { DailyAppsChart } from "@/components/DailyAppsChart";
 import { PipelineFunnel } from "@/components/PipelineFunnel";
 import { SourcePieChart } from "@/components/SourcePieChart";
 import { SalaryHistogram } from "@/components/SalaryHistogram";
+import { LinkedInQuotaWidget } from "@/components/LinkedInQuotaWidget";
+import { RejectionLog } from "@/components/RejectionLog";
 import { FilterBar, Filters, DEFAULT_FILTERS } from "@/components/FilterBar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -129,10 +131,20 @@ const Index = () => {
       return matchesSearch && matchesStatus && matchesSource && matchesDate && matchesSalary && matchesUrl && matchesFunnel;
     });
 
+    // Stable secondary sort: newest first within tied buckets.
+    const byDateDesc = (a: Job, b: Job) =>
+      new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
     result.sort((a, b) => {
-      if (sortBy === "score") return (b.score ?? -1) - (a.score ?? -1);
-      if (sortBy === "salary") return (b.salaryRaw ?? 0) - (a.salaryRaw ?? 0);
-      return new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
+      if (sortBy === "score") {
+        const diff = (b.score ?? -1) - (a.score ?? -1);
+        return diff !== 0 ? diff : byDateDesc(a, b);
+      }
+      if (sortBy === "salary") {
+        const diff = (b.salaryRaw ?? 0) - (a.salaryRaw ?? 0);
+        return diff !== 0 ? diff : byDateDesc(a, b);
+      }
+      if (sortBy === "days") return byDateDesc(b, a); // oldest first when sorting by days since
+      return byDateDesc(a, b);
     });
 
     return result;
@@ -200,9 +212,15 @@ const Index = () => {
       <main className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
         <StatsCards />
 
-        <PipelineFunnel onStageClick={setFunnelStage} activeStage={funnelStage} />
+        <div className="grid gap-4 md:grid-cols-2">
+          <PipelineFunnel onStageClick={setFunnelStage} activeStage={funnelStage} />
+          <LinkedInQuotaWidget />
+        </div>
 
-        <InterviewScheduler />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <InterviewScheduler />
+          <RejectionLog />
+        </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <DailyAppsChart />

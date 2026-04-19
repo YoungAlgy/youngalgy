@@ -6,9 +6,28 @@ import { Lock } from "lucide-react";
 
 const STORAGE_KEY = "ya_dashboard_auth";
 const PASSWORD = "toggle813";
+const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24h
 
 interface PasswordGateProps {
   children: React.ReactNode;
+}
+
+interface AuthRecord {
+  expiresAt: number;
+}
+
+function readAuth(): AuthRecord | null {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+  // Legacy "true" value should be treated as expired so the gate reappears.
+  if (raw === "true") return null;
+  try {
+    const parsed = JSON.parse(raw) as AuthRecord;
+    if (typeof parsed?.expiresAt !== "number") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
 }
 
 export function PasswordGate({ children }: PasswordGateProps) {
@@ -17,15 +36,20 @@ export function PasswordGate({ children }: PasswordGateProps) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
+    const auth = readAuth();
+    if (auth && auth.expiresAt > Date.now()) {
       setAuthenticated(true);
+    } else if (auth) {
+      // expired
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === PASSWORD) {
-      localStorage.setItem(STORAGE_KEY, "true");
+      const record: AuthRecord = { expiresAt: Date.now() + EXPIRY_MS };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
       setAuthenticated(true);
     } else {
       setError(true);
@@ -56,6 +80,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
           {error && <p className="text-sm text-destructive">Incorrect password</p>}
           <Button type="submit" className="w-full">Unlock</Button>
         </form>
+        <p className="text-xs text-muted-foreground">Session lasts 24 hours.</p>
       </Card>
     </div>
   );

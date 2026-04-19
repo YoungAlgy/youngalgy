@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Job, STATUS_CONFIG } from "@/lib/types";
-import { MapPin, ExternalLink, ChevronDown, ChevronRight, Mail, Info } from "lucide-react";
+import { MapPin, ExternalLink, ChevronDown, ChevronRight, Info, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,8 +10,6 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { StatusSelect } from "./StatusSelect";
 import { daysSince, hoursSince, formatRelativeDate } from "@/lib/dates";
-
-const CONTACT_EMAIL = "youngalgy@gmail.com";
 
 const SCORE_TOOLTIP =
   "Score 10 = perfect fit (strategy + salary + role + remote). 9 = strong fit with one soft constraint. 8 = decent fit, worth applying. Below 8 isn't shown.";
@@ -46,9 +44,10 @@ interface JobTableProps {
   jobs: Job[];
   onStatusChange?: (id: string, status: Job["status"]) => void;
   onNotesChange?: (id: string, notes: string) => void;
+  onEdit?: (job: Job) => void;
 }
 
-export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps) {
+export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [notesOpenId, setNotesOpenId] = useState<string | null>(null);
 
@@ -57,15 +56,6 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
     () => jobs.length > 0 && jobs.every((j) => /remote/i.test(j.location ?? "")),
     [jobs],
   );
-
-  async function copyEmail() {
-    try {
-      await navigator.clipboard.writeText(CONTACT_EMAIL);
-      toast.success(`Copied ${CONTACT_EMAIL}`);
-    } catch {
-      toast.error("Couldn't copy");
-    }
-  }
 
   if (jobs.length === 0) {
     return (
@@ -102,7 +92,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
               <TableHead>Status</TableHead>
               <TableHead>Days</TableHead>
               <TableHead className="min-w-[180px]">Notes</TableHead>
-              <TableHead className="w-32">Actions</TableHead>
+              <TableHead className="w-16"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -172,26 +162,29 @@ export function JobTable({ jobs, onStatusChange, onNotesChange }: JobTableProps)
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         {job.url && (
                           <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs gap-1"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
                             onClick={() => window.open(job.url, "_blank")}
+                            title="Open posting"
                           >
-                            Apply <ExternalLink className="h-3 w-3" />
+                            <ExternalLink className="h-3.5 w-3.5" />
                           </Button>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          title={`Copy ${CONTACT_EMAIL}`}
-                          onClick={copyEmail}
-                        >
-                          <Mail className="h-3.5 w-3.5" />
-                        </Button>
+                        {onEdit && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => onEdit(job)}
+                            title="Edit"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

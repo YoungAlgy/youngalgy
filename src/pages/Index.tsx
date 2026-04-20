@@ -211,7 +211,7 @@ const Index = () => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <Briefcase className="h-5 w-5 text-primary" />
-            <h1 className="text-lg font-semibold">Alexander Holmes</h1>
+            <h1 className="text-lg font-semibold">Algernon Holmes</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button

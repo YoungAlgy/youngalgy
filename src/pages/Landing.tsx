@@ -123,7 +123,7 @@ const Landing = () => {
     <div className="min-h-screen bg-background scroll-smooth">
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-4">
-          <span className="text-lg font-semibold text-foreground">Alexander Holmes</span>
+          <span className="text-lg font-semibold text-foreground">Algernon Holmes</span>
           <ThemeToggle />
         </div>
       </header>
@@ -137,7 +137,7 @@ const Landing = () => {
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-primary hover:underline">{CONTACT_EMAIL}</a>
           </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground">
-            Alexander Holmes
+            Algernon Holmes
           </h1>
           <div className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto space-y-1">
             <p>Sales, Customer Success &amp; Talent pro who ships the tools.</p>
@@ -351,7 +351,7 @@ const Landing = () => {
 
       <footer className="border-t bg-card/50 py-6 mt-12">
         <div className="container max-w-3xl mx-auto px-4 flex items-center justify-between text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Alexander Holmes</p>
+          <p>&copy; {new Date().getFullYear()} Algernon Holmes</p>
           <a href="/dashboard" className="hover:text-foreground transition-colors underline-offset-4 hover:underline">
             Dashboard
           </a>

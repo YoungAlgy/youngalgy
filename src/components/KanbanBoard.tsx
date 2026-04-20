@@ -92,7 +92,7 @@ export function KanbanBoard({ jobs, onStatusChange, onEdit }: KanbanBoardProps) 
                             <span className="shrink-0">{formatRelativeDate(job.appliedDate)}</span>
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {job.salary || "—"}
+                            {job.salary && job.salaryRaw && job.salaryRaw > 0 ? job.salary : "—"}
                           </div>
                           <div className="flex justify-end gap-1.5">
                             {onEdit && (

@@ -85,7 +85,7 @@ export function normalizeStatus(raw: string | null | undefined): JobStatus {
 }
 
 export function formatSalary(value: number | null | undefined): string | undefined {
-  if (value == null) return undefined;
+  if (value == null || value === 0) return undefined;
   return `$${value.toLocaleString("en-US")}`;
 }
 

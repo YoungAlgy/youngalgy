@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { logError } from "@/lib/log";
 import { XCircle } from "lucide-react";
 import { formatRelativeDate } from "@/lib/dates";
+import { displayCompany } from "@/lib/company";
 
 interface Row {
   id: string;
@@ -47,7 +48,7 @@ export function RejectionLog() {
           <ul className="divide-y">
             {rows.map((r) => (
               <li key={r.id} className="flex items-center justify-between py-1.5 px-1 text-sm">
-                <span className="font-medium truncate">{r.company}</span>
+                <span className="font-medium truncate">{displayCompany(r.company)}</span>
                 <span className="text-xs text-muted-foreground shrink-0 ml-3">
                   {formatRelativeDate(r.created_at)}
                 </span>

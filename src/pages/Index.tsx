@@ -73,6 +73,7 @@ function SectionHeading({ title, hint }: { title: string; hint?: string }) {
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [interviewCompanies, setInterviewCompanies] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [filters, setFilters] = useState<Filters>(filtersFromParams(searchParams));
@@ -86,20 +87,44 @@ const Index = () => {
 
   const fetchJobs = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
-    const { data, error } = await supabase
-      .from("opportunities")
-      .select("id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at")
-      .eq("bot_type", "manual")
-      .order("score", { ascending: false })
-      .limit(500);
 
-    if (error) {
+    const [oppRes, intRes] = await Promise.all([
+      supabase
+        .from("opportunities")
+        .select("id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at")
+        .eq("bot_type", "manual")
+        .order("score", { ascending: false })
+        .limit(500),
+      supabase.from("interviews").select("company"),
+    ]);
+
+    if (oppRes.error) {
       logError("fetch opportunities");
       if (!silent) setLoading(false);
       return;
     }
 
-    setJobs((data as Opportunity[]).map(mapOpportunityToJob));
+    const intCompanies = new Set(
+      ((intRes.data as { company: string }[] | null) ?? [])
+        .map((r) => r.company?.trim().toLowerCase())
+        .filter(Boolean)
+    );
+    setInterviewCompanies(intCompanies);
+
+    // Derive effective status: presence in interviews table promotes to "interview"
+    // (unless the opportunity is already in a later/terminal stage).
+    const TERMINAL: JobStatus[] = ["offer", "rejected", "ghosted", "withdrew"];
+    const mapped = (oppRes.data as Opportunity[]).map(mapOpportunityToJob).map((j) => {
+      if (
+        intCompanies.has(j.company.trim().toLowerCase()) &&
+        !TERMINAL.includes(j.status) &&
+        j.status !== "interview"
+      ) {
+        return { ...j, status: "interview" as JobStatus };
+      }
+      return j;
+    });
+    setJobs(mapped);
     if (!silent) setLoading(false);
   }, []);
 
@@ -211,7 +236,7 @@ const Index = () => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <Briefcase className="h-5 w-5 text-primary" />
-            <h1 className="text-lg font-semibold">Alexander Holmes</h1>
+            <h1 className="text-lg font-semibold">Algernon Holmes</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button

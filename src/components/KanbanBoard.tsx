@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Job, JobStatus, STATUS_CONFIG } from "@/lib/types";
 import { MapPin, ExternalLink, Pencil } from "lucide-react";
@@ -14,18 +15,27 @@ interface KanbanBoardProps {
   onEdit?: (job: Job) => void;
 }
 
-export function KanbanBoard({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
-  const columns = COLUMNS.map((status) => ({
-    status,
-    config: STATUS_CONFIG[status],
-    jobs: jobs.filter((j) => j.status === status),
-  }));
+function KanbanBoardImpl({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
+  const columns = useMemo(() =>
+    COLUMNS.map((status) => ({
+      status,
+      config: STATUS_CONFIG[status],
+      jobs: jobs.filter((j) => j.status === status),
+    })),
+    [jobs],
+  );
+
+  const jobIndex = useMemo(() => {
+    const m = new Map<string, Job>();
+    for (const j of jobs) m.set(j.id, j);
+    return m;
+  }, [jobs]);
 
   async function handleDragEnd(result: DropResult) {
     if (!result.destination) return;
     const jobId = result.draggableId;
     const newStatus = result.destination.droppableId as JobStatus;
-    const job = jobs.find((j) => j.id === jobId);
+    const job = jobIndex.get(jobId);
     if (!job || job.status === newStatus) return;
     onStatusChange(jobId, newStatus);
     const { error } = await supabase.from("opportunities").update({ status: newStatus }).eq("id", jobId);
@@ -131,3 +141,5 @@ export function KanbanBoard({ jobs, onStatusChange, onEdit }: KanbanBoardProps) 
     </DragDropContext>
   );
 }
+
+export const KanbanBoard = memo(KanbanBoardImpl);

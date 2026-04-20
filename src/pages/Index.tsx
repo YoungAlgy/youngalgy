@@ -130,8 +130,19 @@ const Index = () => {
 
   useEffect(() => {
     fetchJobs();
-    const id = setInterval(() => fetchJobs(true), REFRESH_MS);
-    return () => clearInterval(id);
+    const id = setInterval(() => {
+      // Skip polling when the tab isn't visible — saves Supabase quota and
+      // avoids hammering the DB in background tabs.
+      if (document.visibilityState === "visible") fetchJobs(true);
+    }, REFRESH_MS);
+    const onVis = () => {
+      if (document.visibilityState === "visible") fetchJobs(true);
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, [fetchJobs]);
 
   // Sync URL when filters/search/view/sort change
@@ -199,6 +210,12 @@ const Index = () => {
   const handleEditSaved = (id: string, patch: Partial<Job>) => {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...patch } : j)));
   };
+
+  const handleClearFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
+    setSearch("");
+    setFunnelStage(null);
+  }, []);
 
   async function handleExport() {
     setExporting(true);
@@ -323,11 +340,17 @@ const Index = () => {
             <KanbanBoard jobs={filtered} onStatusChange={handleStatusChange} onEdit={setEditJob} />
           ) : view === "table" ? (
             <Card className="border shadow-sm overflow-hidden">
-              <JobTable jobs={filtered} onStatusChange={handleStatusChange} onNotesChange={handleNotesChange} onEdit={setEditJob} />
+              <JobTable
+                jobs={filtered}
+                onStatusChange={handleStatusChange}
+                onNotesChange={handleNotesChange}
+                onEdit={setEditJob}
+                onClearFilters={handleClearFilters}
+              />
             </Card>
           ) : (
             <Card className="border shadow-sm overflow-hidden">
-              <CompanyTable jobs={filtered} onEdit={setEditJob} />
+              <CompanyTable jobs={filtered} onEdit={setEditJob} onClearFilters={handleClearFilters} />
             </Card>
           )}
         </section>

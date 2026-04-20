@@ -69,15 +69,19 @@ export function PasswordGate({ children }: PasswordGateProps) {
           <p className="text-sm text-muted-foreground mt-1">Enter the password to continue</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3">
+          <label htmlFor="dashboard-password" className="sr-only">Password</label>
           <Input
+            id="dashboard-password"
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => { setPassword(e.target.value); setError(false); }}
             className={error ? "border-destructive" : ""}
             autoFocus
+            aria-invalid={error || undefined}
+            aria-describedby={error ? "password-error" : undefined}
           />
-          {error && <p className="text-sm text-destructive">Incorrect password</p>}
+          {error && <p id="password-error" className="text-sm text-destructive" role="alert">Incorrect password</p>}
           <Button type="submit" className="w-full">Unlock</Button>
         </form>
         <p className="text-xs text-muted-foreground">Session lasts 24 hours.</p>

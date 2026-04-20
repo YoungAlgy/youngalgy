@@ -45,9 +45,10 @@ interface JobTableProps {
   onStatusChange?: (id: string, status: Job["status"]) => void;
   onNotesChange?: (id: string, notes: string) => void;
   onEdit?: (job: Job) => void;
+  onClearFilters?: () => void;
 }
 
-export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTableProps) {
+export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearFilters }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [notesOpenId, setNotesOpenId] = useState<string | null>(null);
 
@@ -59,9 +60,14 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTab
 
   if (jobs.length === 0) {
     return (
-      <div className="text-center py-16 text-muted-foreground">
-        <p className="text-lg font-medium">No jobs found</p>
-        <p className="text-sm mt-1">Adjust your filters.</p>
+      <div className="text-center py-16 space-y-3">
+        <p className="text-lg font-medium text-foreground">No jobs found</p>
+        <p className="text-sm text-muted-foreground">Try adjusting or clearing your filters.</p>
+        {onClearFilters && (
+          <Button variant="outline" size="sm" onClick={onClearFilters} className="mt-2">
+            Clear filters
+          </Button>
+        )}
       </div>
     );
   }
@@ -169,7 +175,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTab
                             size="icon"
                             className="h-7 w-7"
                             onClick={() => window.open(job.url, "_blank")}
-                            title="Open posting"
+                            aria-label="Open job posting"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
                           </Button>
@@ -180,7 +186,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTab
                             size="icon"
                             className="h-7 w-7"
                             onClick={() => onEdit(job)}
-                            title="Edit"
+                            aria-label="Edit job"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
@@ -257,12 +263,12 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit }: JobTab
               />
               <div className="flex items-center justify-end gap-1.5">
                 {job.url && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank")} title="Open posting">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank")} aria-label="Open job posting">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 )}
                 {onEdit && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(job)} title="Edit">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(job)} aria-label="Edit job">
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                 )}

@@ -163,7 +163,7 @@ const Index = () => {
     const customFromMs = filters.customFrom ? new Date(filters.customFrom).getTime() : null;
     const customToMs = filters.customTo ? new Date(filters.customTo).getTime() + 86400_000 : null;
 
-    let result = jobs.filter((j) => {
+    const result = jobs.filter((j) => {
       const matchesSearch = !search ||
         j.company.toLowerCase().includes(search.toLowerCase()) ||
         j.position.toLowerCase().includes(search.toLowerCase());

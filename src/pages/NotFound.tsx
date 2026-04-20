@@ -15,8 +15,8 @@ const NotFound = () => (
         <Button asChild className="gap-2">
           <a href="/"><Home className="h-4 w-4" /> Home</a>
         </Button>
-        <Button asChild variant="outline" className="gap-2 border-primary/40">
-          <a href="javascript:history.back()"><ArrowLeft className="h-4 w-4" /> Go back</a>
+        <Button variant="outline" className="gap-2 border-primary/40" onClick={() => history.back()}>
+          <ArrowLeft className="h-4 w-4" /> Go back
         </Button>
       </div>
     </div>

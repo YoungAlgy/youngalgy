@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Job, JobStatus, STATUS_CONFIG, ALL_STATUSES } from "@/lib/types";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -123,8 +123,8 @@ export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
         {rows.map((r) => {
           const isOpen = expanded.has(r.company);
           return (
-            <>
-              <TableRow key={r.company} className="cursor-pointer hover:bg-muted/40" onClick={() => toggle(r.company)}>
+            <Fragment key={r.company}>
+              <TableRow className="cursor-pointer hover:bg-muted/40" onClick={() => toggle(r.company)}>
                 <TableCell className="pr-0">
                   {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                 </TableCell>
@@ -165,7 +165,7 @@ export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
                   </TableCell>
                 </TableRow>
               )}
-            </>
+            </Fragment>
           );
         })}
       </TableBody>

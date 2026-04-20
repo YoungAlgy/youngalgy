@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { Fragment, useEffect, useRef, useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Job, STATUS_CONFIG } from "@/lib/types";
 import { MapPin, ExternalLink, ChevronDown, ChevronRight, Info, Pencil } from "lucide-react";
@@ -110,8 +110,8 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
               const prePivot = isPrePivot(job);
               const remoteOnly = /remote/i.test(job.location ?? "");
               return (
-                <>
-                  <TableRow key={job.id} className={`group ${tint}`}>
+                <Fragment key={job.id}>
+                  <TableRow className={`group ${tint}`}>
                     <TableCell className="pr-0 cursor-pointer" onClick={() => hasDetails && toggle(job.id)}>
                       {hasDetails && (isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />)}
                     </TableCell>
@@ -174,7 +174,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
-                            onClick={() => window.open(job.url, "_blank")}
+                            onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")}
                             aria-label="Open job posting"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -214,7 +214,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </TableBody>
@@ -263,7 +263,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
               />
               <div className="flex items-center justify-end gap-1.5">
                 {job.url && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank")} aria-label="Open job posting">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")} aria-label="Open job posting">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 )}

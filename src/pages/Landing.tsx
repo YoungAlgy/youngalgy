@@ -3,13 +3,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Users, Sparkles, LineChart, TrendingUp, Utensils,
-  Clock, Mail, Linkedin, MapPin, Github,
+  Users, Sparkles, LineChart, TrendingUp, Utensils, HardHat,
+  Clock, Mail, Linkedin, MapPin, Github, Music, Gem,
   Send, FileText, DollarSign, Rocket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const CONTACT_EMAIL = "alex@avahealth.co";
+const CONTACT_EMAIL = "youngalgy@gmail.com";
 
 const heroStats = [
   { icon: Clock, value: "12+", label: "Years" },
@@ -20,19 +20,23 @@ const heroStats = [
 ];
 
 const timeline = [
-  { year: "2014", title: "B.A. Psychology, USF",
-    detail: "Studied decision-making, motivation, and team dynamics. Foundation for reading people." },
   { year: "2014–2020", title: "Server, Charley's Steakhouse",
     detail: "Six years across every role in the restaurant — kitchen, host, busser, checkout, server. Where I learned to read a room, carry pressure, and hit a rhythm under load." },
+  { year: "2014–2017", title: "A.A. Psychology, St. Petersburg College",
+    detail: "Dual enrolled my senior year of high school; finished the associate's before transferring." },
   { year: "2015", title: "Music agent + Toggle Money founder",
     detail: "Started managing my brother Money Mitch and founded Toggle Money recording studio in Tampa. He signed with Big Gates Records at 17 on the back of that work." },
+  { year: "2017–2020", title: "B.A. Psychology, USF",
+    detail: "Transferred to the University of South Florida. Focused on decision-making, motivation, and team dynamics — the foundation for everything that came after." },
   { year: "2019", title: "Road Manager, Big Gates Records + Toggle Town",
     detail: "Bookings, social, point of contact for Mitch under Big Gates. Separately founded Toggle Town — amateur esports channel curating community gameplay." },
   { year: "2020", title: "Holmes Builders Representative",
     detail: "Family construction business — marketing, investor pitch deck, land auctions, and on-site project experience." },
+  { year: "2021", title: "Angel investor",
+    detail: "Started angel-investing through my network of celebrities, traders, and operators. Constantly scouting innovative teams to back early." },
   { year: "2021–2022", title: "Project Manager, Universe XYZ",
     detail: "Led digital collectible drops and the marketplace build. Program raised $5M+ for charity including the $4.4M Lobby Lobsters drop. Founding-collective member of BAYC; seed investor in OpenSea." },
-  { year: "2024", title: "Toggle Town trading bots go live",
+  { year: "2025", title: "Toggle Town trading bots go live",
     detail: "Algorithmic trading on live Alpaca capital — Kalman filter state estimation, HMM regime detection, VWAP bands, drawdown controller. Markets are another system to read and time." },
   { year: "2026", title: "Healthcare Recruiter + CRM Builder, Ava Health",
     detail: "Joined Ava Health on contract placing physicians nationwide + nurses/therapists in FL. Designed and built Ava's entire digital infrastructure: CRM + public provider directory covering 900K+ verified healthcare professionals across all 50 states." },
@@ -65,17 +69,18 @@ const work: WorkItem[] = [
     icon: Users,
   },
   {
-    title: "Money Mitch",
-    role: "Agent · 2015–Present · 11 yrs",
-    description: "Manage my younger brother's music career (artist name Money Mitch). Built his fanbase from zero — he signed with Big Gates Records at 17. Also designed and built his website and private content vault.",
+    title: "Money Mitch + Big Gates Records",
+    role: "Agent + Road Manager · 2015–Present · 11 yrs",
+    description: "Manage my younger brother's music career (artist name Money Mitch). Built his fanbase from zero — he signed with Big Gates Records at 17. Road Manager for bookings, social, and label point-of-contact. Also designed and built his website and private content vault.",
     bullets: [
       "Guided career from zero to a Big Gates Records deal at 17",
       "\"Flexin' Like Woah\" went viral — hundreds of millions of views, TikTok dance trend",
       "\"Stunting\" exclusive premiere on Worldstar — millions of views",
       "Built moneymitch.music + private content vault (custom web platform)",
+      "Road Manager under Big Gates: bookings, social, label point-of-contact",
       "Handle all SEO and digital presence — landing page, GSC, analytics",
     ],
-    highlights: ["Artist Mgmt", "100M+ Views", "Record Deal", "Web Platform"],
+    highlights: ["Artist Mgmt", "100M+ Views", "Record Deal", "Road Mgr", "Web Platform"],
     icon: Sparkles,
   },
   {
@@ -94,18 +99,58 @@ const work: WorkItem[] = [
     icon: TrendingUp,
   },
   {
-    title: "Trading Bots / Toggle Town",
-    role: "Quant + Systems Builder · 2024–Present",
-    description: "Algorithmic trading systems running on live Alpaca capital. Markets are another system to read and time.",
+    title: "Angel Investor",
+    role: "Private · 2021–Present",
+    description: "Angel investing through a network of celebrities, traders, and business operators. Constantly scouting innovative teams — tech, crypto, culture — to back early.",
     bullets: [
+      "Network-driven deal flow across tech, trading, and culture operators",
+      "Seed-stage checks into teams with strong operator-founders",
+      "OpenSea seed + BAYC founding collective sit alongside this work",
+      "Pattern-match on product, timing, and whether the founder can sell",
+    ],
+    highlights: ["Seed Stage", "Web3", "Tech", "Network"],
+    icon: Gem,
+  },
+  {
+    title: "Toggle Money — Recording Studio",
+    role: "Founder · 2015–Present · Tampa, FL",
+    description: "Founded a Tampa-based recording studio that empowers local artists with resources and opportunities. Engineer and manage sessions, handle mixing and mastering, and connect songwriters, producers, cinematographers, and performers to push each other's work forward.",
+    bullets: [
+      "Engineer + manage recording sessions for Tampa-area artists",
+      "Mix + master tracks in Pro Tools",
+      "Connect songwriters, producers, cinematographers, and performers",
+      "Offer financial support to help artists thrive",
+    ],
+    highlights: ["Recording", "Pro Tools", "Mix/Master", "Tampa Music"],
+    icon: Music,
+  },
+  {
+    title: "Toggle Town — Trading Bots + Esports",
+    role: "Founder · 2019–Present · Trading live since 2025",
+    description: "Started as an amateur esports channel in 2019 curating community gameplay. Evolved into the home for my algorithmic trading systems, now running on live Alpaca capital.",
+    bullets: [
+      "Esports channel curating community gameplay (2019 origin)",
       "Kalman filter state estimation for price + volatility",
       "HMM regime detection to gate strategy switches",
       "VWAP bands and sector rotation models",
       "Drawdown controller and risk manager on top",
       "Real-time dashboards, backtesting harness, Python pipelines",
     ],
-    highlights: ["Python", "Alpaca", "Backtesting", "Kalman + HMM"],
+    highlights: ["Python", "Alpaca", "Backtesting", "Kalman + HMM", "Esports"],
     icon: LineChart,
+  },
+  {
+    title: "Holmes Builders",
+    role: "Representative · 2020–Present",
+    description: "Represent the family-owned construction business. Marketing strategies (social, word-of-mouth), investor pitch deck, participating in land auctions, and hands-on time on-site during project completions.",
+    bullets: [
+      "Marketing strategies across social and word-of-mouth",
+      "Designed and built the company's investor pitch deck",
+      "Participate in land auctions for site acquisition",
+      "On-site during project completions — real industry reps",
+    ],
+    highlights: ["Family Business", "Construction", "Marketing", "Tampa"],
+    icon: HardHat,
   },
   {
     title: "Server — Charley's Steakhouse",

@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
 
 @tailwind base;
 @tailwind components;
@@ -129,6 +132,38 @@
   /* Subtle glow on hero display text */
   h1 {
     text-shadow: 0 0 40px hsl(var(--primary) / 0.25);
+  }
+
+  /* Psychedelic scrollbar — matches the hot-pink primary */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.55) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background-image: linear-gradient(
+      180deg,
+      hsl(320 95% 62%) 0%,
+      hsl(280 85% 62%) 35%,
+      hsl(195 95% 60%) 70%,
+      hsl(135 85% 55%) 100%
+    );
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.35);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    box-shadow: 0 0 16px hsl(var(--primary) / 0.6);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

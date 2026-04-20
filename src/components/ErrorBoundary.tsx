@@ -30,8 +30,8 @@ export class ErrorBoundary extends Component<Props, State> {
             <h1 className="text-3xl font-bold text-psychedelic">Something broke.</h1>
             <p className="text-muted-foreground">
               The page hit an error. A refresh usually clears it. If it keeps happening, email{" "}
-              <a href="mailto:alex@avahealth.co" className="text-primary hover:underline">
-                alex@avahealth.co
+              <a href="mailto:youngalgy@gmail.com" className="text-primary hover:underline">
+                youngalgy@gmail.com
               </a>
               .
             </p>

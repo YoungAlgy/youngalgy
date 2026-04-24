@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
-  variant?: "mark" | "wordmark" | "full";
+  variant?: "mark" | "wordmark" | "full" | "tile";
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
@@ -12,6 +12,58 @@ const sizeMap = {
   lg: { mark: 36, text: "text-xl" },
   xl: { mark: 48, text: "text-2xl" },
 };
+
+// Big hero-tile monogram — used only in the landing hero, sits to the
+// left of the wordmark. Pink gradient fill + chunky white AH inside.
+function HeroTile({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "relative aspect-square w-[clamp(7rem,14vw,10.5rem)] shrink-0",
+        "rounded-[1.25rem] overflow-hidden",
+        "shadow-[0_16px_60px_-12px_hsl(328_90%_62%/0.55)]",
+        "ring-1 ring-primary/40",
+        className,
+      )}
+      aria-hidden
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(140% 120% at 20% 15%, hsl(328 95% 70%) 0%, hsl(328 95% 55%) 45%, hsl(300 85% 22%) 100%)",
+        }}
+      />
+      {/* Subtle noise / grain overlay */}
+      <div
+        className="absolute inset-0 opacity-25 mix-blend-overlay pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(hsl(0 0% 100% / 0.4) 1px, transparent 1px)",
+          backgroundSize: "6px 6px",
+        }}
+      />
+      <svg
+        viewBox="0 0 100 100"
+        className="absolute inset-0 w-full h-full p-[14%]"
+        fill="none"
+      >
+        {/* Chunky A */}
+        <path
+          d="M10 90 L30 10 L42 10 L62 90 L52 90 L46 72 L26 72 L20 90 Z M30 60 L42 60 L36 38 Z"
+          fill="hsl(0 0% 100%)"
+        />
+        {/* Chunky H */}
+        <path
+          d="M66 10 L76 10 L76 44 L88 44 L88 10 L98 10 L98 90 L88 90 L88 54 L76 54 L76 90 L66 90 Z"
+          fill="hsl(0 0% 100%)"
+        />
+      </svg>
+      {/* Bottom-right accent dot */}
+      <span className="absolute bottom-3 right-3 h-2.5 w-2.5 rounded-full bg-[hsl(195_95%_60%)] shadow-[0_0_12px_hsl(195_95%_60%)]" />
+    </div>
+  );
+}
 
 // Geometric AH monogram — two overlapping bars with a negative-space cut.
 // Designed as a single SVG so it scales crisply at any size, and inherits
@@ -56,6 +108,10 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
       <circle cx="41" cy="40" r="2.5" fill="hsl(195 95% 60%)" />
     </svg>
   );
+
+  if (variant === "tile") {
+    return <HeroTile className={className} />;
+  }
 
   if (variant === "mark") {
     return <div className={cn("inline-flex items-center", className)}>{mark}</div>;

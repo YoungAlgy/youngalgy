@@ -13,11 +13,18 @@ import { cn } from "@/lib/utils";
 const CONTACT_EMAIL = "youngalgy@gmail.com";
 
 const heroStats = [
-  { icon: Clock, value: "12+", label: "Years" },
-  { icon: Send, value: "850K+", label: "Providers" },
-  { icon: FileText, value: "1,100+", label: "SEO Pages" },
-  { icon: DollarSign, value: "$5M+", label: "Charity Raise" },
-  { icon: Rocket, value: "3", label: "Apps Live" },
+  { n: "01", icon: Clock, value: "12+", label: "Years Experience" },
+  { n: "02", icon: Send, value: "850K+", label: "Providers · Ava Health" },
+  { n: "03", icon: FileText, value: "1,100+", label: "SEO Pages Shipped" },
+  { n: "04", icon: DollarSign, value: "$5M+", label: "Charity Raised" },
+  { n: "05", icon: Rocket, value: "3", label: "Apps Live" },
+];
+
+const recruiterTags = [
+  "Tampa, FL",
+  "Open to roles",
+  "Sales / CS / Product / Ops",
+  "Fortune 1000 ready",
 ];
 
 const timeline = [
@@ -393,65 +400,93 @@ const Landing = () => {
         </div>
       </header>
 
-      <main className="container max-w-3xl mx-auto px-4 py-12 space-y-20">
-        {/* Hero — bold wordmark, tight hierarchy, premium stat strip */}
-        <section id="home" className="relative text-center space-y-7 py-10 sm:py-14 -mx-4 sm:mx-0">
-          {/* Subtle radial flare behind the name */}
+      <main className="container max-w-5xl mx-auto px-4 py-10 sm:py-12 space-y-20">
+        {/* Hero — tile + wordmark, recruiter strip, numbered stat row */}
+        <section id="home" className="relative space-y-8 sm:space-y-10 py-6 sm:py-10">
+          {/* Radial flare bg */}
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/10 via-transparent to-transparent blur-2xl"
+            className="absolute -top-8 -right-10 -z-10 h-80 w-[32rem] max-w-full bg-gradient-to-br from-primary/25 via-primary/10 to-transparent blur-3xl rounded-full"
           />
 
-          <div className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Tampa, FL
-            <span className="text-muted-foreground/40">·</span>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-primary hover:text-primary/80 transition-colors font-semibold">
-              {CONTACT_EMAIL}
-            </a>
+          {/* Recruiter-intent strip */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] sm:text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            <span className="inline-flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              {recruiterTags[0]}
+            </span>
+            {recruiterTags.slice(1).map((t) => (
+              <span key={t} className="inline-flex items-center gap-5 before:content-['·'] before:text-muted-foreground/40 before:-ml-3">
+                {t}
+              </span>
+            ))}
           </div>
 
-          <h1 className="font-display font-black uppercase text-[clamp(2.5rem,7vw,5rem)] text-psychedelic leading-[0.95] tracking-[-0.03em] hero-title pb-3">
-            Algernon Holmes
-          </h1>
+          {/* Tile + wordmark row */}
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] items-start gap-6 sm:gap-10">
+            <Logo variant="tile" />
 
-          <div className="max-w-2xl mx-auto">
-            <p className="text-2xl sm:text-3xl font-display font-bold text-foreground leading-tight">
-              Sales-first. <span className="text-primary">Builder-brained.</span>
-            </p>
-            <p className="text-muted-foreground text-base sm:text-lg mt-3 leading-relaxed">
-              12 years placing people + shipping the systems that scale the work.
-            </p>
+            <div className="space-y-4 min-w-0">
+              <div className="flex items-center gap-3 text-[10px] sm:text-xs font-mono uppercase tracking-[0.28em] text-primary">
+                <span className="h-px w-6 sm:w-10 bg-primary" />
+                Portfolio / 2026
+              </div>
+
+              <h1 className="font-display font-black uppercase text-[clamp(2.5rem,7.5vw,5.25rem)] text-foreground leading-[0.9] tracking-[-0.03em] pb-1">
+                Algernon
+                <br />
+                Holmes
+                <span className="text-primary">.</span>
+              </h1>
+
+              <p className="text-2xl sm:text-3xl font-display font-bold text-foreground/95 leading-tight">
+                Sales-first<span className="text-primary">.</span>{" "}
+                Builder-brained<span className="text-primary">.</span>
+              </p>
+
+              <p className="text-muted-foreground text-base sm:text-lg max-w-xl leading-relaxed">
+                12 years placing people + shipping the systems that scale the work.
+                Currently healthcare recruiter and CRM builder at Ava Health.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3">
+                <Button asChild size="lg" className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-display font-bold uppercase tracking-widest px-6 glow-primary">
+                  <a href="#work">
+                    See the work <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="gap-2 border-border hover:border-primary/60 hover:bg-primary/5 font-display font-bold uppercase tracking-widest">
+                  <a href="/dashboard">
+                    Live dashboard
+                  </a>
+                </Button>
+                <Button asChild size="lg" variant="ghost" className="gap-2 font-display font-bold uppercase tracking-widest hover:text-primary">
+                  <a href={`mailto:${CONTACT_EMAIL}`}>
+                    <Mail className="h-4 w-4" /> Get in touch
+                  </a>
+                </Button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Button asChild size="lg" className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 glow-primary">
-              <a href={`mailto:${CONTACT_EMAIL}`}>
-                <Mail className="h-4 w-4" /> Get in touch
-              </a>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="gap-2 border-border hover:border-primary/60 hover:bg-primary/5">
-              <a href="https://linkedin.com/in/youngalgy" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="h-4 w-4" /> LinkedIn
-                <ArrowUpRight className="h-3 w-3 opacity-60" />
-              </a>
-            </Button>
-          </div>
-
-          {/* Stat band — bolder numbers, tighter treatment */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-3xl mx-auto pt-10">
+          {/* Stat strip — numbered, expanded labels */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px rounded-xl overflow-hidden border border-border/60 bg-border/60">
             {heroStats.map((s, i) => (
-              <Reveal key={s.label} delay={i * 80}>
-                <Card className="group relative p-4 text-center border border-border/60 bg-card/60 backdrop-blur-sm h-full flex flex-col items-center justify-center gap-1.5 overflow-hidden transition-all duration-300 hover:border-primary/60 hover:bg-card/80 hover:-translate-y-1 hover:shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.4)]">
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <s.icon className="h-3.5 w-3.5 text-primary/70 mb-1" aria-hidden />
+              <Reveal key={s.label} delay={i * 60}>
+                <div className="group relative h-full bg-card/80 backdrop-blur-sm p-4 sm:p-5 transition-colors duration-300 hover:bg-card">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <s.icon className="h-4 w-4 text-primary/80" aria-hidden />
+                    <span className="font-mono text-[10px] font-semibold text-primary/70 tabular-nums">
+                      {s.n}
+                    </span>
+                  </div>
                   <div className="font-display text-2xl sm:text-3xl font-black text-foreground leading-none nums">
                     {s.value}
                   </div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                  <div className="mt-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground leading-snug">
                     {s.label}
                   </div>
-                </Card>
+                </div>
               </Reveal>
             ))}
           </div>

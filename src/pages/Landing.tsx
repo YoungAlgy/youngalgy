@@ -394,7 +394,7 @@ const Landing = () => {
           <p className="text-base sm:text-lg text-muted-foreground font-medium">
             👋 Hi, I&apos;m Algy.
           </p>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-psychedelic leading-[1.05]">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-psychedelic leading-[1.15] pb-2">
             Algernon Holmes
           </h1>
           <div className="text-xl sm:text-2xl text-foreground/90 max-w-2xl mx-auto font-semibold leading-snug">

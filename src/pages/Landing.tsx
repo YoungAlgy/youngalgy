@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Logo } from "@/components/Logo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Users, Sparkles, LineChart, TrendingUp, Utensils, HardHat,
   Clock, Mail, Linkedin, MapPin, Github, Music, Gem,
-  Send, FileText, DollarSign, Rocket,
+  Send, FileText, DollarSign, Rocket, ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +14,7 @@ const CONTACT_EMAIL = "youngalgy@gmail.com";
 
 const heroStats = [
   { icon: Clock, value: "12+", label: "Years" },
-  { icon: Send, value: "900K+", label: "Providers" },
+  { icon: Send, value: "850K+", label: "Providers" },
   { icon: FileText, value: "1,100+", label: "SEO Pages" },
   { icon: DollarSign, value: "$5M+", label: "Charity Raise" },
   { icon: Rocket, value: "3", label: "Apps Live" },
@@ -39,7 +40,7 @@ const timeline = [
   { year: "2025", title: "Toggle Town trading bots go live",
     detail: "Algorithmic trading on live Alpaca capital — Kalman filter state estimation, HMM regime detection, VWAP bands, drawdown controller. Markets are another system to read and time." },
   { year: "2026", title: "Healthcare Recruiter + CRM Builder, Ava Health",
-    detail: "Joined Ava Health on contract placing physicians nationwide + nurses/therapists in FL. Designed and built Ava's entire digital infrastructure: CRM + public provider directory covering 900K+ verified healthcare professionals across all 50 states." },
+    detail: "Joined Ava Health on contract placing physicians nationwide + nurses/therapists in FL. Designed and built Ava's entire digital infrastructure: CRM + public provider directory covering 850K+ verified healthcare professionals across all 50 states." },
 ];
 
 interface WorkItem {
@@ -55,17 +56,17 @@ const work: WorkItem[] = [
   {
     title: "Ava Health — Recruiter + CRM Builder (Current)",
     role: "Contract · 2026–Present",
-    description: "Place physicians nationwide, and nurses & therapists in Florida. Designed and built Ava Health's entire digital infrastructure: full-stack CRM + public provider directory covering 900K+ verified healthcare professionals across all 50 states.",
+    description: "Place physicians nationwide, and nurses & therapists in Florida. Designed and built Ava Health's entire digital infrastructure: full-stack CRM + public provider directory covering 850K+ verified healthcare professionals across all 50 states.",
     bullets: [
       "Place NPI-verified physicians nationwide + nurses/therapists in FL",
       "Designed and shipped the React + Node + PostgreSQL CRM from scratch",
-      "Nationwide NPI data pipeline — 900K+ verified providers",
+      "Nationwide NPI data pipeline — 850K+ verified providers",
       "Telnyx 10DLC SMS engine wired into provider cadences",
       "SEO surface across properties: 1,100+ pages, 123 blog posts indexed",
       "Multi-channel outbound: SMS, email, calls — built the tooling + ran the plays",
       "Supabase RLS, view-as roles, billing integrations, internal admin tooling",
     ],
-    highlights: ["900K+ Providers", "React + Node", "PostgreSQL", "Supabase", "Telnyx 10DLC", "NPI Verified"],
+    highlights: ["850K+ Providers", "React + Node", "PostgreSQL", "Supabase", "Telnyx 10DLC", "NPI Verified"],
     icon: Users,
   },
   {
@@ -292,7 +293,7 @@ function StoryExpander() {
     <>
       <p>
         The current chapter is Ava Health. I came in to place physicians, nurses, and therapists
-        — and we now have 900K+ providers reachable. Somewhere along the way I realized the
+        — and we now have 850K+ providers reachable. Somewhere along the way I realized the
         team needed better tools than what existed. So I started building. The CRM, the outreach
         automation, the Telnyx 10DLC SMS engine, an SEO surface that&apos;s 1,100+ pages and 123
         blog posts deep, a nationwide NPI data pipeline. Full-stack by necessity, sales-first
@@ -376,42 +377,81 @@ const Landing = () => {
     <div className="min-h-screen bg-background scroll-smooth">
       <SectionNav />
 
-      <header className="border-b bg-card/60 backdrop-blur-md sticky top-0 z-10">
-        <div className="container max-w-4xl mx-auto flex items-center justify-between h-14 px-4">
-          <span className="text-lg font-semibold text-foreground">Algernon Holmes</span>
-          <ThemeToggle />
+      <header className="border-b border-border/60 bg-background/70 backdrop-blur-lg sticky top-0 z-20">
+        <div className="container max-w-5xl mx-auto flex items-center justify-between h-16 px-4">
+          <a href="/" aria-label="Home">
+            <Logo variant="full" size="md" />
+          </a>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex gap-1.5 text-xs font-semibold tracking-wide uppercase">
+              <a href={`mailto:${CONTACT_EMAIL}`}>
+                <Mail className="h-3.5 w-3.5" /> Contact
+              </a>
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       <main className="container max-w-3xl mx-auto px-4 py-12 space-y-20">
-        {/* Hero */}
-        <section id="home" className="text-center space-y-6 py-8">
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2 flex-wrap">
-            <MapPin className="h-4 w-4" />
-            Tampa, FL &nbsp;|&nbsp;
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-primary hover:underline">{CONTACT_EMAIL}</a>
-          </p>
-          <p className="text-base sm:text-lg text-muted-foreground font-medium">
-            👋 Hi, I&apos;m Algy.
-          </p>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-psychedelic leading-[1.15] pb-2">
-            Algernon Holmes
+        {/* Hero — bold wordmark, tight hierarchy, premium stat strip */}
+        <section id="home" className="relative text-center space-y-7 py-10 sm:py-14">
+          {/* Subtle radial flare behind the name */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/10 via-transparent to-transparent blur-2xl"
+          />
+
+          <div className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            Tampa, FL
+            <span className="text-muted-foreground/40">·</span>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-primary hover:text-primary/80 transition-colors font-semibold">
+              {CONTACT_EMAIL}
+            </a>
+          </div>
+
+          <h1 className="font-display font-black uppercase text-5xl sm:text-7xl md:text-8xl text-psychedelic leading-[0.95] tracking-[-0.02em] hero-title pb-2">
+            Algernon<br className="sm:hidden" />
+            <span className="sm:ml-4">Holmes</span>
           </h1>
-          <div className="text-xl sm:text-2xl text-foreground/90 max-w-2xl mx-auto font-semibold leading-snug">
-            <p>Sales-first. Builder-brained.</p>
-            <p className="text-muted-foreground text-base sm:text-lg font-normal mt-2">
+
+          <div className="max-w-2xl mx-auto">
+            <p className="text-2xl sm:text-3xl font-display font-bold text-foreground leading-tight">
+              Sales-first. <span className="text-primary">Builder-brained.</span>
+            </p>
+            <p className="text-muted-foreground text-base sm:text-lg mt-3 leading-relaxed">
               12 years placing people + shipping the systems that scale the work.
             </p>
           </div>
 
-          {/* Stat band — 5 quantified credentials */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-3xl mx-auto pt-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <Button asChild size="lg" className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 glow-primary">
+              <a href={`mailto:${CONTACT_EMAIL}`}>
+                <Mail className="h-4 w-4" /> Get in touch
+              </a>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="gap-2 border-border hover:border-primary/60 hover:bg-primary/5">
+              <a href="https://linkedin.com/in/youngalgy" target="_blank" rel="noopener noreferrer">
+                <Linkedin className="h-4 w-4" /> LinkedIn
+                <ArrowUpRight className="h-3 w-3 opacity-60" />
+              </a>
+            </Button>
+          </div>
+
+          {/* Stat band — bolder numbers, tighter treatment */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-3xl mx-auto pt-10">
             {heroStats.map((s, i) => (
               <Reveal key={s.label} delay={i * 80}>
-                <Card className="p-4 text-center border bg-card/70 backdrop-blur-sm h-full flex flex-col items-center justify-center gap-1 transition-all duration-300 hover:border-primary/60 hover:shadow-[0_0_24px_hsl(var(--primary)/0.25)] hover:-translate-y-0.5">
-                  <s.icon className="h-4 w-4 text-primary mb-1" />
-                  <div className="text-2xl sm:text-2xl font-bold text-foreground leading-none">{s.value}</div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                <Card className="group relative p-4 text-center border border-border/60 bg-card/60 backdrop-blur-sm h-full flex flex-col items-center justify-center gap-1.5 overflow-hidden transition-all duration-300 hover:border-primary/60 hover:bg-card/80 hover:-translate-y-1 hover:shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.4)]">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <s.icon className="h-3.5 w-3.5 text-primary/70 mb-1" aria-hidden />
+                  <div className="font-display text-2xl sm:text-3xl font-black text-foreground leading-none nums">
+                    {s.value}
+                  </div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                    {s.label}
+                  </div>
                 </Card>
               </Reveal>
             ))}
@@ -423,7 +463,7 @@ const Landing = () => {
         {/* My Story (long-form, clamped) */}
         <Reveal>
           <section id="story" className="space-y-5 max-w-2xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
               My Story <span className="text-primary">.</span>
             </h2>
             <StoryExpander />
@@ -443,7 +483,7 @@ const Landing = () => {
         {/* Timeline — vertical split */}
         <Reveal>
           <section id="timeline" className="space-y-6 max-w-2xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
               Timeline <span className="text-primary">.</span>
             </h2>
             <div className="space-y-0">
@@ -475,7 +515,7 @@ const Landing = () => {
         <Reveal>
           <section id="skills" className="space-y-5 max-w-3xl mx-auto">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+              <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
                 Skills <span className="text-primary">.</span>
               </h2>
               <p className="text-sm text-muted-foreground mt-1">Tools I reach for daily</p>
@@ -498,7 +538,7 @@ const Landing = () => {
         {/* Experience & Projects */}
         <Reveal>
           <section id="work" className="space-y-6">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
               Experience &amp; Projects <span className="text-primary">.</span>
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
@@ -543,8 +583,8 @@ const Landing = () => {
         <Reveal>
           <section id="contact" className="space-y-8 max-w-3xl mx-auto text-center pt-4">
             <div className="space-y-3">
-              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-psychedelic">
-                Want to talk?
+              <h2 className="font-display text-5xl sm:text-6xl font-black uppercase tracking-[-0.02em] text-psychedelic hero-title pb-2">
+                Let&apos;s talk.
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
                 I&apos;m open to sales / CS / talent roles, builder roles, or a mix of both.

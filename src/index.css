@@ -281,4 +281,97 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* --- Print stylesheet — "Save as PDF" from the browser print dialog --- */
+  /* The PDF button on Landing calls window.print(); these rules turn the
+     dark-mode portfolio into a clean single-column printable resume. */
+  @media print {
+    /* Force light-on-white regardless of dark mode toggle */
+    html, body, .dark {
+      background: #ffffff !important;
+      color: #0a0a0a !important;
+    }
+    body {
+      background-image: none !important;
+    }
+
+    /* Hide anything decorative or interactive */
+    .print-hide,
+    nav[aria-label="Section navigation"],
+    footer,
+    button:not(.print-show),
+    [role="button"]:not(.print-show) {
+      display: none !important;
+    }
+
+    /* Expand main container to full print width */
+    main {
+      max-width: 100% !important;
+      padding: 0 !important;
+    }
+
+    /* Ensure the gradient text + brand elements print in solid black */
+    .text-psychedelic {
+      background: none !important;
+      -webkit-text-fill-color: #0a0a0a !important;
+      color: #0a0a0a !important;
+      background-position: 0 0 !important;
+      animation: none !important;
+    }
+    h1, h2, h3, h4 {
+      color: #0a0a0a !important;
+      text-shadow: none !important;
+    }
+    .text-primary,
+    .text-foreground,
+    .text-foreground\/90,
+    .text-foreground\/95 {
+      color: #0a0a0a !important;
+    }
+    .text-muted-foreground {
+      color: #4a4a4a !important;
+    }
+
+    /* Kill decorative background blurs/gradients that waste ink */
+    [aria-hidden],
+    .grid-dots,
+    .noise,
+    .hero-title {
+      background: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Open-up cards so content fits */
+    .backdrop-blur-sm,
+    .backdrop-blur-lg,
+    .backdrop-blur-md {
+      backdrop-filter: none !important;
+    }
+    .bg-card,
+    .bg-card\/60,
+    .bg-card\/80,
+    .bg-background,
+    .bg-background\/70,
+    .bg-background\/80 {
+      background: #ffffff !important;
+    }
+
+    /* Constrain single-section page breaks */
+    section {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Ensure every section is shown regardless of reveal animations */
+    [style*="opacity"],
+    .opacity-0 {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    /* Set sensible page margins */
+    @page {
+      margin: 0.6in;
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Job, JobStatus, STATUS_CONFIG, ALL_STATUSES } from "@/lib/types";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -78,9 +78,10 @@ function StatusMixBar({ mix, total }: { mix: Record<JobStatus, number>; total: n
 interface Props {
   jobs: Job[];
   onEdit?: (job: Job) => void;
+  onClearFilters?: () => void;
 }
 
-export function CompanyTable({ jobs, onEdit }: Props) {
+export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
   const rows = useMemo(() => aggregate(jobs), [jobs]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -93,8 +94,14 @@ export function CompanyTable({ jobs, onEdit }: Props) {
 
   if (rows.length === 0) {
     return (
-      <div className="text-center py-16 text-muted-foreground">
-        <p className="text-lg font-medium">No companies</p>
+      <div className="text-center py-16 space-y-3">
+        <p className="text-lg font-medium text-foreground">No companies</p>
+        <p className="text-sm text-muted-foreground">Try adjusting or clearing your filters.</p>
+        {onClearFilters && (
+          <Button variant="outline" size="sm" onClick={onClearFilters} className="mt-2">
+            Clear filters
+          </Button>
+        )}
       </div>
     );
   }
@@ -116,8 +123,8 @@ export function CompanyTable({ jobs, onEdit }: Props) {
         {rows.map((r) => {
           const isOpen = expanded.has(r.company);
           return (
-            <>
-              <TableRow key={r.company} className="cursor-pointer hover:bg-muted/40" onClick={() => toggle(r.company)}>
+            <Fragment key={r.company}>
+              <TableRow className="cursor-pointer hover:bg-muted/40" onClick={() => toggle(r.company)}>
                 <TableCell className="pr-0">
                   {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                 </TableCell>
@@ -158,7 +165,7 @@ export function CompanyTable({ jobs, onEdit }: Props) {
                   </TableCell>
                 </TableRow>
               )}
-            </>
+            </Fragment>
           );
         })}
       </TableBody>

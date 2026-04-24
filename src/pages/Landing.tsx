@@ -411,9 +411,9 @@ const Landing = () => {
             </a>
           </div>
 
-          <h1 className="font-display font-black uppercase text-5xl sm:text-7xl md:text-8xl text-psychedelic leading-[0.95] tracking-[-0.02em] hero-title pb-2">
+          <h1 className="font-display font-black uppercase text-[clamp(3rem,10vw,6.5rem)] text-psychedelic leading-[0.95] tracking-[-0.03em] hero-title pb-3 break-words">
             Algernon<br className="sm:hidden" />
-            <span className="sm:ml-4">Holmes</span>
+            <span className="sm:ml-5">Holmes</span>
           </h1>
 
           <div className="max-w-2xl mx-auto">

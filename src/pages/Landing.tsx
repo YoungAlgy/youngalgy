@@ -395,7 +395,7 @@ const Landing = () => {
 
       <main className="container max-w-3xl mx-auto px-4 py-12 space-y-20">
         {/* Hero — bold wordmark, tight hierarchy, premium stat strip */}
-        <section id="home" className="relative text-center space-y-7 py-10 sm:py-14">
+        <section id="home" className="relative text-center space-y-7 py-10 sm:py-14 -mx-4 sm:mx-0">
           {/* Subtle radial flare behind the name */}
           <div
             aria-hidden
@@ -411,9 +411,8 @@ const Landing = () => {
             </a>
           </div>
 
-          <h1 className="font-display font-black uppercase text-[clamp(2.75rem,8.5vw,5.75rem)] text-psychedelic leading-[0.95] tracking-[-0.03em] hero-title pb-3 whitespace-nowrap">
-            <span className="inline-block">Algernon</span>{" "}
-            <span className="inline-block">Holmes</span>
+          <h1 className="font-display font-black uppercase text-[clamp(2.5rem,7vw,5rem)] text-psychedelic leading-[0.95] tracking-[-0.03em] hero-title pb-3">
+            Algernon Holmes
           </h1>
 
           <div className="max-w-2xl mx-auto">

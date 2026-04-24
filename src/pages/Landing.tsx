@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
+import { StatsCards } from "@/components/StatsCards";
+import { PipelineFunnel } from "@/components/PipelineFunnel";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Users, Sparkles, LineChart, TrendingUp, Utensils, HardHat,
   Clock, Mail, Linkedin, MapPin, Github, Music, Gem,
-  Send, FileText, DollarSign, Rocket, ArrowUpRight,
+  Send, FileText, DollarSign, Rocket, ArrowUpRight, Printer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -179,6 +181,7 @@ const salesSkills = ["CRM", "Outreach", "SMS / Telnyx", "Recruiting", "Healthcar
 const techSkills = ["React", "Node.js", "TypeScript", "Python", "Supabase", "PostgreSQL", "AI / ML", "SEO", "Vite", "Tailwind", "Solidity"];
 
 const navSections = [
+  { id: "live", label: "Live" },
   { id: "story", label: "Story" },
   { id: "timeline", label: "Timeline" },
   { id: "skills", label: "Skills" },
@@ -384,12 +387,21 @@ const Landing = () => {
     <div className="min-h-screen bg-background scroll-smooth">
       <SectionNav />
 
-      <header className="border-b border-border/60 bg-background/70 backdrop-blur-lg sticky top-0 z-20">
+      <header className="border-b border-border/60 bg-background/70 backdrop-blur-lg sticky top-0 z-20 print-hide">
         <div className="container max-w-5xl mx-auto flex items-center justify-between h-16 px-4">
           <a href="/" aria-label="Home">
             <Logo variant="full" size="md" />
           </a>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden sm:inline-flex gap-1.5 text-xs font-semibold tracking-wide uppercase"
+              onClick={() => window.print()}
+              title="Download or print this page as PDF"
+            >
+              <Printer className="h-3.5 w-3.5" /> PDF
+            </Button>
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex gap-1.5 text-xs font-semibold tracking-wide uppercase">
               <a href={`mailto:${CONTACT_EMAIL}`}>
                 <Mail className="h-3.5 w-3.5" /> Contact
@@ -491,6 +503,52 @@ const Landing = () => {
             ))}
           </div>
         </section>
+
+        <SectionDivider />
+
+        {/* Live job search — embed of my own CRM on my own site. Demonstrates the
+            "sales-first, builder-brained" thesis in the most literal way possible. */}
+        <Reveal>
+          <section id="live" className="space-y-6 print-hide">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 text-[10px] sm:text-xs font-mono uppercase tracking-[0.28em] text-primary">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                Live · updated in real time
+              </div>
+              <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
+                Job search, in my own CRM<span className="text-primary">.</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl leading-relaxed">
+                This site runs on software I built. The numbers below are my active job
+                search — data pulled live from Supabase, rendered through the same funnel
+                and kanban I shipped for Ava Health. Sales discipline is a thing you do.
+              </p>
+            </div>
+
+            <StatsCards />
+
+            <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
+              <PipelineFunnel />
+              <Card className="border shadow-sm p-5 flex flex-col justify-between bg-card/60 backdrop-blur-sm">
+                <div className="space-y-2">
+                  <p className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
+                    What you're looking at
+                  </p>
+                  <p className="text-sm leading-relaxed text-foreground/90">
+                    React + Supabase dashboard with kanban / table / company views, CSV
+                    export, pipeline funnel, trend charts, interview scheduler. Same
+                    stack that powers the Ava Health CRM at 850K+ providers.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="mt-4 gap-2 self-start border-primary/40 hover:border-primary hover:bg-primary/10 font-display font-bold uppercase tracking-widest">
+                  <a href="/dashboard">
+                    Open the full dashboard <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
+                </Button>
+              </Card>
+            </div>
+          </section>
+        </Reveal>
 
         <SectionDivider />
 

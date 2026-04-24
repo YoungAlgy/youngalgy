@@ -17,9 +17,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Briefcase, Search, LayoutList, Columns3, Loader2, ArrowLeft, Download, Building2,
+  Search, LayoutList, Columns3, Loader2, ArrowLeft, Download, Building2,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
 import { exportOpportunitiesCsv } from "@/lib/csv";
@@ -246,20 +247,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container max-w-6xl mx-auto flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-2.5">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")}>
+      <header className="border-b border-border/60 bg-background/80 backdrop-blur-lg sticky top-0 z-10">
+        <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")} aria-label="Back to home">
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <Briefcase className="h-5 w-5 text-primary" />
-            <h1 className="text-lg font-semibold">Algernon Holmes</h1>
+            <Logo variant="full" size="md" />
+            <span className="hidden sm:inline-flex text-[10px] font-mono font-semibold uppercase tracking-[0.22em] text-primary px-2 py-1 rounded border border-primary/30 bg-primary/5 ml-2">
+              Dashboard
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 gap-1.5 text-xs"
+              className="h-8 gap-1.5 text-xs font-semibold border-border hover:border-primary/50"
               onClick={handleExport}
               disabled={exporting}
             >

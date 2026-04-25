@@ -168,24 +168,35 @@
     font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   }
 
-  /* Hero gradient text — dialed back to 3 colors, more intentional */
+  /* Hero gradient text — full Grateful-Dead 5-stop electric palette to
+     match the psychedelic skull crest. Yellow → orange → pink → cyan →
+     green, slowly drifting horizontally. */
   .text-psychedelic {
     background: linear-gradient(
       100deg,
-      hsl(328 95% 72%) 0%,
-      hsl(280 85% 72%) 45%,
-      hsl(195 95% 65%) 100%
+      hsl(48 100% 60%) 0%,
+      hsl(20 100% 58%) 22%,
+      hsl(328 95% 65%) 45%,
+      hsl(280 90% 70%) 65%,
+      hsl(195 95% 60%) 82%,
+      hsl(110 90% 55%) 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    background-size: 180% 100%;
+    background-size: 220% 100%;
     animation: psychedelic-shift 14s ease-in-out infinite;
   }
 
   @keyframes psychedelic-shift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
+  }
+
+  /* Slow vertical float — used by the hero skull crest so it feels alive */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(-1deg); }
   }
 
   /* Subtle inner glow for primary CTAs */

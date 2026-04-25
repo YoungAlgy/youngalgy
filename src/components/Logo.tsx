@@ -19,10 +19,12 @@ function HeroTile({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative aspect-square w-[clamp(7rem,14vw,10.5rem)] shrink-0",
+        "group relative aspect-square w-[clamp(7rem,14vw,10.5rem)] shrink-0",
         "rounded-[1.25rem] overflow-hidden",
         "shadow-[0_16px_60px_-12px_hsl(328_90%_62%/0.55)]",
         "ring-1 ring-primary/40",
+        "transition-transform duration-500 ease-out hover:-rotate-2 hover:scale-[1.03]",
+        "motion-reduce:hover:rotate-0 motion-reduce:hover:scale-100",
         className,
       )}
       aria-hidden
@@ -43,6 +45,17 @@ function HeroTile({ className }: { className?: string }) {
           backgroundSize: "6px 6px",
         }}
       />
+      {/* Glossy sheen that drifts across on hover */}
+      <div
+        className={cn(
+          "absolute -inset-y-4 -left-1/3 w-1/2 pointer-events-none",
+          "bg-gradient-to-r from-transparent via-white/15 to-transparent",
+          "rotate-[18deg] translate-x-[-200%] opacity-0",
+          "transition-all duration-700 ease-out",
+          "group-hover:translate-x-[420%] group-hover:opacity-100",
+          "motion-reduce:hidden",
+        )}
+      />
       <svg
         viewBox="0 0 100 100"
         className="absolute inset-0 w-full h-full p-[14%]"
@@ -59,8 +72,8 @@ function HeroTile({ className }: { className?: string }) {
           fill="hsl(0 0% 100%)"
         />
       </svg>
-      {/* Bottom-right accent dot */}
-      <span className="absolute bottom-3 right-3 h-2.5 w-2.5 rounded-full bg-[hsl(195_95%_60%)] shadow-[0_0_12px_hsl(195_95%_60%)]" />
+      {/* Bottom-right accent dot — pulses to match the recruiter-strip cue */}
+      <span className="absolute bottom-3 right-3 h-2.5 w-2.5 rounded-full bg-[hsl(195_95%_60%)] shadow-[0_0_12px_hsl(195_95%_60%)] animate-pulse motion-reduce:animate-none" />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { SkullMark } from "@/components/SkullCrest";
 
 interface LogoProps {
   variant?: "mark" | "wordmark" | "full" | "tile";
@@ -116,48 +117,6 @@ function HeroTile({ className }: { className?: string }) {
   );
 }
 
-/**
- * Compact logo mark used in headers/footers. Same glyph DNA as the hero
- * tile, drawn into a small rounded-square chip.
- */
-function ChipMark({ size }: { size: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="shrink-0"
-      aria-hidden="true"
-    >
-      {/* Pink chip */}
-      <rect
-        x="2"
-        y="2"
-        width="44"
-        height="44"
-        rx="10"
-        fill="hsl(var(--primary))"
-      />
-      {/* AH glyph scaled to chip size — same path geometry as the hero
-          tile, just compressed into the smaller viewBox. */}
-      <g transform="translate(6 6) scale(0.36)">
-        <path
-          d="M0 80 L20 0 L36 0 L48 48 L34 48 L32 40 L18 40 L14 48 L0 48 Z M22 28 L30 28 L26 12 Z"
-          fill="hsl(var(--primary-foreground))"
-          fillRule="evenodd"
-        />
-        <rect x="14" y="36" width="56" height="6" fill="hsl(var(--primary-foreground))" />
-        <rect x="48" y="0" width="10" height="80" fill="hsl(var(--primary-foreground))" />
-        <rect x="74" y="0" width="10" height="80" fill="hsl(var(--primary-foreground))" />
-      </g>
-      {/* Cyan accent — keeps the chip recognizable next to the hero tile */}
-      <rect x="11" y="38" width="18" height="2" rx="0.5" fill="hsl(195 95% 60%)" />
-    </svg>
-  );
-}
-
 export function Logo({ variant = "full", size = "md", className }: LogoProps) {
   const s = sizeMap[size];
 
@@ -168,7 +127,7 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
   if (variant === "mark") {
     return (
       <div className={cn("inline-flex items-center", className)}>
-        <ChipMark size={s.mark} />
+        <SkullMark size={s.mark} />
       </div>
     );
   }
@@ -190,7 +149,7 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
 
   return (
     <div className={cn("inline-flex items-center gap-2.5", className)}>
-      <ChipMark size={s.mark} />
+      <SkullMark size={s.mark} />
       <div className="flex flex-col leading-none">
         <span
           className={cn(

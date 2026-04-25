@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
+import { SkullCrest } from "@/components/SkullCrest";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -442,9 +443,23 @@ const Landing = () => {
             ))}
           </div>
 
-          {/* Tile + wordmark row */}
+          {/* Crest + wordmark row — psychedelic skull crest as hero centerpiece.
+              Uses <picture> so a future /public/hero-art.png will auto-take over
+              without a code push; the SVG SkullCrest is the always-shipped fallback. */}
           <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] items-start gap-6 sm:gap-10">
-            <Logo variant="tile" />
+            <div className="relative w-[clamp(11rem,22vw,18rem)] aspect-square shrink-0 motion-safe:animate-[float_8s_ease-in-out_infinite]">
+              <picture>
+                <source srcSet="/hero-art.png" type="image/png" />
+                <img
+                  src="/hero-art.png"
+                  alt=""
+                  className="hidden"
+                  onError={(e) => { (e.currentTarget.parentElement as HTMLElement | null)?.querySelector('svg')?.classList.remove('hidden'); }}
+                />
+              </picture>
+              {/* SVG fallback — always rendered behind the <picture>; if PNG loads it sits on top */}
+              <SkullCrest className="absolute inset-0 drop-shadow-[0_18px_60px_hsl(328_95%_55%/0.55)]" />
+            </div>
 
             <div className="space-y-4 min-w-0">
               <div className="flex items-center gap-3 text-[10px] sm:text-xs font-mono uppercase tracking-[0.28em] text-primary">
@@ -452,7 +467,7 @@ const Landing = () => {
                 Portfolio / 2026
               </div>
 
-              <h1 className="font-display font-black uppercase text-[clamp(2.5rem,7.5vw,5.25rem)] text-foreground leading-[0.9] tracking-[-0.03em] pb-1">
+              <h1 className="font-display font-black uppercase text-[clamp(2.5rem,7.5vw,5.25rem)] text-psychedelic leading-[0.9] tracking-[-0.03em] hero-title pb-1">
                 Algernon
                 <br />
                 Holmes
@@ -512,7 +527,7 @@ const Landing = () => {
         {/* My Story (long-form, clamped) */}
         <Reveal>
           <section id="story" className="space-y-5 max-w-2xl mx-auto">
-            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
+            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-psychedelic tracking-[-0.02em]">
               My Story <span className="text-primary">.</span>
             </h2>
             <StoryExpander />
@@ -532,7 +547,7 @@ const Landing = () => {
         {/* Timeline — vertical split */}
         <Reveal>
           <section id="timeline" className="space-y-6 max-w-2xl mx-auto">
-            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
+            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-psychedelic tracking-[-0.02em]">
               Timeline <span className="text-primary">.</span>
             </h2>
             <div className="space-y-0">
@@ -564,7 +579,7 @@ const Landing = () => {
         <Reveal>
           <section id="skills" className="space-y-5 max-w-3xl mx-auto">
             <div>
-              <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
+              <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-psychedelic tracking-[-0.02em]">
                 Skills <span className="text-primary">.</span>
               </h2>
               <p className="text-sm text-muted-foreground mt-1">Tools I reach for daily</p>
@@ -587,7 +602,7 @@ const Landing = () => {
         {/* Experience & Projects */}
         <Reveal>
           <section id="work" className="space-y-6">
-            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-foreground tracking-[-0.02em]">
+            <h2 className="font-display text-4xl sm:text-5xl font-black uppercase text-psychedelic tracking-[-0.02em]">
               Experience &amp; Projects <span className="text-primary">.</span>
             </h2>
             <div className="grid gap-4 md:grid-cols-2">

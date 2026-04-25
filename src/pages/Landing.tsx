@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Users, Sparkles, LineChart, TrendingUp, Utensils, HardHat,
   Clock, Mail, Linkedin, MapPin, Github, Music, Gem,
-  Send, FileText, DollarSign, Rocket, ArrowUpRight, Printer,
+  Send, FileText, DollarSign, Rocket, ArrowUpRight, Printer, Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -398,6 +398,17 @@ const Landing = () => {
               title="Download or print this page as PDF"
             >
               <Printer className="h-3.5 w-3.5" /> PDF
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-xs font-semibold tracking-wide uppercase"
+              title="Job tracker — password protected"
+            >
+              <a href="/dashboard">
+                <Briefcase className="h-3.5 w-3.5" /> Dashboard
+              </a>
             </Button>
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex gap-1.5 text-xs font-semibold tracking-wide uppercase">
               <a href={`mailto:${CONTACT_EMAIL}`}>

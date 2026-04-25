@@ -13,8 +13,53 @@ const sizeMap = {
   xl: { mark: 48, text: "text-2xl" },
 };
 
-// Big hero-tile monogram — used only in the landing hero, sits to the
-// left of the wordmark. Pink gradient fill + chunky white AH inside.
+/**
+ * Unified AH glyph drawn as a single SVG.
+ *
+ * The A and H share a horizontal crossbar at the same height, and the A's
+ * right diagonal runs into the H's left vertical so the two letters read
+ * as one geometric shape, not two stacked monograms. The empty space
+ * between A's diagonals is cut out with `fill-rule="evenodd"`. A solid
+ * pink underbar at the bottom of the tile replaces the floaty cyan dot
+ * the previous version used — feels more like a stamp, less like a chip.
+ */
+function MonogramGlyph({
+  fg,
+  accent,
+}: {
+  /** color of the AH letters (e.g. `currentColor` or `hsl(0 0% 100%)`) */
+  fg: string;
+  /** color of the accent underbar */
+  accent: string;
+}) {
+  return (
+    <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" fill="none">
+      <g transform="translate(8 8)">
+        {/* A — solid filled triangle silhouette with cut-out counter,
+            using fill-rule=evenodd so the inner triangle is a hole. */}
+        <path
+          d="M0 80 L20 0 L36 0 L48 48 L34 48 L32 40 L18 40 L14 48 L0 48 Z M22 28 L30 28 L26 12 Z"
+          fill={fg}
+          fillRule="evenodd"
+        />
+        {/* Shared horizontal crossbar — the structural element that ties A & H */}
+        <rect x="14" y="36" width="56" height="6" fill={fg} />
+        {/* H — left vertical (overlaps the A's right edge for visual continuity) */}
+        <rect x="48" y="0" width="10" height="80" fill={fg} />
+        {/* H — right vertical */}
+        <rect x="74" y="0" width="10" height="80" fill={fg} />
+      </g>
+      {/* Accent underbar — pink stripe near the bottom of the tile.
+          Replaces the cyan dot; reads as a brand "stamp" cue. */}
+      <rect x="14" y="91" width="44" height="4" rx="1" fill={accent} />
+    </svg>
+  );
+}
+
+/**
+ * Big hero-tile monogram — used only on the landing hero. Pink gradient
+ * fill, white AH glyph inside, sticker-style corner-cut + slight tilt.
+ */
 function HeroTile({ className }: { className?: string }) {
   return (
     <div
@@ -23,12 +68,17 @@ function HeroTile({ className }: { className?: string }) {
         "rounded-[1.25rem] overflow-hidden",
         "shadow-[0_16px_60px_-12px_hsl(328_90%_62%/0.55)]",
         "ring-1 ring-primary/40",
-        "transition-transform duration-500 ease-out hover:-rotate-2 hover:scale-[1.03]",
-        "motion-reduce:hover:rotate-0 motion-reduce:hover:scale-100",
+        // Subtle resting tilt — feels like a stamp/sticker
+        "rotate-[-1.5deg]",
+        // Hover: rotate further & scale up; sheen sweep below
+        "transition-transform duration-500 ease-out",
+        "hover:-rotate-[3.5deg] hover:scale-[1.04]",
+        "motion-reduce:rotate-0 motion-reduce:hover:rotate-0 motion-reduce:hover:scale-100",
         className,
       )}
       aria-hidden
     >
+      {/* Pink radial gradient base */}
       <div
         className="absolute inset-0"
         style={{
@@ -49,53 +99,39 @@ function HeroTile({ className }: { className?: string }) {
       <div
         className={cn(
           "absolute -inset-y-4 -left-1/3 w-1/2 pointer-events-none",
-          "bg-gradient-to-r from-transparent via-white/15 to-transparent",
+          "bg-gradient-to-r from-transparent via-white/20 to-transparent",
           "rotate-[18deg] translate-x-[-200%] opacity-0",
           "transition-all duration-700 ease-out",
           "group-hover:translate-x-[420%] group-hover:opacity-100",
           "motion-reduce:hidden",
         )}
       />
-      <svg
-        viewBox="0 0 100 100"
-        className="absolute inset-0 w-full h-full p-[14%]"
-        fill="none"
-      >
-        {/* Chunky A */}
-        <path
-          d="M10 90 L30 10 L42 10 L62 90 L52 90 L46 72 L26 72 L20 90 Z M30 60 L42 60 L36 38 Z"
-          fill="hsl(0 0% 100%)"
-        />
-        {/* Chunky H */}
-        <path
-          d="M66 10 L76 10 L76 44 L88 44 L88 10 L98 10 L98 90 L88 90 L88 54 L76 54 L76 90 L66 90 Z"
-          fill="hsl(0 0% 100%)"
-        />
-      </svg>
-      {/* Bottom-right accent dot — pulses to match the recruiter-strip cue */}
-      <span className="absolute bottom-3 right-3 h-2.5 w-2.5 rounded-full bg-[hsl(195_95%_60%)] shadow-[0_0_12px_hsl(195_95%_60%)] animate-pulse motion-reduce:animate-none" />
+      <MonogramGlyph fg="hsl(0 0% 100%)" accent="hsl(195 95% 65%)" />
+      {/* Sticker-style corner notch (top-right) */}
+      <span
+        aria-hidden
+        className="absolute top-0 right-0 w-5 h-5 bg-background/90 rounded-bl-xl"
+      />
     </div>
   );
 }
 
-// Geometric AH monogram — two overlapping bars with a negative-space cut.
-// Designed as a single SVG so it scales crisply at any size, and inherits
-// `currentColor` for the theme accent.
-export function Logo({ variant = "full", size = "md", className }: LogoProps) {
-  const s = sizeMap[size];
-  const markSize = s.mark;
-
-  const mark = (
+/**
+ * Compact logo mark used in headers/footers. Same glyph DNA as the hero
+ * tile, drawn into a small rounded-square chip.
+ */
+function ChipMark({ size }: { size: number }) {
+  return (
     <svg
-      width={markSize}
-      height={markSize}
+      width={size}
+      height={size}
       viewBox="0 0 48 48"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="shrink-0"
       aria-hidden="true"
     >
-      {/* Outer rounded square — signature pink */}
+      {/* Pink chip */}
       <rect
         x="2"
         y="2"
@@ -104,30 +140,37 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
         rx="10"
         fill="hsl(var(--primary))"
       />
-      {/* A: left diagonal */}
-      <path
-        d="M11 36 L19 12 L23 12 L31 36 L27 36 L25 30 L17 30 L15 36 Z M19 26 L23 26 L21 18 Z"
-        fill="hsl(var(--primary-foreground))"
-      />
-      {/* H: right side */}
-      <path
-        d="M32 12 L36 12 L36 22 L42 22 L42 12 L46 12"
-        stroke="hsl(var(--primary-foreground))"
-        strokeWidth="3.5"
-        strokeLinecap="square"
-        fill="none"
-      />
-      {/* Accent dot — subtle cyan mark in lower-right corner */}
-      <circle cx="41" cy="40" r="2.5" fill="hsl(195 95% 60%)" />
+      {/* AH glyph scaled to chip size — same path geometry as the hero
+          tile, just compressed into the smaller viewBox. */}
+      <g transform="translate(6 6) scale(0.36)">
+        <path
+          d="M0 80 L20 0 L36 0 L48 48 L34 48 L32 40 L18 40 L14 48 L0 48 Z M22 28 L30 28 L26 12 Z"
+          fill="hsl(var(--primary-foreground))"
+          fillRule="evenodd"
+        />
+        <rect x="14" y="36" width="56" height="6" fill="hsl(var(--primary-foreground))" />
+        <rect x="48" y="0" width="10" height="80" fill="hsl(var(--primary-foreground))" />
+        <rect x="74" y="0" width="10" height="80" fill="hsl(var(--primary-foreground))" />
+      </g>
+      {/* Cyan accent — keeps the chip recognizable next to the hero tile */}
+      <rect x="11" y="38" width="18" height="2" rx="0.5" fill="hsl(195 95% 60%)" />
     </svg>
   );
+}
+
+export function Logo({ variant = "full", size = "md", className }: LogoProps) {
+  const s = sizeMap[size];
 
   if (variant === "tile") {
     return <HeroTile className={className} />;
   }
 
   if (variant === "mark") {
-    return <div className={cn("inline-flex items-center", className)}>{mark}</div>;
+    return (
+      <div className={cn("inline-flex items-center", className)}>
+        <ChipMark size={s.mark} />
+      </div>
+    );
   }
 
   if (variant === "wordmark") {
@@ -147,7 +190,7 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
 
   return (
     <div className={cn("inline-flex items-center gap-2.5", className)}>
-      {mark}
+      <ChipMark size={s.mark} />
       <div className="flex flex-col leading-none">
         <span
           className={cn(

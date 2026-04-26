@@ -5,7 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { PasswordGate } from "@/components/PasswordGate";
+import { SupabaseAuthGate } from "@/components/SupabaseAuthGate";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
@@ -29,11 +29,11 @@ const App = () => (
           <Route
             path="/dashboard"
             element={
-              <PasswordGate>
+              <SupabaseAuthGate>
                 <Suspense fallback={<DashboardFallback />}>
                   <Index />
                 </Suspense>
-              </PasswordGate>
+              </SupabaseAuthGate>
             }
           />
           <Route path="*" element={<NotFound />} />

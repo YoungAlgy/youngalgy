@@ -48,7 +48,7 @@ const timeline = [
     detail: "Started angel-investing through my network of celebrities, traders, and operators. Constantly scouting innovative teams to back early." },
   { year: "2021–2022", title: "Project Manager, Universe XYZ",
     detail: "Led digital collectible drops and the marketplace build. Program raised $5M+ for charity including the $4.4M Lobby Lobsters drop. Founding-collective member of BAYC; seed investor in OpenSea." },
-  { year: "2025", title: "Toggle Town trading bots go live",
+  { year: "2026", title: "Toggle Town trading bots go live",
     detail: "Algorithmic trading on live Alpaca capital — Kalman filter state estimation, HMM regime detection, VWAP bands, drawdown controller. Markets are another system to read and time." },
   { year: "2026", title: "Healthcare Recruiter + CRM Builder, Ava Health",
     detail: "Joined Ava Health on contract placing physicians nationwide + nurses/therapists in FL. Designed and built Ava's entire digital infrastructure: CRM + public provider directory covering 850K+ verified healthcare professionals across all 50 states." },
@@ -138,7 +138,7 @@ const work: WorkItem[] = [
   },
   {
     title: "Toggle Town — Trading Bots + Esports",
-    role: "Founder · 2019–Present · Trading live since 2025",
+    role: "Founder · 2019–Present · Trading live since 2026",
     description: "Started as an amateur esports channel in 2019 curating community gameplay. Evolved into the home for my algorithmic trading systems, now running on live Alpaca capital.",
     bullets: [
       "Esports channel curating community gameplay (2019 origin)",

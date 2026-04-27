@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ALL_STATUSES, STATUS_CONFIG, JobStatus } from "@/lib/types";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
+export type ReplyStateFilter = "all" | "awaiting" | "stale" | "replied";
+
 export interface Filters {
   statuses: JobStatus[];
   sources: string[];
@@ -15,6 +17,7 @@ export interface Filters {
   customTo?: string;
   salaryMin: number;
   hasUrl: boolean;
+  replyState: ReplyStateFilter;
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -23,7 +26,15 @@ export const DEFAULT_FILTERS: Filters = {
   dateRange: "all",
   salaryMin: 0,
   hasUrl: false,
+  replyState: "all",
 };
+
+const REPLY_STATE_OPTIONS: { value: ReplyStateFilter; label: string }[] = [
+  { value: "all",      label: "All"             },
+  { value: "awaiting", label: "Awaiting reply"  },
+  { value: "stale",    label: "Stale (>14d)"    },
+  { value: "replied",  label: "Replied"         },
+];
 
 interface Props {
   filters: Filters;
@@ -40,7 +51,8 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
     filters.sources.length +
     (filters.dateRange !== "all" ? 1 : 0) +
     (filters.salaryMin > 0 ? 1 : 0) +
-    (filters.hasUrl ? 1 : 0);
+    (filters.hasUrl ? 1 : 0) +
+    (filters.replyState !== "all" ? 1 : 0);
 
   const toggleStatus = (s: JobStatus) => {
     const exists = filters.statuses.includes(s);
@@ -95,6 +107,29 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                     }`}
                   >
                     {STATUS_CONFIG[s].label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Reply state — derived from status + first_reply_at + age */}
+          <div>
+            <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">Reply state</p>
+            <div className="flex flex-wrap gap-2">
+              {REPLY_STATE_OPTIONS.map((opt) => {
+                const active = filters.replyState === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setFilters({ ...filters, replyState: opt.value })}
+                    className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
+                      active
+                        ? "bg-primary text-primary-foreground border-transparent"
+                        : "bg-card text-muted-foreground border-border hover:bg-muted"
+                    }`}
+                  >
+                    {opt.label}
                   </button>
                 );
               })}

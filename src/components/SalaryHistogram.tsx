@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { supabase } from "@/lib/supabase";
-import { logError } from "@/lib/log";
 import { DollarSign } from "lucide-react";
+import { Job } from "@/lib/types";
 
 interface Bucket { band: string; count: number; }
 
@@ -16,28 +15,27 @@ const BANDS: { label: string; min: number; max: number }[] = [
   { label: "150K+",    min: 150_000, max: Infinity },
 ];
 
-export function SalaryHistogram() {
-  const [data, setData] = useState<Bucket[]>(BANDS.map((b) => ({ band: b.label, count: 0 })));
+interface Props {
+  /** Already-fetched jobs from Index.tsx — derive client-side. */
+  jobs: Job[];
+}
 
-  useEffect(() => {
-    async function load() {
-      const { data: rows, error } = await supabase
-        .from("opportunities")
-        .select("salary_low")
-        .eq("bot_type", "manual")
-        .gt("salary_low", 0);
-      if (error) { logError("salary histogram"); return; }
-      const buckets = BANDS.map((b) => ({ band: b.label, count: 0 }));
-      (rows ?? []).forEach((r: { salary_low: number | null }) => {
-        const v = r.salary_low ?? 0;
-        if (v <= 0) return;
-        const idx = BANDS.findIndex((b) => v >= b.min && v < b.max);
-        if (idx >= 0) buckets[idx].count += 1;
-      });
-      setData(buckets);
+/**
+ * Salary distribution is derived from the jobs prop instead of firing an
+ * unbounded SELECT salary_low FROM opportunities. Part of the 2026-04-27
+ * disk-IO cleanup.
+ */
+export function SalaryHistogram({ jobs }: Props) {
+  const data = useMemo<Bucket[]>(() => {
+    const buckets = BANDS.map((b) => ({ band: b.label, count: 0 }));
+    for (const j of jobs) {
+      const v = j.salaryRaw ?? 0;
+      if (v <= 0) continue;
+      const idx = BANDS.findIndex((b) => v >= b.min && v < b.max);
+      if (idx >= 0) buckets[idx].count += 1;
     }
-    load();
-  }, []);
+    return buckets;
+  }, [jobs]);
 
   return (
     <Card className="border shadow-sm p-4">

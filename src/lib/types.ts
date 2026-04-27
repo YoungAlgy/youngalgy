@@ -18,6 +18,8 @@ export const ALL_STATUSES: JobStatus[] = [
   "withdrew",
 ];
 
+export type ReplyKind = "rejection" | "screen" | "interview" | "question" | "offer" | "other";
+
 export interface Opportunity {
   id: string;
   bot_type: string | null;
@@ -34,6 +36,26 @@ export interface Opportunity {
   proposal: string | null;
   notes: string | null;
   created_at: string;
+  // Reply tracking — see supabase/migrations/20260427_reply_tracking.sql.
+  // Both fields are nullable; auto-stamped by trigger when status moves
+  // off 'applied' to anything besides 'applied'/'ghosted'.
+  first_reply_at?: string | null;
+  reply_kind?: ReplyKind | null;
+}
+
+/** True when the row is `applied` and we haven't logged a company response yet. */
+export function isAwaitingReply(opp: Pick<Opportunity, "status" | "first_reply_at">): boolean {
+  return (opp.status ?? "applied") === "applied" && !opp.first_reply_at;
+}
+
+/** True when awaiting + over `daysStale` since `created_at`. */
+export function isStale(
+  opp: Pick<Opportunity, "status" | "first_reply_at" | "created_at">,
+  daysStale = 14,
+): boolean {
+  if (!isAwaitingReply(opp)) return false;
+  const ageMs = Date.now() - new Date(opp.created_at).getTime();
+  return ageMs >= daysStale * 24 * 60 * 60 * 1000;
 }
 
 export interface Job {
@@ -52,6 +74,8 @@ export interface Job {
   botType?: string | null;
   coverLetter?: string | null;
   proposal?: string | null;
+  firstReplyAt?: string | null;
+  replyKind?: ReplyKind | null;
 }
 
 export const STATUS_CONFIG: Record<JobStatus, { label: string; className: string; rowTint: string }> = {
@@ -106,5 +130,7 @@ export function mapOpportunityToJob(opp: Opportunity): Job {
     botType: opp.bot_type,
     coverLetter: opp.cover_letter,
     proposal: opp.proposal,
+    firstReplyAt: opp.first_reply_at ?? null,
+    replyKind: opp.reply_kind ?? null,
   };
 }

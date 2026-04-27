@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { Job, JobStatus, STATUS_CONFIG } from "@/lib/types";
-import { MapPin, ExternalLink, Pencil } from "lucide-react";
+import { Job, JobStatus, STATUS_CONFIG, isStale } from "@/lib/types";
+import { MapPin, ExternalLink, Pencil, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -99,7 +99,22 @@ function KanbanBoardImpl({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
                               <MapPin className="h-3 w-3 shrink-0" />
                               <span className="truncate">{job.location}</span>
                             </span>
-                            <span className="shrink-0">{formatRelativeDate(job.appliedDate)}</span>
+                            <span className="shrink-0 flex items-center gap-1">
+                              {isStale({
+                                status: job.status,
+                                first_reply_at: job.firstReplyAt ?? null,
+                                created_at: job.appliedDate,
+                              }) && (
+                                <span
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-destructive/15 text-destructive font-semibold tracking-wide uppercase text-[9px]"
+                                  title="Applied >14 days ago, no reply logged"
+                                >
+                                  <AlertTriangle className="h-2.5 w-2.5" />
+                                  Stale
+                                </span>
+                              )}
+                              {formatRelativeDate(job.appliedDate)}
+                            </span>
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {job.salary && job.salaryRaw && job.salaryRaw > 0 ? job.salary : "—"}

@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
-import { Send, CalendarRange, Activity, CalendarClock, XCircle, PercentCircle } from "lucide-react";
+import {
+  Send, CalendarRange, Activity, CalendarClock, XCircle, PercentCircle,
+  HourglassIcon, AlertTriangle,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 
 interface StatCounts {
   totalSubmitted: number;
   thisWeek: number;
-  activePipeline: number;
+  awaitingReply: number;
   interviews: number;
-  rejections: number;
+  stale: number;
   responseRate: number;
 }
 
+const STALE_DAYS = 14;
+
 export function StatsCards() {
   const [counts, setCounts] = useState<StatCounts>({
-    totalSubmitted: 0, thisWeek: 0, activePipeline: 0, interviews: 0, rejections: 0, responseRate: 0,
+    totalSubmitted: 0, thisWeek: 0, awaitingReply: 0, interviews: 0, stale: 0, responseRate: 0,
   });
 
   useEffect(() => {
@@ -22,17 +27,38 @@ export function StatsCards() {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
 
-      const inactive = ["rejected", "ghosted", "withdrew"];
+      const staleCutoff = new Date();
+      staleCutoff.setDate(staleCutoff.getDate() - STALE_DAYS);
 
-      const [totalRes, weekRes, activeRes, intRes, rejRes] = await Promise.all([
-        supabase.from("opportunities").select("id", { count: "exact", head: true }).eq("bot_type", "manual"),
-        supabase.from("opportunities").select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual").gte("created_at", weekAgo.toISOString()),
-        supabase.from("opportunities").select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual").not("status", "in", `(${inactive.join(",")})`),
-        supabase.from("interviews").select("id", { count: "exact", head: true }),
-        supabase.from("opportunities").select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual").eq("status", "rejected"),
+      const [totalRes, weekRes, awaitingRes, intRes, staleRes, rejRes] = await Promise.all([
+        // Total ever submitted
+        supabase.from("opportunities")
+          .select("id", { count: "exact", head: true })
+          .eq("bot_type", "manual"),
+        // Submitted in the last 7 days
+        supabase.from("opportunities")
+          .select("id", { count: "exact", head: true })
+          .eq("bot_type", "manual")
+          .gte("created_at", weekAgo.toISOString()),
+        // Awaiting reply: still 'applied' (no movement off the column yet)
+        supabase.from("opportunities")
+          .select("id", { count: "exact", head: true })
+          .eq("bot_type", "manual")
+          .eq("status", "applied"),
+        // Interviews on the books
+        supabase.from("interviews")
+          .select("id", { count: "exact", head: true }),
+        // Stale: applied AND created_at older than the cutoff
+        supabase.from("opportunities")
+          .select("id", { count: "exact", head: true })
+          .eq("bot_type", "manual")
+          .eq("status", "applied")
+          .lt("created_at", staleCutoff.toISOString()),
+        // Rejected (used for response-rate denominator only — not its own card anymore)
+        supabase.from("opportunities")
+          .select("id", { count: "exact", head: true })
+          .eq("bot_type", "manual")
+          .eq("status", "rejected"),
       ]);
 
       const total = totalRes.count ?? 0;
@@ -43,9 +69,9 @@ export function StatsCards() {
       setCounts({
         totalSubmitted: total,
         thisWeek: weekRes.count ?? 0,
-        activePipeline: activeRes.count ?? 0,
+        awaitingReply: awaitingRes.count ?? 0,
         interviews,
-        rejections,
+        stale: staleRes.count ?? 0,
         responseRate,
       });
     }
@@ -56,10 +82,15 @@ export function StatsCards() {
 
   const stats = [
     { label: "Total Submitted", value: counts.totalSubmitted, icon: Send, color: "text-primary" },
-    { label: "This Week", value: counts.thisWeek, icon: CalendarRange, color: "text-info" },
-    { label: "Active Pipeline", value: counts.activePipeline, icon: Activity, color: "text-success" },
-    { label: "Interviews", value: counts.interviews, icon: CalendarClock, color: "text-purple-500" },
-    { label: "Rejections", value: counts.rejections, icon: XCircle, color: "text-destructive" },
+    { label: "This Week",       value: counts.thisWeek,       icon: CalendarRange, color: "text-info" },
+    { label: "Awaiting Reply",  value: counts.awaitingReply,  icon: HourglassIcon, color: "text-amber-500" },
+    { label: "Interviews",      value: counts.interviews,     icon: CalendarClock, color: "text-purple-500" },
+    {
+      label: `Stale (>${STALE_DAYS}d)`,
+      value: counts.stale,
+      icon: AlertTriangle,
+      color: counts.stale > 0 ? "text-destructive" : "text-muted-foreground",
+    },
     {
       label: "Response Rate",
       value: `${counts.responseRate.toFixed(1)}%`,

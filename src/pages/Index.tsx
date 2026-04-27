@@ -89,15 +89,33 @@ const Index = () => {
   const fetchJobs = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
 
-    const [oppRes, intRes] = await Promise.all([
+    // Try the new schema first (first_reply_at + reply_kind from
+    // 20260427_reply_tracking.sql). If those columns aren't deployed yet
+    // we'll get PostgREST error 42703 and retry without them so the UI
+    // keeps working during the migration window.
+    const COLS_NEW = "id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at,first_reply_at,reply_kind";
+    const COLS_OLD = "id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at";
+
+    let [oppRes, intRes] = await Promise.all([
       supabase
         .from("opportunities")
-        .select("id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at")
+        .select(COLS_NEW)
         .eq("bot_type", "manual")
         .order("score", { ascending: false })
         .limit(500),
       supabase.from("interviews").select("company"),
     ]);
+
+    // Graceful fallback: schema not yet migrated -> retry with old column set
+    if (oppRes.error && (oppRes.error as { code?: string })?.code === "42703") {
+      const retry = await supabase
+        .from("opportunities")
+        .select(COLS_OLD)
+        .eq("bot_type", "manual")
+        .order("score", { ascending: false })
+        .limit(500);
+      oppRes = retry;
+    }
 
     if (oppRes.error) {
       logError("fetch opportunities");

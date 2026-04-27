@@ -1,33 +1,32 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { supabase } from "@/lib/supabase";
-import { logError } from "@/lib/log";
 import { PieChart as PieIcon } from "lucide-react";
+import { Job } from "@/lib/types";
 
 interface Slice { name: string; value: number; }
 
 const COLORS = ["hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)", "hsl(280 70% 55%)", "hsl(0 72% 51%)"];
 
-export function SourcePieChart() {
-  const [data, setData] = useState<Slice[]>([]);
+interface Props {
+  /** Already-fetched jobs from Index.tsx — derive client-side. */
+  jobs: Job[];
+}
 
-  useEffect(() => {
-    async function load() {
-      const { data: rows, error } = await supabase
-        .from("opportunities")
-        .select("source")
-        .eq("bot_type", "manual");
-      if (error) { logError("source pie chart"); return; }
-      const counts: Record<string, number> = {};
-      (rows ?? []).forEach((r: { source: string | null }) => {
-        const k = (r.source || "unknown").toLowerCase();
-        counts[k] = (counts[k] || 0) + 1;
-      });
-      setData(Object.entries(counts).map(([name, value]) => ({ name, value })));
+/**
+ * Source distribution is derived from the jobs prop instead of firing an
+ * unbounded SELECT source FROM opportunities WHERE bot_type='manual'.
+ * Part of the 2026-04-27 disk-IO cleanup.
+ */
+export function SourcePieChart({ jobs }: Props) {
+  const data = useMemo<Slice[]>(() => {
+    const counts: Record<string, number> = {};
+    for (const j of jobs) {
+      const k = (j.source || "unknown").toLowerCase();
+      counts[k] = (counts[k] || 0) + 1;
     }
-    load();
-  }, []);
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  }, [jobs]);
 
   const total = data.reduce((sum, d) => sum + d.value, 0);
 

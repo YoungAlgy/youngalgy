@@ -30,7 +30,11 @@ import { toast } from "sonner";
 type ViewMode = "kanban" | "table" | "company";
 type SortKey = "score" | "date" | "salary" | "days";
 
-const REFRESH_MS = 30_000;
+// Polling interval. Bumped from 30s -> 90s on 2026-04-27 as part of the
+// disk-IO cleanup — the Supabase project warned about its IO budget. With
+// the analytics widgets now deriving from the in-memory jobs array (no
+// per-widget queries), 90s is plenty for "kanban stays warm" UX.
+const REFRESH_MS = 90_000;
 
 // --- URL <-> Filters serialization ---
 const VALID_REPLY_STATES = new Set(["all", "awaiting", "stale", "replied"] as const);
@@ -80,6 +84,7 @@ const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [interviewCompanies, setInterviewCompanies] = useState<Set<string>>(new Set());
+  const [interviewCount, setInterviewCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [filters, setFilters] = useState<Filters>(filtersFromParams(searchParams));
@@ -128,12 +133,12 @@ const Index = () => {
       return;
     }
 
+    const intRows = ((intRes.data as { company: string }[] | null) ?? []);
     const intCompanies = new Set(
-      ((intRes.data as { company: string }[] | null) ?? [])
-        .map((r) => r.company?.trim().toLowerCase())
-        .filter(Boolean)
+      intRows.map((r) => r.company?.trim().toLowerCase()).filter(Boolean),
     );
     setInterviewCompanies(intCompanies);
+    setInterviewCount(intRows.length);
 
     // Derive effective status: presence in interviews table promotes to "interview"
     // (unless the opportunity is already in a later/terminal stage).
@@ -318,9 +323,9 @@ const Index = () => {
         {/* SECTION: Snapshot */}
         <section className="space-y-4">
           <SectionHeading title="Snapshot" hint="Top-of-funnel + recent rejections" />
-          <StatsCards />
+          <StatsCards jobs={jobs} interviewCount={interviewCount} />
           <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-            <PipelineFunnel onStageClick={setFunnelStage} activeStage={funnelStage} />
+            <PipelineFunnel jobs={jobs} interviewCount={interviewCount} onStageClick={setFunnelStage} activeStage={funnelStage} />
             <RejectionLog />
           </div>
         </section>
@@ -335,10 +340,10 @@ const Index = () => {
         <section className="space-y-4">
           <SectionHeading title="Trends" hint="Daily volume, source mix, salary spread" />
           <div className="grid gap-4 lg:grid-cols-2">
-            <DailyAppsChart />
-            <SourcePieChart />
+            <DailyAppsChart jobs={jobs} />
+            <SourcePieChart jobs={jobs} />
           </div>
-          <SalaryHistogram />
+          <SalaryHistogram jobs={jobs} />
         </section>
 
         {/* SECTION: All Applications */}

@@ -6,19 +6,22 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Users, Sparkles, LineChart, TrendingUp, Utensils, HardHat,
-  Clock, Mail, Linkedin, MapPin, Github, Music, Gem,
-  Send, FileText, DollarSign, Rocket, ArrowUpRight, Printer, Briefcase,
+  Mail, Linkedin, MapPin, Github, Music, Gem,
+  FileText, Rocket, ArrowUpRight, Printer, Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CONTACT_EMAIL = "youngalgy@gmail.com";
 
-const heroStats = [
-  { n: "01", icon: Clock,      value: "12+",       label: "Years · Placing + Shipping" },
-  { n: "02", icon: Send,       value: "850K+",     label: "Providers · Ava Health CRM" },
-  { n: "03", icon: DollarSign, value: "$5M+",      label: "Charity · Universe XYZ" },
-  { n: "04", icon: Music,      value: "100M+",     label: "Views · Money Mitch + Big Gates" },
-  { n: "05", icon: Gem,        value: "BAYC + OS", label: "Founding · OpenSea Seed" },
+// Tag chips that replace the older numbered "01–05" stat grid.
+// Hero body copy already says "12 years placing + shipping" — so the
+// chips skip restating that and instead anchor the 5 worlds I operate in.
+const heroChips = [
+  "Healthcare Recruiter",
+  "CRM Builder",
+  "Trader / Quant",
+  "Music Industry",
+  "Web3 Founding Member",
 ];
 
 const recruiterTags = [
@@ -499,27 +502,22 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* Stat strip — numbered, expanded labels */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px rounded-xl overflow-hidden border border-border/60 bg-border/60">
-            {heroStats.map((s, i) => (
-              <Reveal key={s.label} delay={i * 60}>
-                <div className="group relative h-full bg-card/80 backdrop-blur-sm p-4 sm:p-5 transition-colors duration-300 hover:bg-card">
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <s.icon className="h-4 w-4 text-primary/80" aria-hidden />
-                    <span className="font-mono text-[10px] font-semibold text-primary/70 tabular-nums">
-                      {s.n}
-                    </span>
-                  </div>
-                  <div className="font-display text-2xl sm:text-3xl font-black text-foreground leading-none nums">
-                    {s.value}
-                  </div>
-                  <div className="mt-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground leading-snug">
-                    {s.label}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          {/* Identity chips — replaced the older numbered 01–05 stat grid.
+              Hero body already states the 12-year + Ava Health anchor; chips
+              tag the 5 worlds I operate in without restating numbers. */}
+          <Reveal>
+            <div className="flex flex-wrap gap-2 sm:gap-2.5 pt-2">
+              {heroChips.map((c, i) => (
+                <span
+                  key={c}
+                  className="inline-flex items-center px-3 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary font-mono text-[11px] sm:text-xs uppercase tracking-[0.16em] hover:bg-primary/10 hover:border-primary/50 transition-colors"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </Reveal>
         </section>
 
         <SectionDivider />

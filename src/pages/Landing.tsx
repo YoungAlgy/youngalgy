@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils";
 const CONTACT_EMAIL = "youngalgy@gmail.com";
 
 const heroStats = [
-  { n: "01", icon: Clock, value: "12+", label: "Years Experience" },
-  { n: "02", icon: Send, value: "850K+", label: "Providers · Ava Health" },
-  { n: "03", icon: FileText, value: "1,100+", label: "SEO Pages Shipped" },
-  { n: "04", icon: DollarSign, value: "$5M+", label: "Charity Raised" },
-  { n: "05", icon: Rocket, value: "3", label: "Apps Live" },
+  { n: "01", icon: Clock,      value: "12+",       label: "Years · Placing + Shipping" },
+  { n: "02", icon: Send,       value: "850K+",     label: "Providers · Ava Health CRM" },
+  { n: "03", icon: DollarSign, value: "$5M+",      label: "Charity · Universe XYZ" },
+  { n: "04", icon: Music,      value: "100M+",     label: "Views · Money Mitch + Big Gates" },
+  { n: "05", icon: Gem,        value: "BAYC + OS", label: "Founding · OpenSea Seed" },
 ];
 
 const recruiterTags = [

@@ -33,7 +33,10 @@ type SortKey = "score" | "date" | "salary" | "days";
 const REFRESH_MS = 30_000;
 
 // --- URL <-> Filters serialization ---
+const VALID_REPLY_STATES = new Set(["all", "awaiting", "stale", "replied"] as const);
+
 function filtersFromParams(p: URLSearchParams): Filters {
+  const rawReply = p.get("reply") as Filters["replyState"] | null;
   return {
     statuses: (p.get("status")?.split(",").filter(Boolean) as JobStatus[]) ?? [],
     sources: p.get("source")?.split(",").filter(Boolean) ?? [],
@@ -42,6 +45,7 @@ function filtersFromParams(p: URLSearchParams): Filters {
     customTo: p.get("to") ?? undefined,
     salaryMin: Number(p.get("salaryMin") ?? "0") || 0,
     hasUrl: p.get("hasUrl") === "1",
+    replyState: rawReply && VALID_REPLY_STATES.has(rawReply) ? rawReply : "all",
   };
 }
 
@@ -54,6 +58,7 @@ function paramsFromFilters(f: Filters, search: string, view: ViewMode, sortBy: S
   if (f.customTo) p.set("to", f.customTo);
   if (f.salaryMin > 0) p.set("salaryMin", String(f.salaryMin));
   if (f.hasUrl) p.set("hasUrl", "1");
+  if (f.replyState !== "all") p.set("reply", f.replyState);
   if (search) p.set("q", search);
   // Default view is kanban — only encode when overridden.
   if (view !== "kanban") p.set("view", view);
@@ -197,7 +202,24 @@ const Index = () => {
       const matchesSalary = filters.salaryMin === 0 || (j.salaryRaw ?? 0) >= filters.salaryMin;
       const matchesUrl = !filters.hasUrl || !!j.url;
       const matchesFunnel = !funnelStage || j.status === funnelStage;
-      return matchesSearch && matchesStatus && matchesSource && matchesDate && matchesSalary && matchesUrl && matchesFunnel;
+
+      // Reply-state filter: derives from status + firstReplyAt + age
+      let matchesReplyState = true;
+      if (filters.replyState !== "all") {
+        const isApplied = j.status === "applied";
+        const hasReply = !!j.firstReplyAt;
+        if (filters.replyState === "awaiting") {
+          matchesReplyState = isApplied && !hasReply;
+        } else if (filters.replyState === "replied") {
+          matchesReplyState = hasReply;
+        } else if (filters.replyState === "stale") {
+          const ageMs = now - t;
+          const STALE_MS = 14 * 86400_000;
+          matchesReplyState = isApplied && !hasReply && ageMs >= STALE_MS;
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesSource && matchesDate && matchesSalary && matchesUrl && matchesFunnel && matchesReplyState;
     });
 
     const byDateDesc = (a: Job, b: Job) =>

@@ -1,53 +1,53 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { supabase } from "@/lib/supabase";
-import { logError } from "@/lib/log";
 import { TrendingUp } from "lucide-react";
+import { Job } from "@/lib/types";
 
 interface Point { date: string; label: string; count: number; }
 
-export function DailyAppsChart() {
-  const [data, setData] = useState<Point[]>([]);
+interface Props {
+  /** Already-fetched jobs from Index.tsx — derive client-side. */
+  jobs: Job[];
+}
 
-  useEffect(() => {
-    async function load() {
-      const since = new Date();
-      since.setDate(since.getDate() - 13);
-      since.setHours(0, 0, 0, 0);
+/**
+ * 14-day applications chart derived from the jobs prop instead of firing
+ * a fresh SELECT created_at, status FROM opportunities. Part of the
+ * 2026-04-27 disk-IO cleanup.
+ */
+export function DailyAppsChart({ jobs }: Props) {
+  const data = useMemo<Point[]>(() => {
+    const since = new Date();
+    since.setDate(since.getDate() - 13);
+    since.setHours(0, 0, 0, 0);
+    const sinceMs = since.getTime();
 
-      const { data: rows, error } = await supabase
-        .from("opportunities")
-        .select("created_at, status")
-        .eq("status", "applied")
-        .gte("created_at", since.toISOString());
-
-      if (error) { logError("daily apps chart"); return; }
-
-      // Build 14-day skeleton
-      const buckets: Record<string, number> = {};
-      const points: Point[] = [];
-      for (let i = 13; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        d.setHours(0, 0, 0, 0);
-        const key = d.toISOString().slice(0, 10);
-        buckets[key] = 0;
-        points.push({
-          date: key,
-          label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-          count: 0,
-        });
-      }
-      (rows ?? []).forEach((r: { created_at: string }) => {
-        const key = new Date(r.created_at).toISOString().slice(0, 10);
-        if (key in buckets) buckets[key] += 1;
+    const buckets: Record<string, number> = {};
+    const points: Point[] = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const key = d.toISOString().slice(0, 10);
+      buckets[key] = 0;
+      points.push({
+        date: key,
+        label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+        count: 0,
       });
-      points.forEach((p) => { p.count = buckets[p.date]; });
-      setData(points);
     }
-    load();
-  }, []);
+
+    for (const j of jobs) {
+      if (j.status !== "applied") continue;
+      const t = new Date(j.appliedDate).getTime();
+      if (t < sinceMs) continue;
+      const key = j.appliedDate.slice(0, 10);
+      if (key in buckets) buckets[key] += 1;
+    }
+    points.forEach((p) => { p.count = buckets[p.date]; });
+    return points;
+  }, [jobs]);
 
   return (
     <Card className="border shadow-sm p-4">

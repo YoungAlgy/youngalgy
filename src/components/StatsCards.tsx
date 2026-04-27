@@ -1,82 +1,66 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
-  Send, CalendarRange, Activity, CalendarClock, XCircle, PercentCircle,
+  Send, CalendarRange, CalendarClock, PercentCircle,
   HourglassIcon, AlertTriangle,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
-
-interface StatCounts {
-  totalSubmitted: number;
-  thisWeek: number;
-  awaitingReply: number;
-  interviews: number;
-  stale: number;
-  responseRate: number;
-}
+import { Job, isStale } from "@/lib/types";
 
 const STALE_DAYS = 14;
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-export function StatsCards() {
-  const [counts, setCounts] = useState<StatCounts>({
-    totalSubmitted: 0, thisWeek: 0, awaitingReply: 0, interviews: 0, stale: 0, responseRate: 0,
-  });
+interface Props {
+  /** Already-fetched jobs from Index.tsx — derive everything client-side. */
+  jobs: Job[];
+  /** Interview-table row count, fetched alongside jobs. */
+  interviewCount: number;
+}
 
-  useEffect(() => {
-    async function load() {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
+/**
+ * Stats are derived from the jobs prop instead of firing 6 round-trip count
+ * queries on mount. This is part of the 2026-04-27 disk-IO budget cleanup
+ * (Supabase warned the project was about to deplete its IO quota).
+ */
+export function StatsCards({ jobs, interviewCount }: Props) {
+  const counts = useMemo(() => {
+    const now = Date.now();
+    const weekAgoMs = now - WEEK_MS;
 
-      const staleCutoff = new Date();
-      staleCutoff.setDate(staleCutoff.getDate() - STALE_DAYS);
+    let totalSubmitted = 0;
+    let thisWeek = 0;
+    let awaitingReply = 0;
+    let stale = 0;
+    let rejections = 0;
 
-      const [totalRes, weekRes, awaitingRes, intRes, staleRes, rejRes] = await Promise.all([
-        // Total ever submitted
-        supabase.from("opportunities")
-          .select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual"),
-        // Submitted in the last 7 days
-        supabase.from("opportunities")
-          .select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual")
-          .gte("created_at", weekAgo.toISOString()),
-        // Awaiting reply: still 'applied' (no movement off the column yet)
-        supabase.from("opportunities")
-          .select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual")
-          .eq("status", "applied"),
-        // Interviews on the books
-        supabase.from("interviews")
-          .select("id", { count: "exact", head: true }),
-        // Stale: applied AND created_at older than the cutoff
-        supabase.from("opportunities")
-          .select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual")
-          .eq("status", "applied")
-          .lt("created_at", staleCutoff.toISOString()),
-        // Rejected (used for response-rate denominator only — not its own card anymore)
-        supabase.from("opportunities")
-          .select("id", { count: "exact", head: true })
-          .eq("bot_type", "manual")
-          .eq("status", "rejected"),
-      ]);
-
-      const total = totalRes.count ?? 0;
-      const interviews = intRes.count ?? 0;
-      const rejections = rejRes.count ?? 0;
-      const responseRate = total > 0 ? ((interviews + rejections) / total) * 100 : 0;
-
-      setCounts({
-        totalSubmitted: total,
-        thisWeek: weekRes.count ?? 0,
-        awaitingReply: awaitingRes.count ?? 0,
-        interviews,
-        stale: staleRes.count ?? 0,
-        responseRate,
-      });
+    for (const j of jobs) {
+      totalSubmitted += 1;
+      const t = new Date(j.appliedDate).getTime();
+      if (t >= weekAgoMs) thisWeek += 1;
+      if (j.status === "applied") {
+        if (!j.firstReplyAt) {
+          awaitingReply += 1;
+          if (isStale({
+            status: j.status,
+            first_reply_at: j.firstReplyAt ?? null,
+            created_at: j.appliedDate,
+          })) stale += 1;
+        }
+      }
+      if (j.status === "rejected") rejections += 1;
     }
-    load();
-  }, []);
+
+    const responded = interviewCount + rejections;
+    const responseRate = totalSubmitted > 0 ? (responded / totalSubmitted) * 100 : 0;
+
+    return {
+      totalSubmitted,
+      thisWeek,
+      awaitingReply,
+      interviews: interviewCount,
+      stale,
+      responseRate,
+    };
+  }, [jobs, interviewCount]);
 
   const responseRateGood = counts.responseRate > 5;
 

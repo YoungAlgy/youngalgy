@@ -43,7 +43,7 @@ export function SourcePieChart({ jobs }: Props) {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={false}>
-                {data.map((_, i) => (<Cell key={i} fill={COLORS[i % COLORS.length]} />))}
+                {data.map((d, i) => (<Cell key={d.name} fill={COLORS[i % COLORS.length]} />))}
               </Pie>
               <Tooltip
                 formatter={(v: number, n: string) => [`${v} (${total > 0 ? ((v / total) * 100).toFixed(1) : 0}%)`, n]}

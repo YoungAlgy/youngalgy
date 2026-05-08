@@ -31,6 +31,7 @@ import {
   type SortKey,
 } from "@/lib/url-filters";
 import { exportOpportunitiesCsv } from "@/lib/csv";
+import { filterAndSortJobs } from "@/lib/job-filter";
 import { logError } from "@/lib/log";
 import { toast } from "sonner";
 
@@ -155,66 +156,13 @@ const Index = () => {
     [jobs]
   );
 
-  const filtered = useMemo(() => {
-    const now = Date.now();
-    let cutoff: number | null = null;
-    if (filters.dateRange === "7") cutoff = now - 7 * 86400_000;
-    else if (filters.dateRange === "30") cutoff = now - 30 * 86400_000;
-    const customFromMs = filters.customFrom ? new Date(filters.customFrom).getTime() : null;
-    const customToMs = filters.customTo ? new Date(filters.customTo).getTime() + 86400_000 : null;
-
-    const result = jobs.filter((j) => {
-      const matchesSearch = !search ||
-        j.company.toLowerCase().includes(search.toLowerCase()) ||
-        j.position.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = filters.statuses.length === 0 || filters.statuses.includes(j.status);
-      const matchesSource = filters.sources.length === 0 || (j.source ? filters.sources.includes(j.source) : false);
-      const t = new Date(j.appliedDate).getTime();
-      let matchesDate = true;
-      if (cutoff !== null) matchesDate = t >= cutoff;
-      else if (filters.dateRange === "custom") {
-        matchesDate = (customFromMs === null || t >= customFromMs) && (customToMs === null || t < customToMs);
-      }
-      const matchesSalary = filters.salaryMin === 0 || (j.salaryRaw ?? 0) >= filters.salaryMin;
-      const matchesUrl = !filters.hasUrl || !!j.url;
-      const matchesFunnel = !funnelStage || j.status === funnelStage;
-
-      // Reply-state filter: derives from status + firstReplyAt + age
-      let matchesReplyState = true;
-      if (filters.replyState !== "all") {
-        const isApplied = j.status === "applied";
-        const hasReply = !!j.firstReplyAt;
-        if (filters.replyState === "awaiting") {
-          matchesReplyState = isApplied && !hasReply;
-        } else if (filters.replyState === "replied") {
-          matchesReplyState = hasReply;
-        } else if (filters.replyState === "stale") {
-          const ageMs = now - t;
-          const STALE_MS = 14 * 86400_000;
-          matchesReplyState = isApplied && !hasReply && ageMs >= STALE_MS;
-        }
-      }
-
-      return matchesSearch && matchesStatus && matchesSource && matchesDate && matchesSalary && matchesUrl && matchesFunnel && matchesReplyState;
-    });
-
-    const byDateDesc = (a: Job, b: Job) =>
-      new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
-    result.sort((a, b) => {
-      if (sortBy === "score") {
-        const diff = (b.score ?? -1) - (a.score ?? -1);
-        return diff !== 0 ? diff : byDateDesc(a, b);
-      }
-      if (sortBy === "salary") {
-        const diff = (b.salaryRaw ?? 0) - (a.salaryRaw ?? 0);
-        return diff !== 0 ? diff : byDateDesc(a, b);
-      }
-      if (sortBy === "days") return byDateDesc(b, a);
-      return byDateDesc(a, b);
-    });
-
-    return result;
-  }, [jobs, search, filters, sortBy, funnelStage]);
+  // Filter + sort logic lives in src/lib/job-filter.ts as a pure function so
+  // it can be unit-tested in isolation. This component just wraps the call
+  // in useMemo for re-render efficiency.
+  const filtered = useMemo(
+    () => filterAndSortJobs({ jobs, search, filters, funnelStage, sortBy }),
+    [jobs, search, filters, sortBy, funnelStage],
+  );
 
   const handleStatusChange = (id: string, status: JobStatus) => {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status } : j)));
@@ -263,6 +211,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip-to-content link — keyboard users can bypass the sticky header. */}
+      <a
+        href="#dashboard-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:font-semibold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/40"
+      >
+        Skip to content
+      </a>
       <header className="border-b border-border/60 bg-background/80 backdrop-blur-lg sticky top-0 z-10">
         <div className="container max-w-screen-2xl mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-3">
@@ -290,7 +245,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container max-w-screen-2xl mx-auto px-4 py-6 space-y-8">
+      <main id="dashboard-main" className="container max-w-screen-2xl mx-auto px-4 py-6 space-y-8">
         {/* SECTION: Snapshot */}
         <section className="space-y-4">
           <SectionHeading title="Snapshot" hint="Top-of-funnel + recent rejections" />

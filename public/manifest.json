@@ -1,0 +1,21 @@
+{
+  "name": "Alex Holmes — Sales, Recruiting & Builder",
+  "short_name": "Alex Holmes",
+  "description": "Healthcare recruiter, CRM builder, and sales operator based in Tampa, FL.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#d43b8f",
+  "background_color": "#0a0410",
+  "lang": "en-US",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}

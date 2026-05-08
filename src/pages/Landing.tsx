@@ -33,6 +33,15 @@ import { SkillsMarquee } from "@/components/landing/SkillsMarquee";
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background scroll-smooth">
+      {/* Skip-to-content link for keyboard users — visually hidden until focused.
+          Per WCAG 2.4.1 (Bypass Blocks): keyboard users can jump past the
+          header + section nav rail straight to the main content. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:font-semibold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/40"
+      >
+        Skip to content
+      </a>
       <SectionNav />
 
       <header className="border-b border-border/60 bg-background/70 backdrop-blur-lg sticky top-0 z-20 print-hide">
@@ -71,7 +80,7 @@ const Landing = () => {
         </div>
       </header>
 
-      <main className="container max-w-5xl mx-auto px-4 py-10 sm:py-12 space-y-20">
+      <main id="main-content" className="container max-w-5xl mx-auto px-4 py-10 sm:py-12 space-y-20">
         {/* Hero — tile + wordmark, recruiter strip, numbered stat row */}
         <section id="home" className="relative space-y-8 sm:space-y-10 py-6 sm:py-10">
           {/* Radial flare bg */}

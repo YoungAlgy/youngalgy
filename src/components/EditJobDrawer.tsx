@@ -176,18 +176,18 @@ export function EditJobDrawer({ job, onClose, onSaved }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Source</Label>
+              <Label id="source-label">Source</Label>
               <Select value={draft.source} onValueChange={(v) => setDraft({ ...draft, source: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-labelledby="source-label"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {SOURCES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Status</Label>
+              <Label id="status-label">Status</Label>
               <Select value={draft.status} onValueChange={(v) => setDraft({ ...draft, status: v as JobStatus })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-labelledby="status-label"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {ALL_STATUSES.map((s) => (
                     <SelectItem key={s} value={s}>{STATUS_CONFIG[s].label}</SelectItem>
@@ -216,12 +216,12 @@ export function EditJobDrawer({ job, onClose, onSaved }: Props) {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Reply kind</Label>
+                <Label id="reply-kind-label">Reply kind</Label>
                 <Select
                   value={draft.reply_kind}
                   onValueChange={(v) => setDraft({ ...draft, reply_kind: v as ReplyKind | "none" })}
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger aria-labelledby="reply-kind-label"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {REPLY_KIND_OPTIONS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>

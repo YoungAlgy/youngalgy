@@ -155,7 +155,7 @@ export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
                             {STATUS_CONFIG[j.status].label}
                           </Badge>
                           {onEdit && (
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onEdit(j); }}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={`Edit ${j.position} at ${r.company}`} onClick={(e) => { e.stopPropagation(); onEdit(j); }}>
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
                           )}

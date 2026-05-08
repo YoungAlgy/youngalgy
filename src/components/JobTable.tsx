@@ -342,6 +342,7 @@ function NotesCell({
       <button
         type="button"
         onClick={onOpen}
+        aria-label={`Notes for ${job.company} — click to edit`}
         className="text-left text-xs text-muted-foreground hover:text-foreground w-full min-h-[24px] truncate"
       >
         {preview ? preview + ((job.notes ?? "").length > 80 ? "…" : "") : <span className="italic">Add note…</span>}
@@ -352,6 +353,7 @@ function NotesCell({
   return (
     <Textarea
       autoFocus
+      aria-label={`Notes for ${job.company}`}
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onBlur={commit}

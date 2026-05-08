@@ -40,7 +40,7 @@ export const work: readonly WorkItem[] = [
       "Designed and shipped the React + Node + PostgreSQL CRM from scratch",
       "Nationwide NPI data pipeline — 850K+ verified providers",
       "Telnyx 10DLC SMS engine wired into provider cadences",
-      "SEO surface across properties: 1,100+ pages, 204 blog posts indexed",
+      "SEO surface across properties: 1,100+ pages, 482+ blog posts indexed",
       "Multi-channel outbound: SMS, email, calls — built the tooling + ran the plays",
       "Supabase RLS, view-as roles, billing integrations, internal admin tooling",
     ],

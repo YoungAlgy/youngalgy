@@ -41,7 +41,7 @@ export function StoryExpander() {
           The current chapter is Ava Health. I came in to place physicians, nurses, and therapists
           — and we now have 850K+ providers reachable. Somewhere along the way I realized the
           team needed better tools than what existed. So I started building. The CRM, the outreach
-          automation, the Telnyx 10DLC SMS engine, an SEO surface that&apos;s 1,100+ pages and 204
+          automation, the Telnyx 10DLC SMS engine, an SEO surface that&apos;s 1,100+ pages and 482+
           blog posts deep, a nationwide NPI data pipeline. Full-stack by necessity, sales-first
           by instinct.
         </p>

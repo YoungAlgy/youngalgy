@@ -37,11 +37,13 @@ export function PasswordGate({ children }: PasswordGateProps) {
   // On mount: do we already have a valid Supabase session? Skip the gate if so.
   useEffect(() => {
     let cancelled = false;
-    supabase.auth.getSession().then(({ data }) => {
-      if (cancelled) return;
-      if (data.session) setAuthenticated(true);
-      setCheckingSession(false);
-    });
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        if (cancelled) return;
+        if (data.session) setAuthenticated(true);
+      })
+      .catch(() => { /* network error — show login form */ })
+      .finally(() => { if (!cancelled) setCheckingSession(false); });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (cancelled) return;
       setAuthenticated(!!newSession);

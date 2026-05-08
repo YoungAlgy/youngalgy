@@ -93,21 +93,9 @@ const Landing = () => {
             ))}
           </div>
 
-          {/* Crest + wordmark row — psychedelic skull crest as hero centerpiece.
-              Uses <picture> so a future /public/hero-art.png will auto-take over
-              without a code push; the SVG SkullCrest is the always-shipped fallback. */}
+          {/* Crest + wordmark row — psychedelic skull crest as hero centerpiece. */}
           <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] items-start gap-6 sm:gap-10">
             <div className="relative w-[clamp(11rem,22vw,18rem)] aspect-square shrink-0 motion-safe:animate-[float_8s_ease-in-out_infinite]">
-              <picture>
-                <source srcSet="/hero-art.png" type="image/png" />
-                <img
-                  src="/hero-art.png"
-                  alt=""
-                  className="hidden"
-                  onError={(e) => { (e.currentTarget.parentElement as HTMLElement | null)?.querySelector('svg')?.classList.remove('hidden'); }}
-                />
-              </picture>
-              {/* SVG fallback — always rendered behind the <picture>; if PNG loads it sits on top */}
               <SkullCrest className="absolute inset-0 drop-shadow-[0_18px_60px_hsl(328_95%_55%/0.55)]" />
             </div>
 

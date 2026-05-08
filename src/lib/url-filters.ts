@@ -6,15 +6,40 @@
  * tested in isolation + reused if FilterBar or a future deep-link
  * helper needs it.
  *
+ * Filter types (Filters, ReplyStateFilter, DEFAULT_FILTERS) live here
+ * rather than in FilterBar.tsx to avoid co-locating non-component exports
+ * with a component file (react-refresh ESLint rule).
+ *
  * Default view = "kanban", default sort = "score". Both are omitted
  * from the URL when at default to keep query strings short.
  */
 
-import type { Filters, ReplyStateFilter } from "@/components/FilterBar";
 import type { JobStatus } from "@/lib/types";
 
 export type ViewMode = "kanban" | "table" | "company";
 export type SortKey = "score" | "date" | "salary" | "days";
+
+export type ReplyStateFilter = "all" | "awaiting" | "stale" | "replied";
+
+export interface Filters {
+  statuses: JobStatus[];
+  sources: string[];
+  dateRange: "7" | "30" | "all" | "custom";
+  customFrom?: string;
+  customTo?: string;
+  salaryMin: number;
+  hasUrl: boolean;
+  replyState: ReplyStateFilter;
+}
+
+export const DEFAULT_FILTERS: Filters = {
+  statuses: [],
+  sources: [],
+  dateRange: "all",
+  salaryMin: 0,
+  hasUrl: false,
+  replyState: "all",
+};
 
 export const VALID_REPLY_STATES: ReadonlySet<ReplyStateFilter> = new Set([
   "all",

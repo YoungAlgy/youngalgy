@@ -4,30 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ALL_STATUSES, STATUS_CONFIG, JobStatus } from "@/lib/types";
+import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/types";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-
-export type ReplyStateFilter = "all" | "awaiting" | "stale" | "replied";
-
-export interface Filters {
-  statuses: JobStatus[];
-  sources: string[];
-  dateRange: "7" | "30" | "all" | "custom";
-  customFrom?: string;
-  customTo?: string;
-  salaryMin: number;
-  hasUrl: boolean;
-  replyState: ReplyStateFilter;
-}
-
-export const DEFAULT_FILTERS: Filters = {
-  statuses: [],
-  sources: [],
-  dateRange: "all",
-  salaryMin: 0,
-  hasUrl: false,
-  replyState: "all",
-};
+import type { Filters, ReplyStateFilter } from "@/lib/url-filters";
 
 const REPLY_STATE_OPTIONS: { value: ReplyStateFilter; label: string }[] = [
   { value: "all",      label: "All"             },

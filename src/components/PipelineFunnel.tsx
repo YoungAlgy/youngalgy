@@ -38,7 +38,7 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
     let phoneScreen = 0;
     let interview = 0;
     let offer = 0;
-    let hired = 0;
+    const hired = 0;
 
     for (const j of jobs) {
       submitted += 1; // total ever submitted == count in opportunities table (manual)

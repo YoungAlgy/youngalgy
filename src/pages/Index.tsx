@@ -10,7 +10,8 @@ import { PipelineFunnel } from "@/components/PipelineFunnel";
 import { SourcePieChart } from "@/components/SourcePieChart";
 import { SalaryHistogram } from "@/components/SalaryHistogram";
 import { RejectionLog } from "@/components/RejectionLog";
-import { FilterBar, Filters, DEFAULT_FILTERS } from "@/components/FilterBar";
+import { FilterBar } from "@/components/FilterBar";
+import { DEFAULT_FILTERS, type Filters } from "@/lib/url-filters";
 import { EditJobDrawer } from "@/components/EditJobDrawer";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -75,7 +76,7 @@ const Index = () => {
     const COLS_NEW = "id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at,first_reply_at,reply_kind";
     const COLS_OLD = "id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at";
 
-    let [oppRes, intRes] = await Promise.all([
+    const [initOppRes, intRes] = await Promise.all([
       supabase
         .from("opportunities")
         .select(COLS_NEW)
@@ -84,6 +85,7 @@ const Index = () => {
         .limit(500),
       supabase.from("interviews").select("company"),
     ]);
+    let oppRes = initOppRes;
 
     // Graceful fallback: schema not yet migrated -> retry with old column set
     if (oppRes.error && (oppRes.error as { code?: string })?.code === "42703") {

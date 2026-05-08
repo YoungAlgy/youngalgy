@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { DEFAULT_FILTERS, type Filters } from "@/components/FilterBar";
+import { DEFAULT_FILTERS, type Filters } from "@/lib/url-filters";
 import {
   filtersFromParams,
   paramsFromFilters,

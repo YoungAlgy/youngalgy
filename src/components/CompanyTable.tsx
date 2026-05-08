@@ -7,55 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, Pencil } from "lucide-react";
 import { formatRelativeDate } from "@/lib/dates";
-
-interface CompanyRow {
-  company: string;
-  count: number;
-  latestRole: string;
-  highestSalary: number;
-  latestDate: string;
-  hasInterview: boolean;
-  mix: Record<JobStatus, number>;
-  jobs: Job[];
-}
-
-function aggregate(jobs: Job[]): CompanyRow[] {
-  const map = new Map<string, CompanyRow>();
-  for (const j of jobs) {
-    const key = j.company || "Unknown";
-    let row = map.get(key);
-    if (!row) {
-      row = {
-        company: key,
-        count: 0,
-        latestRole: j.position,
-        highestSalary: 0,
-        latestDate: j.appliedDate,
-        hasInterview: false,
-        mix: ALL_STATUSES.reduce((acc, s) => ({ ...acc, [s]: 0 }), { saved: 0 } as Record<JobStatus, number>),
-        jobs: [],
-      };
-      map.set(key, row);
-    }
-    row.count += 1;
-    row.jobs.push(j);
-    row.mix[j.status] = (row.mix[j.status] || 0) + 1;
-    if ((j.salaryRaw ?? 0) > row.highestSalary) row.highestSalary = j.salaryRaw ?? 0;
-    if (new Date(j.appliedDate).getTime() > new Date(row.latestDate).getTime()) {
-      row.latestDate = j.appliedDate;
-      row.latestRole = j.position;
-    }
-    if (j.status === "interview" || j.status === "phone_screen" || j.status === "offer") {
-      row.hasInterview = true;
-    }
-  }
-  // Sort: companies with interview-ish progress first, then most apps, then newest
-  return Array.from(map.values()).sort((a, b) => {
-    if (a.hasInterview !== b.hasInterview) return a.hasInterview ? -1 : 1;
-    if (b.count !== a.count) return b.count - a.count;
-    return new Date(b.latestDate).getTime() - new Date(a.latestDate).getTime();
-  });
-}
+import { aggregateByCompany } from "@/lib/company-aggregate";
 
 function StatusMixBar({ mix, total }: { mix: Record<JobStatus, number>; total: number }) {
   const segments = ALL_STATUSES
@@ -82,7 +34,7 @@ interface Props {
 }
 
 export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
-  const rows = useMemo(() => aggregate(jobs), [jobs]);
+  const rows = useMemo(() => aggregateByCompany(jobs), [jobs]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   function toggle(company: string) {

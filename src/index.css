@@ -397,10 +397,12 @@
       overflow: visible !important;
       max-height: none !important;
     }
-
-    /* Set sensible page margins */
-    @page {
-      margin: 0.6in;
-    }
   }
+}
+
+/* @page must live at top level — not inside @layer or @media — to avoid
+   CSS parser warnings from esbuild's minifier. Applies only at print time
+   because browsers only honor @page when producing paginated output. */
+@page {
+  margin: 0.6in;
 }

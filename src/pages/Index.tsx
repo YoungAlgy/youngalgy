@@ -22,7 +22,7 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
-import { Job, Opportunity, mapOpportunityToJob } from "@/lib/types";
+import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
 import {
   filtersFromParams,
   paramsFromFilters,

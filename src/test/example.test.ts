@@ -15,7 +15,9 @@ describe("cn", () => {
   });
 
   it("filters out falsy values", () => {
-    expect(cn("a", false && "b", null, undefined, "c")).toBe("a c");
+    // false && "b" evaluates to false — pass the evaluated form directly so
+    // no-constant-binary-expression doesn't fire on the literal `false &&`.
+    expect(cn("a", false, null, undefined, "c")).toBe("a c");
   });
 
   it("resolves Tailwind conflicts — last value wins (tailwind-merge)", () => {

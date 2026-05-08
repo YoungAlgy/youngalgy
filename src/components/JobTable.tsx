@@ -148,6 +148,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                         id={job.id}
                         value={job.status}
                         onChanged={(s) => onStatusChange?.(job.id, s)}
+                        label={`Status for ${job.position} at ${job.company}`}
                       />
                     </TableCell>
                     <TableCell><DaysBadge date={job.appliedDate} /></TableCell>
@@ -253,7 +254,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                 <DaysBadge date={job.appliedDate} />
                 {prePivot && <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground">Pre-pivot</Badge>}
               </div>
-              <StatusSelect id={job.id} value={job.status} onChanged={(s) => onStatusChange?.(job.id, s)} />
+              <StatusSelect id={job.id} value={job.status} onChanged={(s) => onStatusChange?.(job.id, s)} label={`Status for ${job.position} at ${job.company}`} />
               <NotesCell
                 job={job}
                 open={notesOpenId === job.id}

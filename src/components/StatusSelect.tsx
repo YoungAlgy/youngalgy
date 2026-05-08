@@ -8,6 +8,8 @@ interface Props {
   id: string;
   value: JobStatus;
   onChanged?: (status: JobStatus) => void;
+  /** Accessible label for the combobox — e.g. "Status for Acme Corp". */
+  label?: string;
 }
 
 // Visible solid-color trigger per status. Kept here (not in types.ts) because it's a UI-only concern.
@@ -22,7 +24,7 @@ const TRIGGER_CLASS: Record<JobStatus, string> = {
   withdrew:     "bg-warning/15 text-foreground border-warning/50",
 };
 
-export function StatusSelect({ id, value, onChanged }: Props) {
+export function StatusSelect({ id, value, onChanged, label }: Props) {
   const [pending, setPending] = useState(false);
   const [current, setCurrent] = useState<JobStatus>(value);
 
@@ -49,7 +51,10 @@ export function StatusSelect({ id, value, onChanged }: Props) {
 
   return (
     <Select value={current} onValueChange={handleChange} disabled={pending}>
-      <SelectTrigger className={`h-8 text-xs w-[140px] border-2 font-medium ${TRIGGER_CLASS[current]}`}>
+      <SelectTrigger
+        className={`h-8 text-xs w-[140px] border-2 font-medium ${TRIGGER_CLASS[current]}`}
+        aria-label={label ?? "Change status"}
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

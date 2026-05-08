@@ -72,9 +72,10 @@
     <script>
       (function () {
         try {
+          // Default to dark on first visit (no system-preference fallback)
+          // to match ThemeToggle.tsx initialDark() behavior.
           var t = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (t === 'dark' || (!t && prefersDark)) {
+          if (t !== 'light') {
             document.documentElement.classList.add('dark');
           }
         } catch (e) {}

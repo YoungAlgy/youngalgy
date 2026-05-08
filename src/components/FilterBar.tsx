@@ -104,6 +104,8 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                 return (
                   <button
                     key={s}
+                    type="button"
+                    aria-pressed={active}
                     onClick={() => toggleStatus(s)}
                     className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
                       active ? STATUS_CONFIG[s].className + " border-transparent" : "bg-card text-muted-foreground border-border hover:bg-muted"
@@ -125,6 +127,8 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                 return (
                   <button
                     key={opt.value}
+                    type="button"
+                    aria-pressed={active}
                     onClick={() => setFilters({ ...filters, replyState: opt.value })}
                     className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
                       active
@@ -149,6 +153,8 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                 return (
                   <button
                     key={s}
+                    type="button"
+                    aria-pressed={active}
                     onClick={() => toggleSource(s)}
                     className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
                       active ? "bg-primary text-primary-foreground border-transparent" : "bg-card text-muted-foreground border-border hover:bg-muted"
@@ -169,7 +175,7 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                 value={filters.dateRange}
                 onValueChange={(v) => setFilters({ ...filters, dateRange: v as Filters["dateRange"] })}
               >
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-8 text-xs" aria-label="Date range filter"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="7">Last 7 days</SelectItem>
                   <SelectItem value="30">Last 30 days</SelectItem>
@@ -206,6 +212,7 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                 step={5_000}
                 value={[filters.salaryMin]}
                 onValueChange={(v) => setFilters({ ...filters, salaryMin: v[0] })}
+                aria-label="Minimum salary filter"
               />
             </div>
             <div className="flex items-end">

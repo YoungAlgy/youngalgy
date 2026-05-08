@@ -72,6 +72,7 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
         <h2 className="text-sm font-semibold">Pipeline Funnel</h2>
         {activeStage && (
           <button
+            type="button"
             onClick={() => onStageClick?.(null)}
             className="ml-auto text-xs text-muted-foreground hover:text-foreground underline"
           >
@@ -89,9 +90,11 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
           return (
             <button
               key={stage.key}
+              type="button"
+              aria-pressed={isActive}
+              aria-label={`Filter to ${stage.label} (${stage.count})`}
               onClick={() => onStageClick?.(isActive ? null : stage.key)}
               className="w-full flex items-center gap-3 group"
-              title={`Filter to ${stage.label}`}
             >
               <span className="w-24 sm:w-28 text-xs text-muted-foreground text-right shrink-0">
                 {stage.label}

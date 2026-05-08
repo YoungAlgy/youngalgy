@@ -385,11 +385,17 @@
       break-inside: avoid;
     }
 
-    /* Ensure every section is shown regardless of reveal animations */
+    /* Ensure every section is shown regardless of reveal animations or
+       collapsed states (e.g. StoryExpander's max-h-0 clamp) */
     [style*="opacity"],
     .opacity-0 {
       opacity: 1 !important;
       transform: none !important;
+    }
+    /* Override max-height clamps used for JS-toggled expand/collapse */
+    .overflow-hidden {
+      overflow: visible !important;
+      max-height: none !important;
     }
 
     /* Set sensible page margins */

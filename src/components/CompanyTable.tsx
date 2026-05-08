@@ -124,9 +124,16 @@ export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
           const isOpen = expanded.has(r.company);
           return (
             <Fragment key={r.company}>
-              <TableRow className="cursor-pointer hover:bg-muted/40" onClick={() => toggle(r.company)}>
+              <TableRow
+                className="cursor-pointer hover:bg-muted/40"
+                onClick={() => toggle(r.company)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(r.company); } }}
+                tabIndex={0}
+                aria-expanded={isOpen}
+                role="row"
+              >
                 <TableCell className="pr-0">
-                  {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                  {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden /> : <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden />}
                 </TableCell>
                 <TableCell className="font-medium">{r.company}</TableCell>
                 <TableCell>

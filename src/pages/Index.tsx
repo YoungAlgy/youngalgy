@@ -326,18 +326,24 @@ const Index = () => {
             onClear={() => setFilters(DEFAULT_FILTERS)}
           />
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground mr-1">View:</span>
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="View mode">
+            <span className="text-xs font-medium text-muted-foreground mr-1" aria-hidden="true">View:</span>
             {ViewToggle}
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative w-full sm:max-w-xs sm:flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search title or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <Input
+                aria-label="Search applications by title or company"
+                placeholder="Search title or company..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
             </div>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-              <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectTrigger className="w-full sm:w-[160px]" aria-label="Sort applications">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>

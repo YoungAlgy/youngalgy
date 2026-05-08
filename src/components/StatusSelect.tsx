@@ -18,8 +18,8 @@ const TRIGGER_CLASS: Record<JobStatus, string> = {
   interview:    "bg-stage/15 text-foreground border-stage/50",
   offer:        "bg-success/20 text-foreground border-success/50",
   rejected:     "bg-destructive/15 text-foreground border-destructive/50",
-  ghosted:      "bg-gray-500/15 text-foreground border-gray-500/50",
-  withdrew:     "bg-amber-500/15 text-foreground border-amber-500/50",
+  ghosted:      "bg-muted/60 text-muted-foreground border-muted-foreground/30",
+  withdrew:     "bg-warning/15 text-foreground border-warning/50",
 };
 
 export function StatusSelect({ id, value, onChanged }: Props) {

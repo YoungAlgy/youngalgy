@@ -9,13 +9,12 @@ import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
-// Lazy-load both Index AND SupabaseAuthGate so the public landing
-// (which most visitors hit) doesn't pay the ~70KB gzip cost of
-// @supabase/auth-ui-react. The auth bundle only loads when someone
-// actually visits /dashboard.
+// Lazy-load Index so the public landing (which most visitors hit) doesn't
+// pay the dashboard bundle cost. PasswordGate is cheap (no auth-ui-react
+// dependency) so it's imported eagerly along with the rest of the dashboard chunk.
 const Index = lazy(() => import("./pages/Index"));
-const SupabaseAuthGate = lazy(() =>
-  import("./components/SupabaseAuthGate").then((m) => ({ default: m.SupabaseAuthGate }))
+const PasswordGate = lazy(() =>
+  import("./components/PasswordGate").then((m) => ({ default: m.PasswordGate }))
 );
 
 const DashboardFallback = () => (
@@ -36,9 +35,9 @@ const App = () => (
             path="/dashboard"
             element={
               <Suspense fallback={<DashboardFallback />}>
-                <SupabaseAuthGate>
+                <PasswordGate>
                   <Index />
-                </SupabaseAuthGate>
+                </PasswordGate>
               </Suspense>
             }
           />

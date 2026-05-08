@@ -2,59 +2,81 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Lock } from "lucide-react";
+import { Lock, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-const STORAGE_KEY = "ya_dashboard_auth";
-const PASSWORD = "toggle813";
-const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24h
+/**
+ * Cosmetic-but-RLS-backed password gate for /dashboard.
+ *
+ * UX: type a passcode (toggle813), click Unlock, you're in. No email, no magic link.
+ *
+ * Implementation: the typed passcode is the actual Supabase Auth password for a
+ * fixed dashboard identity (`dashboard@youngalgy.local`). On Unlock we call
+ * `supabase.auth.signInWithPassword(...)`. Success sets a real session in
+ * localStorage, which `auth.uid()` checks pass — so the 2026-04-26 RLS lockdown
+ * stays in force and `select * from opportunities` actually returns rows.
+ *
+ * Why this over magic-link: the user wanted the original PasswordGate UX back.
+ * Why this over re-opening anon SELECT: that would weaken RLS on shared
+ * production infra; this preserves the lockdown without sacrificing UX.
+ */
+
+const DASHBOARD_EMAIL = "dashboard@youngalgy.local";
 
 interface PasswordGateProps {
   children: React.ReactNode;
 }
 
-interface AuthRecord {
-  expiresAt: number;
-}
-
-function readAuth(): AuthRecord | null {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return null;
-  // Legacy "true" value should be treated as expired so the gate reappears.
-  if (raw === "true") return null;
-  try {
-    const parsed = JSON.parse(raw) as AuthRecord;
-    if (typeof parsed?.expiresAt !== "number") return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
 export function PasswordGate({ children }: PasswordGateProps) {
   const [authenticated, setAuthenticated] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
+  // On mount: do we already have a valid Supabase session? Skip the gate if so.
   useEffect(() => {
-    const auth = readAuth();
-    if (auth && auth.expiresAt > Date.now()) {
-      setAuthenticated(true);
-    } else if (auth) {
-      // expired
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      if (data.session) setAuthenticated(true);
+      setCheckingSession(false);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (cancelled) return;
+      setAuthenticated(!!newSession);
+    });
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === PASSWORD) {
-      const record: AuthRecord = { expiresAt: Date.now() + EXPIRY_MS };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
-      setAuthenticated(true);
-    } else {
-      setError(true);
+    if (!password || submitting) return;
+    setSubmitting(true);
+    setError(null);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: DASHBOARD_EMAIL,
+      password,
+    });
+    setSubmitting(false);
+    if (signInError) {
+      setError("Incorrect password");
+      setPassword("");
+      return;
     }
+    setAuthenticated(true);
   };
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Checking session" />
+      </div>
+    );
+  }
 
   if (authenticated) return <>{children}</>;
 
@@ -75,16 +97,19 @@ export function PasswordGate({ children }: PasswordGateProps) {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => { setPassword(e.target.value); setError(false); }}
+            onChange={(e) => { setPassword(e.target.value); setError(null); }}
             className={error ? "border-destructive" : ""}
             autoFocus
-            aria-invalid={error || undefined}
+            disabled={submitting}
+            aria-invalid={!!error || undefined}
             aria-describedby={error ? "password-error" : undefined}
           />
-          {error && <p id="password-error" className="text-sm text-destructive" role="alert">Incorrect password</p>}
-          <Button type="submit" className="w-full">Unlock</Button>
+          {error && <p id="password-error" className="text-sm text-destructive" role="alert">{error}</p>}
+          <Button type="submit" className="w-full" disabled={!password || submitting}>
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Signing in" /> : "Unlock"}
+          </Button>
         </form>
-        <p className="text-xs text-muted-foreground">Session lasts 24 hours.</p>
+        <p className="text-xs text-muted-foreground">Sessions persist for ~7 days.</p>
       </Card>
     </div>
   );

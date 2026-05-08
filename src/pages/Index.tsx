@@ -238,7 +238,7 @@ const Index = () => {
       await exportOpportunitiesCsv();
       toast.success("CSV exported");
     } catch (e) {
-      console.error(e);
+      logError("export csv", e);
       toast.error("Export failed");
     } finally {
       setExporting(false);

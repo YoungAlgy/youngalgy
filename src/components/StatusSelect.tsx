@@ -14,8 +14,8 @@ interface Props {
 const TRIGGER_CLASS: Record<JobStatus, string> = {
   saved:        "bg-secondary text-secondary-foreground border-border",
   applied:      "bg-info/15 text-foreground border-info/40",
-  phone_screen: "bg-blue-500/15 text-foreground border-blue-500/50",
-  interview:    "bg-purple-500/15 text-foreground border-purple-500/50",
+  phone_screen: "bg-screen/15 text-foreground border-screen/50",
+  interview:    "bg-stage/15 text-foreground border-stage/50",
   offer:        "bg-success/20 text-foreground border-success/50",
   rejected:     "bg-destructive/15 text-foreground border-destructive/50",
   ghosted:      "bg-gray-500/15 text-foreground border-gray-500/50",

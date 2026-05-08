@@ -22,53 +22,22 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
-import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
+import { Job, Opportunity, mapOpportunityToJob } from "@/lib/types";
+import {
+  filtersFromParams,
+  paramsFromFilters,
+  type ViewMode,
+  type SortKey,
+} from "@/lib/url-filters";
 import { exportOpportunitiesCsv } from "@/lib/csv";
 import { logError } from "@/lib/log";
 import { toast } from "sonner";
-
-type ViewMode = "kanban" | "table" | "company";
-type SortKey = "score" | "date" | "salary" | "days";
 
 // Polling interval. Bumped from 30s -> 90s on 2026-04-27 as part of the
 // disk-IO cleanup — the Supabase project warned about its IO budget. With
 // the analytics widgets now deriving from the in-memory jobs array (no
 // per-widget queries), 90s is plenty for "kanban stays warm" UX.
 const REFRESH_MS = 90_000;
-
-// --- URL <-> Filters serialization ---
-const VALID_REPLY_STATES = new Set(["all", "awaiting", "stale", "replied"] as const);
-
-function filtersFromParams(p: URLSearchParams): Filters {
-  const rawReply = p.get("reply") as Filters["replyState"] | null;
-  return {
-    statuses: (p.get("status")?.split(",").filter(Boolean) as JobStatus[]) ?? [],
-    sources: p.get("source")?.split(",").filter(Boolean) ?? [],
-    dateRange: (p.get("range") as Filters["dateRange"]) || "all",
-    customFrom: p.get("from") ?? undefined,
-    customTo: p.get("to") ?? undefined,
-    salaryMin: Number(p.get("salaryMin") ?? "0") || 0,
-    hasUrl: p.get("hasUrl") === "1",
-    replyState: rawReply && VALID_REPLY_STATES.has(rawReply) ? rawReply : "all",
-  };
-}
-
-function paramsFromFilters(f: Filters, search: string, view: ViewMode, sortBy: SortKey): URLSearchParams {
-  const p = new URLSearchParams();
-  if (f.statuses.length) p.set("status", f.statuses.join(","));
-  if (f.sources.length) p.set("source", f.sources.join(","));
-  if (f.dateRange !== "all") p.set("range", f.dateRange);
-  if (f.customFrom) p.set("from", f.customFrom);
-  if (f.customTo) p.set("to", f.customTo);
-  if (f.salaryMin > 0) p.set("salaryMin", String(f.salaryMin));
-  if (f.hasUrl) p.set("hasUrl", "1");
-  if (f.replyState !== "all") p.set("reply", f.replyState);
-  if (search) p.set("q", search);
-  // Default view is kanban — only encode when overridden.
-  if (view !== "kanban") p.set("view", view);
-  if (sortBy !== "score") p.set("sort", sortBy);
-  return p;
-}
 
 function SectionHeading({ title, hint }: { title: string; hint?: string }) {
   return (
@@ -293,7 +262,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/60 bg-background/80 backdrop-blur-lg sticky top-0 z-10">
-        <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
+        <div className="container max-w-screen-2xl mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")} aria-label="Back to home">
               <ArrowLeft className="h-4 w-4" />
@@ -319,7 +288,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container max-w-6xl mx-auto px-4 py-6 space-y-8">
+      <main className="container max-w-screen-2xl mx-auto px-4 py-6 space-y-8">
         {/* SECTION: Snapshot */}
         <section className="space-y-4">
           <SectionHeading title="Snapshot" hint="Top-of-funnel + recent rejections" />

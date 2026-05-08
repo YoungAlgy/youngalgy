@@ -78,15 +78,19 @@ export interface Job {
   replyKind?: ReplyKind | null;
 }
 
+// Per the 2026-04-29 cleanup plan (S9) + 2026-05-08 full-tokenization pass:
+// All statuses now use semantic tokens defined in tailwind.config.ts and
+// src/index.css — light/dark mode flips automatically for every status.
+// screen = phone screen (blue); stage = interview (purple).
 export const STATUS_CONFIG: Record<JobStatus, { label: string; className: string; rowTint: string }> = {
-  saved:        { label: "Saved",        className: "bg-secondary text-secondary-foreground",     rowTint: "" },
-  applied:      { label: "Applied",      className: "bg-info text-info-foreground",               rowTint: "" },
-  phone_screen: { label: "Phone Screen", className: "bg-blue-500 text-white",                     rowTint: "bg-blue-500/10" },
-  interview:    { label: "Interview",    className: "bg-purple-500 text-white",                   rowTint: "bg-purple-500/10" },
-  offer:        { label: "Offer",        className: "bg-success text-success-foreground",         rowTint: "bg-green-500/10" },
-  rejected:     { label: "Rejected",     className: "bg-destructive text-destructive-foreground", rowTint: "bg-red-500/10" },
-  ghosted:      { label: "Ghosted",      className: "bg-gray-500 text-white",                     rowTint: "bg-gray-500/10" },
-  withdrew:     { label: "Withdrew",     className: "bg-amber-500 text-white",                    rowTint: "bg-amber-500/10" },
+  saved:        { label: "Saved",        className: "bg-secondary text-secondary-foreground",     rowTint: "bg-secondary/30" },
+  applied:      { label: "Applied",      className: "bg-info text-info-foreground",               rowTint: "bg-info/10" },
+  phone_screen: { label: "Phone Screen", className: "bg-screen text-screen-foreground",           rowTint: "bg-screen/10" },
+  interview:    { label: "Interview",    className: "bg-stage text-stage-foreground",             rowTint: "bg-stage/10" },
+  offer:        { label: "Offer",        className: "bg-success text-success-foreground",         rowTint: "bg-success/10" },
+  rejected:     { label: "Rejected",     className: "bg-destructive text-destructive-foreground", rowTint: "bg-destructive/10" },
+  ghosted:      { label: "Ghosted",      className: "bg-muted text-muted-foreground",             rowTint: "bg-muted/40" },
+  withdrew:     { label: "Withdrew",     className: "bg-warning text-warning-foreground",         rowTint: "bg-warning/10" },
 };
 
 const STATUS_MAP: Record<string, JobStatus> = {

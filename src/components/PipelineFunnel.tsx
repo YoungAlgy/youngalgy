@@ -21,11 +21,11 @@ interface Props {
 }
 
 const BASE: Omit<Stage, "count">[] = [
-  { key: "applied",      label: "Submitted",    fill: "bg-blue-500" },
-  { key: "phone_screen", label: "Phone Screen", fill: "bg-cyan-500" },
-  { key: "interview",    label: "Interview",    fill: "bg-purple-500" },
-  { key: "offer",        label: "Offer",        fill: "bg-green-500" },
-  { key: "hired",        label: "Hired",        fill: "bg-emerald-600" },
+  { key: "applied",      label: "Submitted",    fill: "bg-info" },
+  { key: "phone_screen", label: "Phone Screen", fill: "bg-screen" },
+  { key: "interview",    label: "Interview",    fill: "bg-stage" },
+  { key: "offer",        label: "Offer",        fill: "bg-success" },
+  { key: "hired",        label: "Hired",        fill: "bg-success" },
 ];
 
 /**

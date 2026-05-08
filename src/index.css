@@ -43,6 +43,12 @@
     --info: 195 90% 50%;
     --info-foreground: 0 0% 100%;
 
+    /* Status-specific tokens — phone screen (blue) and interview (purple) */
+    --screen: 213 90% 52%;
+    --screen-foreground: 0 0% 100%;
+    --stage: 270 65% 58%;
+    --stage-foreground: 0 0% 100%;
+
     --border: 280 20% 88%;
     --input: 280 20% 88%;
     --ring: 328 85% 55%;
@@ -93,6 +99,12 @@
 
     --info: 195 95% 58%;
     --info-foreground: 272 50% 8%;
+
+    /* Status-specific tokens — phone screen (blue) and interview (purple) */
+    --screen: 213 90% 60%;
+    --screen-foreground: 0 0% 100%;
+    --stage: 270 70% 65%;
+    --stage-foreground: 0 0% 100%;
 
     --border: 272 30% 18%;
     --input: 272 30% 18%;

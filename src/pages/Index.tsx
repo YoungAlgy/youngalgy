@@ -249,14 +249,14 @@ const Index = () => {
 
   const ViewToggle = (
     <div className="inline-flex items-center rounded-md border bg-muted p-0.5">
-      <Button variant={view === "kanban" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("kanban")}>
-        <Columns3 className="h-3.5 w-3.5" /> Board
+      <Button variant={view === "kanban" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" aria-pressed={view === "kanban"} onClick={() => setView("kanban")}>
+        <Columns3 className="h-3.5 w-3.5" aria-hidden /> Board
       </Button>
-      <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("table")}>
-        <LayoutList className="h-3.5 w-3.5" /> By Job
+      <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" aria-pressed={view === "table"} onClick={() => setView("table")}>
+        <LayoutList className="h-3.5 w-3.5" aria-hidden /> By Job
       </Button>
-      <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("company")}>
-        <Building2 className="h-3.5 w-3.5" /> By Company
+      <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" aria-pressed={view === "company"} onClick={() => setView("company")}>
+        <Building2 className="h-3.5 w-3.5" aria-hidden /> By Company
       </Button>
     </div>
   );

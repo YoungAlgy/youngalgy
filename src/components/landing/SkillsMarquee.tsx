@@ -22,7 +22,10 @@ export function SkillsMarquee({
 }: SkillsMarqueeProps) {
   const loop = [...items, ...items];
   return (
-    <div className="relative overflow-hidden mask-edges py-2">
+    // aria-hidden: the skills are labelled by the section heading. The
+    // animated loop doubles every item, so screen readers would encounter
+    // 80+ identical chips — hiding the whole marquee is the right call.
+    <div className="relative overflow-hidden mask-edges py-2" aria-hidden="true">
       <div
         className={cn(
           "flex gap-3 whitespace-nowrap w-max",

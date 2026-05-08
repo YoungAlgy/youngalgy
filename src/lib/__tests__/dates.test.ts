@@ -66,8 +66,15 @@ describe("formatRelativeDate", () => {
     expect(formatRelativeDate("2026-05-03T12:00:00Z")).toBe("5 days ago");
   });
 
-  it("shows 'MMM D' for timestamps 7+ days old", () => {
+  it("shows 'MMM D' for timestamps 7+ days old (boundary at exactly 7)", () => {
+    // Exactly 7 days → d === 7 → not < 7 → falls through to MMM D format
+    expect(formatRelativeDate("2026-05-01T12:00:00Z")).toBe("May 1");
+    // 14 days — well into the MMM D range
     expect(formatRelativeDate("2026-04-24T12:00:00Z")).toBe("Apr 24");
     expect(formatRelativeDate("2026-01-15T12:00:00Z")).toBe("Jan 15");
+  });
+
+  it("shows '6 days ago' for 6-day-old timestamps (last case before MMM D)", () => {
+    expect(formatRelativeDate("2026-05-02T12:00:00Z")).toBe("6 days ago");
   });
 });

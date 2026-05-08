@@ -1,9 +1,12 @@
 import { supabase } from "./supabase";
 
+// Columns in the order we want them to appear in the CSV export.
+// Extra columns present in the DB but not listed here are appended after.
 const PREFERRED_ORDER = [
   "id", "company", "title", "status", "source", "bot_type",
-  "location", "is_remote", "salary_low", "salary_text", "score",
-  "url", "notes", "reasoning", "cover_letter", "proposal", "created_at",
+  "location", "salary_low", "score",
+  "url", "notes", "reasoning", "cover_letter", "proposal",
+  "first_reply_at", "reply_kind", "created_at",
 ];
 
 function toCsvCell(val: unknown): string {

@@ -166,10 +166,10 @@ export function InterviewScheduler() {
               <p className="text-sm text-muted-foreground">{row.prep_notes || "—"}</p>
             </div>
             <div className="flex gap-1 justify-end">
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEdit(row)}>
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEdit(row)} aria-label={`Edit interview at ${row.company}`}>
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(row.id)}>
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(row.id)} aria-label={`Delete interview at ${row.company}`}>
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -189,12 +189,14 @@ function DraftRow({ draft, setDraft, onSave, onCancel }: {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1.2fr_1fr_2fr_auto] gap-2 items-start p-3 rounded-md border-2 border-primary/40 bg-muted/20">
       <Input
+        aria-label="Company name"
         placeholder="Company"
         value={draft.company}
         onChange={(e) => setDraft({ ...draft, company: e.target.value })}
         className="h-8 text-sm"
       />
       <Input
+        aria-label="Role / position"
         placeholder="Role"
         value={draft.role}
         onChange={(e) => setDraft({ ...draft, role: e.target.value })}
@@ -202,11 +204,13 @@ function DraftRow({ draft, setDraft, onSave, onCancel }: {
       />
       <Input
         type="datetime-local"
+        aria-label="Scheduled date and time"
         value={toLocalInput(draft.scheduled_at)}
         onChange={(e) => setDraft({ ...draft, scheduled_at: e.target.value ? new Date(e.target.value).toISOString() : null })}
         className="h-8 text-sm"
       />
       <Textarea
+        aria-label="Prep notes"
         placeholder="Prep notes"
         value={draft.prep_notes ?? ""}
         onChange={(e) => setDraft({ ...draft, prep_notes: e.target.value })}
@@ -214,10 +218,10 @@ function DraftRow({ draft, setDraft, onSave, onCancel }: {
         rows={2}
       />
       <div className="flex gap-1 justify-end">
-        <Button size="icon" variant="default" className="h-7 w-7" onClick={onSave}>
+        <Button size="icon" variant="default" className="h-7 w-7" onClick={onSave} aria-label="Save interview">
           <Save className="h-3.5 w-3.5" />
         </Button>
-        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onCancel}>
+        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onCancel} aria-label="Cancel">
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>

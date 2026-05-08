@@ -27,7 +27,6 @@ interface Draft {
   company: string;
   title: string;
   salary_low: string;
-  salary_text: string;
   source: string;
   status: JobStatus;
   notes: string;
@@ -54,7 +53,6 @@ function jobToDraft(job: Job): Draft {
     company: job.company,
     title: job.position,
     salary_low: job.salaryRaw != null ? String(job.salaryRaw) : "",
-    salary_text: job.salary ?? "",
     source: job.source ?? "other",
     status: job.status,
     notes: job.notes ?? "",
@@ -162,25 +160,19 @@ export function EditJobDrawer({ job, onClose, onSaved }: Props) {
             <Label htmlFor="title">Title (role)</Label>
             <Input id="title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="salary_low">Salary low ($)</Label>
-              <Input
-                id="salary_low" type="number" inputMode="numeric"
-                value={draft.salary_low}
-                onChange={(e) => setDraft({ ...draft, salary_low: e.target.value })}
-                placeholder="0"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="salary_text">Salary label</Label>
-              <Input
-                id="salary_text"
-                value={draft.salary_text}
-                onChange={(e) => setDraft({ ...draft, salary_text: e.target.value })}
-                placeholder="$120K"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="salary_low">Salary ($)</Label>
+            <Input
+              id="salary_low" type="number" inputMode="numeric"
+              value={draft.salary_low}
+              onChange={(e) => setDraft({ ...draft, salary_low: e.target.value })}
+              placeholder="120000"
+            />
+            {draft.salary_low && Number(draft.salary_low) > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Displays as: ${Number(draft.salary_low).toLocaleString()}
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">

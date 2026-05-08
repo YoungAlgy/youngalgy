@@ -325,7 +325,7 @@ const Index = () => {
             filters={filters}
             setFilters={setFilters}
             availableSources={sources}
-            onClear={() => setFilters(DEFAULT_FILTERS)}
+            onClear={handleClearFilters}
           />
 
           <div className="flex flex-wrap items-center gap-2" role="group" aria-label="View mode">

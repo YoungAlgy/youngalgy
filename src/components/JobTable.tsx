@@ -174,7 +174,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
-                            onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")}
+                            onClick={() => { if (/^https?:\/\//i.test(job.url ?? "")) window.open(job.url, "_blank", "noopener,noreferrer"); }}
                             aria-label="Open job posting"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -263,7 +263,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
               />
               <div className="flex items-center justify-end gap-1.5">
                 {job.url && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")} aria-label="Open job posting">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (/^https?:\/\//i.test(job.url ?? "")) window.open(job.url, "_blank", "noopener,noreferrer"); }} aria-label="Open job posting">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 )}

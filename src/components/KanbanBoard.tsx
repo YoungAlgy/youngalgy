@@ -136,7 +136,11 @@ function KanbanBoardImpl({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
                                 variant="outline"
                                 size="sm"
                                 className="h-6 text-xs gap-1"
-                                onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")}
+                                onClick={() => {
+                                  if (/^https?:\/\//i.test(job.url ?? "")) {
+                                    window.open(job.url, "_blank", "noopener,noreferrer");
+                                  }
+                                }}
                               >
                                 Apply <ExternalLink className="h-3 w-3" />
                               </Button>

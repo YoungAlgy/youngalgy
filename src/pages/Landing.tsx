@@ -11,6 +11,7 @@ import {
 import {
   CONTACT_EMAIL,
   TOGGLE_TOWN_URL,
+  ALPHA_URL,
   timeline,
   loadout,
   cases,
@@ -131,6 +132,16 @@ const Landing = () => {
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
               TOGGLE.TOWN <ArrowUpRight className="h-3 w-3" />
+            </a>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>
+              ·
+            </span>
+            <a
+              href={ALPHA_URL}
+              className="landing-mono inline-flex items-center gap-1"
+              style={{ color: "var(--ink)", opacity: 0.85 }}
+            >
+              ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
             <span className="landing-mono" style={{ opacity: 0.3 }}>
               ·
@@ -313,7 +324,7 @@ const Landing = () => {
           <p className="landing-mono" style={{ opacity: 0.6 }}>
             © 2026 Alexander Holmes · youngalgy.com
           </p>
-          <p className="text-center">
+          <p className="text-center flex items-center justify-center gap-4">
             <a
               href={TOGGLE_TOWN_URL}
               target="_blank"
@@ -322,6 +333,16 @@ const Landing = () => {
               style={{ color: "var(--accent-secondary)" }}
             >
               TOGGLE.TOWN <ArrowUpRight className="h-3 w-3" />
+            </a>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>
+              ·
+            </span>
+            <a
+              href={ALPHA_URL}
+              className="landing-mono inline-flex items-center gap-1"
+              style={{ color: "var(--accent-secondary)" }}
+            >
+              ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
           </p>
           <p className="landing-mono text-right" style={{ opacity: 0.6 }}>

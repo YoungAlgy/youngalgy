@@ -9,6 +9,7 @@
 
 export const CONTACT_EMAIL = "youngalgy@gmail.com";
 export const TOGGLE_TOWN_URL = "https://toggle.town";
+export const ALPHA_URL = "/alpha";
 
 export type TimelineEntry = {
   year: string;

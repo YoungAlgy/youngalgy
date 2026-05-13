@@ -215,7 +215,7 @@ export const cases: readonly Case[] = [
     category: "QUANT",
     period: "PARALLEL · ALWAYS",
     spineLabel: "QUANT",
-    title: "Quant Trading. Live capital, systematic.",
+    title: "Quant Trading. Live capital.",
     body: "Built in Python on his own time: backtesting harness, regime detection (Kalman filter + HMM), VWAP bands, drawdown controller. Trades on Alpaca (equities) and Kalshi (prediction markets) with real capital.",
     stats: [
       {

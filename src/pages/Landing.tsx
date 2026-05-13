@@ -51,60 +51,32 @@ function Illustration({ name }: { name: Case["illustration"] }) {
   return <QuantChartIllustration />;
 }
 
-function CaseStudy({ data }: { data: Case }) {
+function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 py-16 lg:py-24 relative">
-      <div
-        className={`relative ${data.flip ? "lg:order-2" : ""}`}
-        style={{ paddingLeft: data.flip ? 0 : "2rem" }}
-      >
-        <div
-          className="absolute left-0 top-0 bottom-0 hidden lg:flex flex-col items-center justify-between"
-          style={{ width: "1.25rem" }}
-        >
-          <span
-            className="landing-mono"
-            style={{
-              writingMode: "vertical-rl",
-              transform: "rotate(180deg)",
-              letterSpacing: "0.32em",
-              opacity: 0.65,
-            }}
-          >
-            {data.spineLabel}
-          </span>
-          <span
-            className="landing-mono"
-            style={{
-              writingMode: "vertical-rl",
-              transform: "rotate(180deg)",
-              opacity: 0.5,
-            }}
-          >
-            LOG {data.number}
-          </span>
+    <section
+      className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 py-16 lg:py-24 ${
+        isFirst ? "" : "border-t"
+      }`}
+      style={{ borderColor: "color-mix(in srgb, var(--ink) 10%, transparent)" }}
+    >
+      <div className={data.flip ? "lg:order-2" : ""}>
+        <div className="landing-mono mb-4" style={{ opacity: 0.7 }}>
+          CASE {data.number} &nbsp;/&nbsp; {data.category} &nbsp;/&nbsp; {data.period}
         </div>
-
-        <div className="landing-mono mb-4">
-          CASE {data.number} · {data.category} · {data.period}
-        </div>
-        <h2
-          className="landing-display text-[clamp(2.5rem,5.5vw,4.5rem)] mb-6 period-dot inline"
-          style={{ display: "block" }}
-        >
+        <h2 className="landing-display text-[clamp(2rem,4.2vw,3.5rem)] mb-7 period-dot">
           {data.title.replace(/\.$/, "")}
         </h2>
         <p
-          className="text-base lg:text-lg mb-8 max-w-xl"
-          style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.9 }}
+          className="text-base lg:text-lg mb-9 max-w-xl"
+          style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
         >
           {data.body}
         </p>
         <ul className="space-y-5">
           {data.stats.map((stat) => (
-            <li key={stat.value} className="grid grid-cols-[auto_1fr] gap-x-5 items-baseline">
+            <li key={stat.value} className="grid grid-cols-[5rem_1fr] gap-x-5 items-baseline">
               <span
-                className="landing-display landing-stat-number text-2xl lg:text-3xl"
+                className="landing-display landing-stat-number text-xl lg:text-2xl"
                 style={{ color: "var(--accent-primary)" }}
               >
                 {stat.value}
@@ -211,8 +183,8 @@ const Landing = () => {
         <div className="landing-divider border-t" />
 
         <section id="work">
-          {cases.map((c) => (
-            <CaseStudy key={c.number} data={c} />
+          {cases.map((c, i) => (
+            <CaseStudy key={c.number} data={c} isFirst={i === 0} />
           ))}
         </section>
 

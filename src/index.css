@@ -3,9 +3,142 @@
 @import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
 
+/* Bodoni Moda for the Pirate display serif; Anton for the Miami condensed sans;
+   Source Serif 4 for the Pirate body serif. Inter is already loaded above for
+   Miami body + general UI. */
+@import url("https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,6..96,700;1,6..96,900&family=Anton&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── Landing dual-theme system (Pirate / Miami) ─────────────────────────
+   Scoped via [data-mode] on the <html> element. Only set while the Landing
+   route is mounted; cleared on unmount so dashboard keeps the existing
+   shadcn dark/light tokens. */
+
+html[data-mode="pirate"] {
+  --bg: #0F0A08;
+  --ink: #F0E6D2;
+  --ink-muted: #D9CBAA;
+  --accent-primary: #7A1F1F;
+  --accent-secondary: #C9A961;
+  --font-display: "Bodoni Moda", "Tiempos Headline", Georgia, serif;
+  --font-body: "Source Serif 4", "Tiempos Text", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --display-italic: italic;
+  --display-transform: none;
+  --display-tracking: -0.02em;
+  --display-weight: 900;
+  --period-color: var(--accent-primary);
+  --glow: none;
+  --scanline-opacity: 0;
+}
+
+html[data-mode="miami"] {
+  --bg: #0A0A0F;
+  --ink: #F2EFE8;
+  --ink-muted: #BFBFC5;
+  --accent-primary: #FF2E93;
+  --accent-secondary: #00D4FF;
+  --font-display: "Anton", "Monument Extended", Impact, sans-serif;
+  --font-body: "Inter", "GT Walsheim", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --display-italic: normal;
+  --display-transform: uppercase;
+  --display-tracking: -0.01em;
+  --display-weight: 400;
+  --period-color: var(--accent-primary);
+  --glow: 0 0 24px var(--accent-primary), 0 0 48px color-mix(in srgb, var(--accent-primary) 40%, transparent);
+  --scanline-opacity: 0.035;
+}
+
+html[data-mode] body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  background-image: none;
+  transition: background-color 400ms ease, color 400ms ease;
+}
+
+html[data-mode] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.06) 0px,
+    rgba(255, 255, 255, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: var(--scanline-opacity);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 400ms ease;
+}
+
+html[data-mode] .landing-display {
+  font-family: var(--font-display);
+  font-style: var(--display-italic);
+  text-transform: var(--display-transform);
+  letter-spacing: var(--display-tracking);
+  font-weight: var(--display-weight);
+  line-height: 0.92;
+}
+
+html[data-mode] .landing-mono {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  color: var(--accent-secondary);
+  transition: color 400ms ease;
+}
+
+html[data-mode] .period-dot::after {
+  content: '.';
+  color: var(--period-color);
+  transition: color 400ms ease;
+}
+
+html[data-mode] .accent-primary { color: var(--accent-primary); transition: color 400ms ease; }
+html[data-mode] .accent-secondary { color: var(--accent-secondary); transition: color 400ms ease; }
+html[data-mode] .bg-accent-primary { background: var(--accent-primary); transition: background-color 400ms ease; }
+html[data-mode] .border-accent-primary { border-color: var(--accent-primary); transition: border-color 400ms ease; }
+html[data-mode] .border-accent-secondary { border-color: var(--accent-secondary); transition: border-color 400ms ease; }
+
+html[data-mode="miami"] .landing-stat-number {
+  text-shadow: var(--glow);
+}
+
+html[data-mode="miami"] .landing-quant-chart-line {
+  filter: drop-shadow(0 0 8px var(--accent-primary));
+}
+
+html[data-mode] .landing-divider {
+  border-color: var(--accent-primary);
+  opacity: 0.35;
+  transition: border-color 400ms ease;
+}
+
+html[data-mode] .landing-pill {
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  background: transparent;
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  transition: border-color 220ms ease, background 220ms ease, color 220ms ease;
+}
+
+html[data-mode] .landing-pill:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
 
 @layer base {
   :root {

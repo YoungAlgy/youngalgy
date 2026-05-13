@@ -67,23 +67,6 @@ const Index = () => {
   const [editJob, setEditJob] = useState<Job | null>(null);
   const navigate = useNavigate();
 
-  // Swap the favicon to the old pink/skull mark while on the dashboard,
-  // then restore the public-facing boat sloop on unmount. The dashboard
-  // keeps the legacy psychedelic theme intentionally — the dual-theme
-  // Pirate/Miami system is scoped to the public landing route.
-  useEffect(() => {
-    const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-    const apple = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
-    const prev = link?.href ?? "/boat.svg";
-    const prevApple = apple?.href ?? "/boat.svg";
-    if (link) link.href = "/logo.svg";
-    if (apple) apple.href = "/logo.svg";
-    return () => {
-      if (link) link.href = prev;
-      if (apple) apple.href = prevApple;
-    };
-  }, []);
-
   const fetchJobs = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
 

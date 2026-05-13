@@ -34,6 +34,22 @@ export function PasswordGate({ children }: PasswordGateProps) {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Swap the favicon to the legacy pink/skull mark as soon as the
+  // /dashboard route mounts (before auth) so the tab icon matches the
+  // dashboard's psychedelic theme. Restored on unmount.
+  useEffect(() => {
+    const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    const apple = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
+    const prev = link?.href ?? "/boat.svg";
+    const prevApple = apple?.href ?? "/boat.svg";
+    if (link) link.href = "/logo.svg";
+    if (apple) apple.href = "/logo.svg";
+    return () => {
+      if (link) link.href = prev;
+      if (apple) apple.href = prevApple;
+    };
+  }, []);
+
   // On mount: do we already have a valid Supabase session? Skip the gate if so.
   useEffect(() => {
     let cancelled = false;

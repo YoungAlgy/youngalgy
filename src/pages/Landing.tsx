@@ -119,16 +119,16 @@ const Landing = () => {
       </a>
 
       <header className="relative z-10">
-        <div className="container max-w-6xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between">
+        <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-5 sm:py-6 flex items-center justify-between gap-3">
           <a
             href="/"
             aria-label="Alexander Holmes — home"
-            className="block"
+            className="block shrink-0"
             style={{ color: "var(--accent-secondary)" }}
           >
             <BoatLogo />
           </a>
-          <nav className="flex items-center gap-6 lg:gap-8">
+          <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
             <a
               href={TOGGLE_TOWN_URL}
               target="_blank"
@@ -138,7 +138,7 @@ const Landing = () => {
             >
               TOGGLE.TOWN <ArrowUpRight className="h-3 w-3" />
             </a>
-            <span className="landing-mono" style={{ opacity: 0.3 }}>
+            <span className="landing-mono hidden sm:inline" style={{ opacity: 0.3 }}>
               ·
             </span>
             <a
@@ -148,12 +148,12 @@ const Landing = () => {
             >
               ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
-            <span className="landing-mono" style={{ opacity: 0.3 }}>
+            <span className="landing-mono hidden sm:inline" style={{ opacity: 0.3 }}>
               ·
             </span>
             <a
               href="/dashboard"
-              className="landing-mono inline-flex items-center gap-1"
+              className="landing-mono hidden sm:inline-flex items-center gap-1"
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
               DASHBOARD <ArrowUpRight className="h-3 w-3" />
@@ -163,30 +163,30 @@ const Landing = () => {
         </div>
       </header>
 
-      <main id="main" className="container max-w-6xl mx-auto px-6 lg:px-10 relative z-10">
-        <section className="min-h-[78vh] flex items-center py-12 lg:py-20">
-          <div>
+      <main id="main" className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+        <section className="min-h-[70vh] sm:min-h-[78vh] flex items-center py-10 sm:py-12 lg:py-20">
+          <div className="w-full">
             <h1
-              className="landing-display text-[clamp(3.5rem,12vw,9.5rem)] period-dot"
+              className="landing-display text-[clamp(3rem,12vw,9.5rem)] period-dot"
               style={{ color: "var(--ink)" }}
             >
               Alexander
               <br />
               Holmes
             </h1>
-            <div className="flex flex-col sm:flex-row gap-4 mt-10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
               <a
                 href={TOGGLE_TOWN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5"
+                className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
                 style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
               >
                 SEE THE WORK <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
               <a
                 href="#contact"
-                className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5"
+                className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
                 style={{
                   border: "1px solid var(--accent-secondary)",
                   color: "var(--accent-secondary)",
@@ -208,9 +208,9 @@ const Landing = () => {
 
         <div className="landing-divider border-t" />
 
-        <section className="py-20">
+        <section className="py-14 sm:py-20">
           <h2
-            className="landing-display text-[clamp(2.5rem,6vw,4.5rem)] period-dot mb-12"
+            className="landing-display text-[clamp(2.25rem,6vw,4.5rem)] period-dot mb-8 sm:mb-12"
             style={{ color: "var(--ink)" }}
           >
             The route
@@ -219,16 +219,16 @@ const Landing = () => {
             {timeline.map((entry, i) => (
               <li
                 key={`${entry.year}-${i}`}
-                className="grid grid-cols-[5rem_1fr_auto] gap-6 items-baseline py-4 border-b"
+                className="grid grid-cols-[3.75rem_1fr] sm:grid-cols-[5rem_1fr_auto] gap-3 sm:gap-6 items-baseline py-3 sm:py-4 border-b"
                 style={{ borderColor: "color-mix(in srgb, var(--ink) 8%, transparent)" }}
               >
                 <span
-                  className="landing-display text-2xl lg:text-3xl"
+                  className="landing-display text-xl sm:text-2xl lg:text-3xl"
                   style={{ color: "var(--accent-primary)" }}
                 >
                   {entry.year}
                 </span>
-                <span className="text-base lg:text-lg" style={{ fontFamily: "var(--font-body)" }}>
+                <span className="text-sm sm:text-base lg:text-lg" style={{ fontFamily: "var(--font-body)" }}>
                   {entry.title}
                 </span>
                 <span className="landing-mono hidden sm:inline">— {entry.tag} —</span>
@@ -239,9 +239,9 @@ const Landing = () => {
 
         <div className="landing-divider border-t" />
 
-        <section className="py-20">
+        <section className="py-14 sm:py-20">
           <h2
-            className="landing-display text-[clamp(2.5rem,6vw,4.5rem)] period-dot mb-12"
+            className="landing-display text-[clamp(2.25rem,6vw,4.5rem)] period-dot mb-8 sm:mb-12"
             style={{ color: "var(--ink)" }}
           >
             The loadout
@@ -264,32 +264,32 @@ const Landing = () => {
 
         <div className="landing-divider border-t" />
 
-        <section id="contact" className="py-24 text-center">
+        <section id="contact" className="py-16 sm:py-24 text-center">
           <h2
-            className="landing-display text-[clamp(3.5rem,10vw,8rem)] period-dot mb-8"
+            className="landing-display text-[clamp(3rem,10vw,8rem)] period-dot mb-6 sm:mb-8"
             style={{ color: "var(--ink)" }}
           >
             Let's talk
           </h2>
           <p
-            className="text-base lg:text-lg mb-10 mx-auto max-w-xl"
+            className="text-base lg:text-lg mb-8 sm:mb-10 mx-auto max-w-xl"
             style={{ color: "var(--ink)", opacity: 0.8 }}
           >
             Open to GTM + Builder roles. Tampa, FL.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
+              className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5 break-all sm:break-normal"
               style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
             >
-              <Mail className="h-4 w-4" /> {CONTACT_EMAIL} <ArrowUpRight className="h-3.5 w-3.5" />
+              <Mail className="h-4 w-4 shrink-0" /> {CONTACT_EMAIL} <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
             </a>
             <a
               href={LINKEDIN_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
+              className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5"
               style={{
                 border: "1px solid var(--accent-secondary)",
                 color: "var(--accent-secondary)",
@@ -301,7 +301,7 @@ const Landing = () => {
               href={FACEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
+              className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5"
               style={{
                 border: "1px solid var(--accent-secondary)",
                 color: "var(--accent-secondary)",
@@ -313,7 +313,7 @@ const Landing = () => {
               href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
+              className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5"
               style={{
                 border: "1px solid var(--accent-secondary)",
                 color: "var(--accent-secondary)",
@@ -323,7 +323,7 @@ const Landing = () => {
             </a>
           </div>
           <p
-            className="landing-mono mt-12 inline-flex items-center gap-2"
+            className="landing-mono mt-8 sm:mt-12 inline-flex items-center gap-2"
             style={{ color: "var(--ink)", opacity: 0.6 }}
           >
             <span
@@ -335,12 +335,12 @@ const Landing = () => {
         </section>
       </main>
 
-      <footer className="relative z-10 mt-12 pb-10">
+      <footer className="relative z-10 mt-8 sm:mt-12 pb-8 sm:pb-10">
         <div
-          className="container max-w-6xl mx-auto px-6 lg:px-10 pt-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center text-center md:text-left border-t"
+          className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 pt-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 items-center text-center md:text-left border-t"
           style={{ borderColor: "color-mix(in srgb, var(--ink) 12%, transparent)" }}
         >
-          <p className="landing-mono" style={{ opacity: 0.6 }}>
+          <p className="landing-mono md:text-left" style={{ opacity: 0.6 }}>
             © 2026 Alexander Holmes
           </p>
           <p className="text-center flex items-center justify-center gap-4">
@@ -364,7 +364,7 @@ const Landing = () => {
               ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
           </p>
-          <p className="landing-mono text-right" style={{ opacity: 0.6 }}>
+          <p className="landing-mono md:text-right" style={{ opacity: 0.6 }}>
             ALEXANDER HOLMES
           </p>
         </div>

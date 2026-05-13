@@ -26,8 +26,14 @@ export function ThemeToggle() {
   }, [dark]);
 
   return (
-    <Button variant="outline" size="icon" onClick={() => setDark(!dark)} className="rounded-full">
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => setDark(!dark)}
+      className="rounded-full"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {dark ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
     </Button>
   );
 }

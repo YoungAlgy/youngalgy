@@ -124,9 +124,9 @@ function KanbanBoardImpl({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
                                 onClick={() => onEdit(job)}
-                                title="Edit"
+                                aria-label={`Edit ${job.company}`}
                               >
                                 <Pencil className="h-3 w-3" />
                               </Button>
@@ -136,7 +136,12 @@ function KanbanBoardImpl({ jobs, onStatusChange, onEdit }: KanbanBoardProps) {
                                 variant="outline"
                                 size="sm"
                                 className="h-6 text-xs gap-1"
-                                onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")}
+                                aria-label={`Open ${job.company} job posting`}
+                                onClick={() => {
+                                  if (/^https?:\/\//i.test(job.url ?? "")) {
+                                    window.open(job.url, "_blank", "noopener,noreferrer");
+                                  }
+                                }}
                               >
                                 Apply <ExternalLink className="h-3 w-3" />
                               </Button>

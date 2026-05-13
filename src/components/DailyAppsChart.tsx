@@ -39,7 +39,9 @@ export function DailyAppsChart({ jobs }: Props) {
     }
 
     for (const j of jobs) {
-      if (j.status !== "applied") continue;
+      // Count all applications regardless of current status — a job that
+      // was applied and later rejected/phone-screened still counts as a
+      // submitted application on the day it was entered.
       const t = new Date(j.appliedDate).getTime();
       if (t < sinceMs) continue;
       const key = j.appliedDate.slice(0, 10);

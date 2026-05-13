@@ -67,8 +67,8 @@ export function StatsCards({ jobs, interviewCount }: Props) {
   const stats = [
     { label: "Total Submitted", value: counts.totalSubmitted, icon: Send, color: "text-primary" },
     { label: "This Week",       value: counts.thisWeek,       icon: CalendarRange, color: "text-info" },
-    { label: "Awaiting Reply",  value: counts.awaitingReply,  icon: HourglassIcon, color: "text-amber-500" },
-    { label: "Interviews",      value: counts.interviews,     icon: CalendarClock, color: "text-purple-500" },
+    { label: "Awaiting Reply",  value: counts.awaitingReply,  icon: HourglassIcon, color: "text-warning" },
+    { label: "Interviews",      value: counts.interviews,     icon: CalendarClock, color: "text-stage" },
     {
       label: `Stale (>${STALE_DAYS}d)`,
       value: counts.stale,

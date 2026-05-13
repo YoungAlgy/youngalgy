@@ -10,7 +10,8 @@ import { PipelineFunnel } from "@/components/PipelineFunnel";
 import { SourcePieChart } from "@/components/SourcePieChart";
 import { SalaryHistogram } from "@/components/SalaryHistogram";
 import { RejectionLog } from "@/components/RejectionLog";
-import { FilterBar, Filters, DEFAULT_FILTERS } from "@/components/FilterBar";
+import { FilterBar } from "@/components/FilterBar";
+import { DEFAULT_FILTERS, type Filters } from "@/lib/url-filters";
 import { EditJobDrawer } from "@/components/EditJobDrawer";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,52 +24,22 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
+import {
+  filtersFromParams,
+  paramsFromFilters,
+  type ViewMode,
+  type SortKey,
+} from "@/lib/url-filters";
 import { exportOpportunitiesCsv } from "@/lib/csv";
+import { filterAndSortJobs } from "@/lib/job-filter";
 import { logError } from "@/lib/log";
 import { toast } from "sonner";
-
-type ViewMode = "kanban" | "table" | "company";
-type SortKey = "score" | "date" | "salary" | "days";
 
 // Polling interval. Bumped from 30s -> 90s on 2026-04-27 as part of the
 // disk-IO cleanup — the Supabase project warned about its IO budget. With
 // the analytics widgets now deriving from the in-memory jobs array (no
 // per-widget queries), 90s is plenty for "kanban stays warm" UX.
 const REFRESH_MS = 90_000;
-
-// --- URL <-> Filters serialization ---
-const VALID_REPLY_STATES = new Set(["all", "awaiting", "stale", "replied"] as const);
-
-function filtersFromParams(p: URLSearchParams): Filters {
-  const rawReply = p.get("reply") as Filters["replyState"] | null;
-  return {
-    statuses: (p.get("status")?.split(",").filter(Boolean) as JobStatus[]) ?? [],
-    sources: p.get("source")?.split(",").filter(Boolean) ?? [],
-    dateRange: (p.get("range") as Filters["dateRange"]) || "all",
-    customFrom: p.get("from") ?? undefined,
-    customTo: p.get("to") ?? undefined,
-    salaryMin: Number(p.get("salaryMin") ?? "0") || 0,
-    hasUrl: p.get("hasUrl") === "1",
-    replyState: rawReply && VALID_REPLY_STATES.has(rawReply) ? rawReply : "all",
-  };
-}
-
-function paramsFromFilters(f: Filters, search: string, view: ViewMode, sortBy: SortKey): URLSearchParams {
-  const p = new URLSearchParams();
-  if (f.statuses.length) p.set("status", f.statuses.join(","));
-  if (f.sources.length) p.set("source", f.sources.join(","));
-  if (f.dateRange !== "all") p.set("range", f.dateRange);
-  if (f.customFrom) p.set("from", f.customFrom);
-  if (f.customTo) p.set("to", f.customTo);
-  if (f.salaryMin > 0) p.set("salaryMin", String(f.salaryMin));
-  if (f.hasUrl) p.set("hasUrl", "1");
-  if (f.replyState !== "all") p.set("reply", f.replyState);
-  if (search) p.set("q", search);
-  // Default view is kanban — only encode when overridden.
-  if (view !== "kanban") p.set("view", view);
-  if (sortBy !== "score") p.set("sort", sortBy);
-  return p;
-}
 
 function SectionHeading({ title, hint }: { title: string; hint?: string }) {
   return (
@@ -106,7 +77,7 @@ const Index = () => {
     const COLS_NEW = "id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at,first_reply_at,reply_kind";
     const COLS_OLD = "id,title,company,location,salary_low,score,status,source,bot_type,url,notes,reasoning,cover_letter,proposal,created_at";
 
-    let [oppRes, intRes] = await Promise.all([
+    const [initOppRes, intRes] = await Promise.all([
       supabase
         .from("opportunities")
         .select(COLS_NEW)
@@ -115,6 +86,7 @@ const Index = () => {
         .limit(500),
       supabase.from("interviews").select("company"),
     ]);
+    let oppRes = initOppRes;
 
     // Graceful fallback: schema not yet migrated -> retry with old column set
     if (oppRes.error && (oppRes.error as { code?: string })?.code === "42703") {
@@ -184,66 +156,13 @@ const Index = () => {
     [jobs]
   );
 
-  const filtered = useMemo(() => {
-    const now = Date.now();
-    let cutoff: number | null = null;
-    if (filters.dateRange === "7") cutoff = now - 7 * 86400_000;
-    else if (filters.dateRange === "30") cutoff = now - 30 * 86400_000;
-    const customFromMs = filters.customFrom ? new Date(filters.customFrom).getTime() : null;
-    const customToMs = filters.customTo ? new Date(filters.customTo).getTime() + 86400_000 : null;
-
-    const result = jobs.filter((j) => {
-      const matchesSearch = !search ||
-        j.company.toLowerCase().includes(search.toLowerCase()) ||
-        j.position.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = filters.statuses.length === 0 || filters.statuses.includes(j.status);
-      const matchesSource = filters.sources.length === 0 || (j.source ? filters.sources.includes(j.source) : false);
-      const t = new Date(j.appliedDate).getTime();
-      let matchesDate = true;
-      if (cutoff !== null) matchesDate = t >= cutoff;
-      else if (filters.dateRange === "custom") {
-        matchesDate = (customFromMs === null || t >= customFromMs) && (customToMs === null || t < customToMs);
-      }
-      const matchesSalary = filters.salaryMin === 0 || (j.salaryRaw ?? 0) >= filters.salaryMin;
-      const matchesUrl = !filters.hasUrl || !!j.url;
-      const matchesFunnel = !funnelStage || j.status === funnelStage;
-
-      // Reply-state filter: derives from status + firstReplyAt + age
-      let matchesReplyState = true;
-      if (filters.replyState !== "all") {
-        const isApplied = j.status === "applied";
-        const hasReply = !!j.firstReplyAt;
-        if (filters.replyState === "awaiting") {
-          matchesReplyState = isApplied && !hasReply;
-        } else if (filters.replyState === "replied") {
-          matchesReplyState = hasReply;
-        } else if (filters.replyState === "stale") {
-          const ageMs = now - t;
-          const STALE_MS = 14 * 86400_000;
-          matchesReplyState = isApplied && !hasReply && ageMs >= STALE_MS;
-        }
-      }
-
-      return matchesSearch && matchesStatus && matchesSource && matchesDate && matchesSalary && matchesUrl && matchesFunnel && matchesReplyState;
-    });
-
-    const byDateDesc = (a: Job, b: Job) =>
-      new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
-    result.sort((a, b) => {
-      if (sortBy === "score") {
-        const diff = (b.score ?? -1) - (a.score ?? -1);
-        return diff !== 0 ? diff : byDateDesc(a, b);
-      }
-      if (sortBy === "salary") {
-        const diff = (b.salaryRaw ?? 0) - (a.salaryRaw ?? 0);
-        return diff !== 0 ? diff : byDateDesc(a, b);
-      }
-      if (sortBy === "days") return byDateDesc(b, a);
-      return byDateDesc(a, b);
-    });
-
-    return result;
-  }, [jobs, search, filters, sortBy, funnelStage]);
+  // Filter + sort logic lives in src/lib/job-filter.ts as a pure function so
+  // it can be unit-tested in isolation. This component just wraps the call
+  // in useMemo for re-render efficiency.
+  const filtered = useMemo(
+    () => filterAndSortJobs({ jobs, search, filters, funnelStage, sortBy }),
+    [jobs, search, filters, sortBy, funnelStage],
+  );
 
   const handleStatusChange = (id: string, status: JobStatus) => {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status } : j)));
@@ -269,7 +188,7 @@ const Index = () => {
       await exportOpportunitiesCsv();
       toast.success("CSV exported");
     } catch (e) {
-      console.error(e);
+      logError("export csv", e);
       toast.error("Export failed");
     } finally {
       setExporting(false);
@@ -278,22 +197,29 @@ const Index = () => {
 
   const ViewToggle = (
     <div className="inline-flex items-center rounded-md border bg-muted p-0.5">
-      <Button variant={view === "kanban" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("kanban")}>
-        <Columns3 className="h-3.5 w-3.5" /> Board
+      <Button variant={view === "kanban" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" aria-pressed={view === "kanban"} onClick={() => setView("kanban")}>
+        <Columns3 className="h-3.5 w-3.5" aria-hidden /> Board
       </Button>
-      <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("table")}>
-        <LayoutList className="h-3.5 w-3.5" /> By Job
+      <Button variant={view === "table" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" aria-pressed={view === "table"} onClick={() => setView("table")}>
+        <LayoutList className="h-3.5 w-3.5" aria-hidden /> By Job
       </Button>
-      <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" onClick={() => setView("company")}>
-        <Building2 className="h-3.5 w-3.5" /> By Company
+      <Button variant={view === "company" ? "default" : "ghost"} size="sm" className="h-8 px-3 gap-1.5 text-xs" aria-pressed={view === "company"} onClick={() => setView("company")}>
+        <Building2 className="h-3.5 w-3.5" aria-hidden /> By Company
       </Button>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip-to-content link — keyboard users can bypass the sticky header. */}
+      <a
+        href="#dashboard-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:font-semibold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/40"
+      >
+        Skip to content
+      </a>
       <header className="border-b border-border/60 bg-background/80 backdrop-blur-lg sticky top-0 z-10">
-        <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
+        <div className="container max-w-screen-2xl mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")} aria-label="Back to home">
               <ArrowLeft className="h-4 w-4" />
@@ -319,7 +245,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container max-w-6xl mx-auto px-4 py-6 space-y-8">
+      <main id="dashboard-main" className="container max-w-screen-2xl mx-auto px-4 py-6 space-y-8">
         {/* SECTION: Snapshot */}
         <section className="space-y-4">
           <SectionHeading title="Snapshot" hint="Top-of-funnel + recent rejections" />
@@ -354,21 +280,27 @@ const Index = () => {
             filters={filters}
             setFilters={setFilters}
             availableSources={sources}
-            onClear={() => setFilters(DEFAULT_FILTERS)}
+            onClear={handleClearFilters}
           />
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground mr-1">View:</span>
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="View mode">
+            <span className="text-xs font-medium text-muted-foreground mr-1" aria-hidden="true">View:</span>
             {ViewToggle}
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative w-full sm:max-w-xs sm:flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search title or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <Input
+                aria-label="Search applications by title or company"
+                placeholder="Search title or company..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
             </div>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-              <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectTrigger className="w-full sm:w-[160px]" aria-label="Sort applications">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>

@@ -12,7 +12,7 @@ import { StatusSelect } from "./StatusSelect";
 import { daysSince, hoursSince, formatRelativeDate } from "@/lib/dates";
 
 const SCORE_TOOLTIP =
-  "Score 10 = perfect fit (strategy + salary + role + remote). 9 = strong fit with one soft constraint. 8 = decent fit, worth applying. Below 8 isn't shown.";
+  "Score 10 = perfect fit (strategy + salary + role + remote). 9 = strong fit with one soft constraint. 8 = decent fit, worth applying. Lower scores = weaker alignment.";
 
 // Strategy pivot — anything older than this with a "senior/sr/enterprise AE" title is pre-pivot.
 const PIVOT_DATE = new Date("2026-04-18T00:00:00Z").getTime();
@@ -148,6 +148,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                         id={job.id}
                         value={job.status}
                         onChanged={(s) => onStatusChange?.(job.id, s)}
+                        label={`Status for ${job.position} at ${job.company}`}
                       />
                     </TableCell>
                     <TableCell><DaysBadge date={job.appliedDate} /></TableCell>
@@ -174,7 +175,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
-                            onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")}
+                            onClick={() => { if (/^https?:\/\//i.test(job.url ?? "")) window.open(job.url, "_blank", "noopener,noreferrer"); }}
                             aria-label="Open job posting"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -253,7 +254,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
                 <DaysBadge date={job.appliedDate} />
                 {prePivot && <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground">Pre-pivot</Badge>}
               </div>
-              <StatusSelect id={job.id} value={job.status} onChanged={(s) => onStatusChange?.(job.id, s)} />
+              <StatusSelect id={job.id} value={job.status} onChanged={(s) => onStatusChange?.(job.id, s)} label={`Status for ${job.position} at ${job.company}`} />
               <NotesCell
                 job={job}
                 open={notesOpenId === job.id}
@@ -263,7 +264,7 @@ export function JobTable({ jobs, onStatusChange, onNotesChange, onEdit, onClearF
               />
               <div className="flex items-center justify-end gap-1.5">
                 {job.url && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(job.url, "_blank", "noopener,noreferrer")} aria-label="Open job posting">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { if (/^https?:\/\//i.test(job.url ?? "")) window.open(job.url, "_blank", "noopener,noreferrer"); }} aria-label="Open job posting">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 )}
@@ -342,6 +343,7 @@ function NotesCell({
       <button
         type="button"
         onClick={onOpen}
+        aria-label={`Notes for ${job.company} — click to edit`}
         className="text-left text-xs text-muted-foreground hover:text-foreground w-full min-h-[24px] truncate"
       >
         {preview ? preview + ((job.notes ?? "").length > 80 ? "…" : "") : <span className="italic">Add note…</span>}
@@ -352,6 +354,7 @@ function NotesCell({
   return (
     <Textarea
       autoFocus
+      aria-label={`Notes for ${job.company}`}
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onBlur={commit}

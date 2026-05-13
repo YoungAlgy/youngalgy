@@ -7,9 +7,7 @@ import { cn } from "@/lib/utils";
  * vector so it stays crisp at any size; saturated fills + heavy outlines
  * to feel hand-drawn instead of corporate-vector.
  *
- * If `/public/hero-art.png` exists at request time, the parent Landing.tsx
- * uses a `<picture>` source to prefer the bitmap; this SVG is the always-
- * shipped fallback so the page never renders empty.
+ * Rendered directly in Landing.tsx as the hero centerpiece.
  */
 export function SkullCrest({ className }: { className?: string }) {
   return (

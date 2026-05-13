@@ -1,0 +1,23 @@
+-- 2026-05-08: NO-OP migration. DO NOT RUN.
+--
+-- Earlier in this session this file proposed re-opening anon SELECT on
+-- opportunities + interviews to restore the cosmetic PasswordGate UX.
+-- That approach was rejected by the safety system as a security regression.
+--
+-- The shipped solution preserves the 2026-04-26 RLS lockdown:
+--   1. A fixed Supabase Auth identity was provisioned via admin API:
+--        email:    dashboard@youngalgy.local
+--        password: toggle813   (this IS the user-facing passcode)
+--   2. PasswordGate.tsx now calls supabase.auth.signInWithPassword(...) on
+--      submit. The typed value IS the password, so toggle813 unlocks both
+--      the UI and the underlying authenticated Supabase session.
+--   3. RLS continues to require auth.uid() != null, which is now satisfied
+--      after sign-in. select_authenticated_* policies STAY IN PLACE.
+--
+-- Net effect: same UX as the pre-2026-04-26 PasswordGate, but the data
+-- gate is real (RLS-backed), not cosmetic.
+--
+-- This file is left as a marker so the migration sequence is preserved
+-- and future readers understand why the path changed mid-session.
+
+select 'PasswordGate auth-backed migration complete - no SQL required' as note;

@@ -21,11 +21,11 @@ interface Props {
 }
 
 const BASE: Omit<Stage, "count">[] = [
-  { key: "applied",      label: "Submitted",    fill: "bg-blue-500" },
-  { key: "phone_screen", label: "Phone Screen", fill: "bg-cyan-500" },
-  { key: "interview",    label: "Interview",    fill: "bg-purple-500" },
-  { key: "offer",        label: "Offer",        fill: "bg-green-500" },
-  { key: "hired",        label: "Hired",        fill: "bg-emerald-600" },
+  { key: "applied",      label: "Submitted",    fill: "bg-info" },
+  { key: "phone_screen", label: "Phone Screen", fill: "bg-screen" },
+  { key: "interview",    label: "Interview",    fill: "bg-stage" },
+  { key: "offer",        label: "Offer",        fill: "bg-success" },
+  { key: "hired",        label: "Hired",        fill: "bg-success" },
 ];
 
 /**
@@ -38,7 +38,7 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
     let phoneScreen = 0;
     let interview = 0;
     let offer = 0;
-    let hired = 0;
+    const hired = 0;
 
     for (const j of jobs) {
       submitted += 1; // total ever submitted == count in opportunities table (manual)
@@ -72,6 +72,7 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
         <h2 className="text-sm font-semibold">Pipeline Funnel</h2>
         {activeStage && (
           <button
+            type="button"
             onClick={() => onStageClick?.(null)}
             className="ml-auto text-xs text-muted-foreground hover:text-foreground underline"
           >
@@ -89,9 +90,11 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
           return (
             <button
               key={stage.key}
+              type="button"
+              aria-pressed={isActive}
+              aria-label={`Filter to ${stage.label} (${stage.count})`}
               onClick={() => onStageClick?.(isActive ? null : stage.key)}
               className="w-full flex items-center gap-3 group"
-              title={`Filter to ${stage.label}`}
             >
               <span className="w-24 sm:w-28 text-xs text-muted-foreground text-right shrink-0">
                 {stage.label}

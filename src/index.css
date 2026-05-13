@@ -3,9 +3,142 @@
 @import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
 
+/* Bodoni Moda for the Pirate display serif; Anton for the Miami condensed sans;
+   Source Serif 4 for the Pirate body serif. Inter is already loaded above for
+   Miami body + general UI. */
+@import url("https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,6..96,700;1,6..96,900&family=Anton&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── Landing dual-theme system (Pirate / Miami) ─────────────────────────
+   Scoped via [data-mode] on the <html> element. Only set while the Landing
+   route is mounted; cleared on unmount so dashboard keeps the existing
+   shadcn dark/light tokens. */
+
+html[data-mode="pirate"] {
+  --bg: #0F0A08;
+  --ink: #F0E6D2;
+  --ink-muted: #D9CBAA;
+  --accent-primary: #7A1F1F;
+  --accent-secondary: #C9A961;
+  --font-display: "Bodoni Moda", "Tiempos Headline", Georgia, serif;
+  --font-body: "Source Serif 4", "Tiempos Text", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --display-italic: italic;
+  --display-transform: none;
+  --display-tracking: -0.02em;
+  --display-weight: 900;
+  --period-color: var(--accent-primary);
+  --glow: none;
+  --scanline-opacity: 0;
+}
+
+html[data-mode="miami"] {
+  --bg: #0A0A0F;
+  --ink: #F2EFE8;
+  --ink-muted: #BFBFC5;
+  --accent-primary: #FF2E93;
+  --accent-secondary: #00D4FF;
+  --font-display: "Anton", "Monument Extended", Impact, sans-serif;
+  --font-body: "Inter", "GT Walsheim", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --display-italic: normal;
+  --display-transform: uppercase;
+  --display-tracking: -0.01em;
+  --display-weight: 400;
+  --period-color: var(--accent-primary);
+  --glow: 0 0 24px var(--accent-primary), 0 0 48px color-mix(in srgb, var(--accent-primary) 40%, transparent);
+  --scanline-opacity: 0.035;
+}
+
+html[data-mode] body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  background-image: none;
+  transition: background-color 400ms ease, color 400ms ease;
+}
+
+html[data-mode] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.06) 0px,
+    rgba(255, 255, 255, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: var(--scanline-opacity);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 400ms ease;
+}
+
+html[data-mode] .landing-display {
+  font-family: var(--font-display);
+  font-style: var(--display-italic);
+  text-transform: var(--display-transform);
+  letter-spacing: var(--display-tracking);
+  font-weight: var(--display-weight);
+  line-height: 0.92;
+}
+
+html[data-mode] .landing-mono {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  color: var(--accent-secondary);
+  transition: color 400ms ease;
+}
+
+html[data-mode] .period-dot::after {
+  content: '.';
+  color: var(--period-color);
+  transition: color 400ms ease;
+}
+
+html[data-mode] .accent-primary { color: var(--accent-primary); transition: color 400ms ease; }
+html[data-mode] .accent-secondary { color: var(--accent-secondary); transition: color 400ms ease; }
+html[data-mode] .bg-accent-primary { background: var(--accent-primary); transition: background-color 400ms ease; }
+html[data-mode] .border-accent-primary { border-color: var(--accent-primary); transition: border-color 400ms ease; }
+html[data-mode] .border-accent-secondary { border-color: var(--accent-secondary); transition: border-color 400ms ease; }
+
+html[data-mode="miami"] .landing-stat-number {
+  text-shadow: var(--glow);
+}
+
+html[data-mode="miami"] .landing-quant-chart-line {
+  filter: drop-shadow(0 0 8px var(--accent-primary));
+}
+
+html[data-mode] .landing-divider {
+  border-color: var(--accent-primary);
+  opacity: 0.35;
+  transition: border-color 400ms ease;
+}
+
+html[data-mode] .landing-pill {
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  background: transparent;
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  transition: border-color 220ms ease, background 220ms ease, color 220ms ease;
+}
+
+html[data-mode] .landing-pill:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
 
 @layer base {
   :root {
@@ -42,6 +175,12 @@
 
     --info: 195 90% 50%;
     --info-foreground: 0 0% 100%;
+
+    /* Status-specific tokens — phone screen (blue) and interview (purple) */
+    --screen: 213 90% 52%;
+    --screen-foreground: 0 0% 100%;
+    --stage: 270 65% 58%;
+    --stage-foreground: 0 0% 100%;
 
     --border: 280 20% 88%;
     --input: 280 20% 88%;
@@ -93,6 +232,12 @@
 
     --info: 195 95% 58%;
     --info-foreground: 272 50% 8%;
+
+    /* Status-specific tokens — phone screen (blue) and interview (purple) */
+    --screen: 213 90% 60%;
+    --screen-foreground: 0 0% 100%;
+    --stage: 270 70% 65%;
+    --stage-foreground: 0 0% 100%;
 
     --border: 272 30% 18%;
     --input: 272 30% 18%;
@@ -267,122 +412,134 @@
     border-radius: 2px;
   }
 
-  @media (hover: none) {
-    .animate-marquee:hover,
-    .animate-marquee-reverse:hover {
-      animation-play-state: running;
-    }
+}
+
+/* ─── Media queries live at top-level to avoid esbuild CSS-minifier warnings
+       that fire when @media is nested inside @layer. Cascade order is correct:
+       styles outside @layer win over same-specificity rules inside a layer,
+       and all print/reduced-motion rules use !important anyway.             ─── */
+
+@media (hover: none) {
+  .animate-marquee:hover,
+  .animate-marquee-reverse:hover {
+    animation-play-state: running;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .text-psychedelic {
+    animation: none !important;
+  }
+  .text-psychedelic {
+    background-position: 50% 50%;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Print stylesheet — "Save as PDF" from the browser print dialog ---
+   The PDF button on Landing calls window.print(); these rules turn the
+   dark-mode portfolio into a clean single-column printable resume.      */
+@media print {
+  /* Force light-on-white regardless of dark mode toggle */
+  html, body, .dark {
+    background: #ffffff !important;
+    color: #0a0a0a !important;
+  }
+  body {
+    background-image: none !important;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .animate-marquee,
-    .animate-marquee-reverse,
-    .text-psychedelic {
-      animation: none !important;
-    }
-    .text-psychedelic {
-      background-position: 50% 50%;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
+  /* Hide anything decorative or interactive */
+  .print-hide,
+  nav[aria-label="Section navigation"],
+  footer,
+  button:not(.print-show),
+  [role="button"]:not(.print-show) {
+    display: none !important;
   }
 
-  /* --- Print stylesheet — "Save as PDF" from the browser print dialog --- */
-  /* The PDF button on Landing calls window.print(); these rules turn the
-     dark-mode portfolio into a clean single-column printable resume. */
-  @media print {
-    /* Force light-on-white regardless of dark mode toggle */
-    html, body, .dark {
-      background: #ffffff !important;
-      color: #0a0a0a !important;
-    }
-    body {
-      background-image: none !important;
-    }
-
-    /* Hide anything decorative or interactive */
-    .print-hide,
-    nav[aria-label="Section navigation"],
-    footer,
-    button:not(.print-show),
-    [role="button"]:not(.print-show) {
-      display: none !important;
-    }
-
-    /* Expand main container to full print width */
-    main {
-      max-width: 100% !important;
-      padding: 0 !important;
-    }
-
-    /* Ensure the gradient text + brand elements print in solid black */
-    .text-psychedelic {
-      background: none !important;
-      -webkit-text-fill-color: #0a0a0a !important;
-      color: #0a0a0a !important;
-      background-position: 0 0 !important;
-      animation: none !important;
-    }
-    h1, h2, h3, h4 {
-      color: #0a0a0a !important;
-      text-shadow: none !important;
-    }
-    .text-primary,
-    .text-foreground,
-    .text-foreground\/90,
-    .text-foreground\/95 {
-      color: #0a0a0a !important;
-    }
-    .text-muted-foreground {
-      color: #4a4a4a !important;
-    }
-
-    /* Kill decorative background blurs/gradients that waste ink */
-    [aria-hidden],
-    .grid-dots,
-    .noise,
-    .hero-title {
-      background: none !important;
-      box-shadow: none !important;
-    }
-
-    /* Open-up cards so content fits */
-    .backdrop-blur-sm,
-    .backdrop-blur-lg,
-    .backdrop-blur-md {
-      backdrop-filter: none !important;
-    }
-    .bg-card,
-    .bg-card\/60,
-    .bg-card\/80,
-    .bg-background,
-    .bg-background\/70,
-    .bg-background\/80 {
-      background: #ffffff !important;
-    }
-
-    /* Constrain single-section page breaks */
-    section {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
-    /* Ensure every section is shown regardless of reveal animations */
-    [style*="opacity"],
-    .opacity-0 {
-      opacity: 1 !important;
-      transform: none !important;
-    }
-
-    /* Set sensible page margins */
-    @page {
-      margin: 0.6in;
-    }
+  /* Expand main container to full print width */
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
   }
+
+  /* Ensure the gradient text + brand elements print in solid black */
+  .text-psychedelic {
+    background: none !important;
+    -webkit-text-fill-color: #0a0a0a !important;
+    color: #0a0a0a !important;
+    background-position: 0 0 !important;
+    animation: none !important;
+  }
+  h1, h2, h3, h4 {
+    color: #0a0a0a !important;
+    text-shadow: none !important;
+  }
+  .text-primary,
+  .text-foreground,
+  .text-foreground\/90,
+  .text-foreground\/95 {
+    color: #0a0a0a !important;
+  }
+  .text-muted-foreground {
+    color: #4a4a4a !important;
+  }
+
+  /* Kill decorative background blurs/gradients that waste ink */
+  [aria-hidden],
+  .grid-dots,
+  .noise,
+  .hero-title {
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Open-up cards so content fits */
+  .backdrop-blur-sm,
+  .backdrop-blur-lg,
+  .backdrop-blur-md {
+    backdrop-filter: none !important;
+  }
+  .bg-card,
+  .bg-card\/60,
+  .bg-card\/80,
+  .bg-background,
+  .bg-background\/70,
+  .bg-background\/80 {
+    background: #ffffff !important;
+  }
+
+  /* Constrain single-section page breaks */
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Ensure every section is shown regardless of reveal animations or
+     collapsed states (e.g. StoryExpander's max-h-0 clamp) */
+  [style*="opacity"],
+  .opacity-0 {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Override max-height clamps used for JS-toggled expand/collapse */
+  .overflow-hidden {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+}
+
+/* @page lives at top level — browsers only honor it for paginated (print) output. */
+@page {
+  margin: 0.6in;
 }

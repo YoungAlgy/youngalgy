@@ -12,6 +12,9 @@ import {
   CONTACT_EMAIL,
   TOGGLE_TOWN_URL,
   ALPHA_URL,
+  FACEBOOK_URL,
+  LINKEDIN_URL,
+  GITHUB_URL,
   timeline,
   loadout,
   cases,
@@ -68,27 +71,29 @@ function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
           {data.title.replace(/\.$/, "")}
         </h2>
         <p
-          className="text-base lg:text-lg mb-9 max-w-xl"
+          className="text-base lg:text-lg max-w-xl"
           style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
         >
           {data.body}
         </p>
-        <ul className="space-y-5">
-          {data.stats.map((stat) => (
-            <li key={stat.value} className="grid grid-cols-[5rem_1fr] gap-x-5 items-baseline">
-              <span
-                className="landing-display landing-stat-number text-xl lg:text-2xl"
-                style={{ color: "var(--accent-primary)" }}
-              >
-                {stat.value}
-              </span>
-              <div className="text-sm lg:text-base">
-                <span style={{ fontWeight: 600 }}>{stat.label}.</span>{" "}
-                <span style={{ opacity: 0.75 }}>{stat.sub}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {data.stats.length > 0 && (
+          <ul className="space-y-5 mt-9">
+            {data.stats.map((stat) => (
+              <li key={stat.value} className="grid grid-cols-[5rem_1fr] gap-x-5 items-baseline">
+                <span
+                  className="landing-display landing-stat-number text-xl lg:text-2xl"
+                  style={{ color: "var(--accent-primary)" }}
+                >
+                  {stat.value}
+                </span>
+                <div className="text-sm lg:text-base">
+                  <span style={{ fontWeight: 600 }}>{stat.label}.</span>{" "}
+                  <span style={{ opacity: 0.75 }}>{stat.sub}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className={`flex items-center justify-center ${data.flip ? "lg:order-1" : ""}`}>
@@ -171,7 +176,9 @@ const Landing = () => {
             </h1>
             <div className="flex flex-col sm:flex-row gap-4 mt-10">
               <a
-                href="#work"
+                href={TOGGLE_TOWN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5"
                 style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
               >
@@ -270,7 +277,7 @@ const Landing = () => {
           >
             Open to GTM + Builder roles. Tampa, FL.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-wrap gap-4 justify-center items-center">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
@@ -279,7 +286,7 @@ const Landing = () => {
               <Mail className="h-4 w-4" /> {CONTACT_EMAIL} <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
             <a
-              href="https://linkedin.com/in/youngalgy"
+              href={LINKEDIN_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
@@ -291,7 +298,19 @@ const Landing = () => {
               LINKEDIN <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
             <a
-              href="https://github.com/youngalgy"
+              href={FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
+              style={{
+                border: "1px solid var(--accent-secondary)",
+                color: "var(--accent-secondary)",
+              }}
+            >
+              FACEBOOK <ArrowUpRight className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="landing-mono inline-flex items-center gap-2 px-7 py-3.5"
@@ -322,7 +341,7 @@ const Landing = () => {
           style={{ borderColor: "color-mix(in srgb, var(--ink) 12%, transparent)" }}
         >
           <p className="landing-mono" style={{ opacity: 0.6 }}>
-            © 2026 Alexander Holmes · youngalgy.com
+            © 2026 Alexander Holmes
           </p>
           <p className="text-center flex items-center justify-center gap-4">
             <a

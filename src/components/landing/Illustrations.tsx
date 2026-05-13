@@ -40,12 +40,6 @@ export function AvaMapIllustration() {
       <text x="180" y="194" fill={PRIMARY} fontSize="9" style={monoStyle}>
         TAMPA
       </text>
-      <text x="20" y="22" fill={SECONDARY} fontSize="9" style={monoStyle}>
-        FIG. 01
-      </text>
-      <text x="345" y="22" fill={SECONDARY} fontSize="9" textAnchor="end" style={monoStyle}>
-        ACTIVE
-      </text>
       <text x="20" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
         850K / 50 STATES
       </text>
@@ -61,27 +55,32 @@ export function NftFrameIllustration() {
     <svg viewBox="0 0 400 400" className="w-full h-auto" aria-hidden="true">
       <rect x="40" y="40" width="320" height="320" fill="none" stroke={SECONDARY} strokeWidth={1.5} />
       <rect x="50" y="50" width="300" height="300" fill="none" stroke={SECONDARY} strokeWidth={0.5} opacity={0.5} />
-      <g transform="translate(200 215)">
-        <ellipse cx="0" cy="0" rx="60" ry="55" fill={PRIMARY} />
-        <circle cx="-20" cy="-12" r="3.8" fill={SECONDARY} />
-        <circle cx="20" cy="-12" r="3.8" fill={SECONDARY} />
-        <path d="M -60 -28 Q -82 -50 -92 -72" stroke={PRIMARY} strokeWidth={3} fill="none" strokeLinecap="round" />
-        <path d="M 60 -28 Q 82 -50 92 -72" stroke={PRIMARY} strokeWidth={3} fill="none" strokeLinecap="round" />
-        <path d="M -45 40 Q -60 60 -65 75" stroke={PRIMARY} strokeWidth={4} fill="none" strokeLinecap="round" />
-        <path d="M 0 40 Q 0 65 0 80" stroke={PRIMARY} strokeWidth={4} fill="none" strokeLinecap="round" />
-        <path d="M 45 40 Q 60 60 65 75" stroke={PRIMARY} strokeWidth={4} fill="none" strokeLinecap="round" />
+      <defs>
+        <radialGradient id="planet-shade" cx="0.32" cy="0.32" r="0.85">
+          <stop offset="0%" stopColor={SECONDARY} stopOpacity={0.55} />
+          <stop offset="55%" stopColor={PRIMARY} stopOpacity={1} />
+          <stop offset="100%" stopColor={PRIMARY} stopOpacity={0.85} />
+        </radialGradient>
+      </defs>
+      <g transform="translate(200 200)">
+        <circle cx="0" cy="0" r="78" fill="url(#planet-shade)" />
+        <ellipse cx="-25" cy="-18" rx="14" ry="6" fill={SECONDARY} opacity={0.35} />
+        <ellipse cx="18" cy="8" rx="22" ry="8" fill={SECONDARY} opacity={0.25} />
+        <ellipse cx="-10" cy="28" rx="18" ry="5" fill={SECONDARY} opacity={0.3} />
+        <ellipse cx="0" cy="0" rx="120" ry="22" fill="none" stroke={SECONDARY} strokeWidth={2} transform="rotate(-18)" />
+        <ellipse cx="0" cy="0" rx="120" ry="22" fill="none" stroke={SECONDARY} strokeWidth={0.6} opacity={0.5} transform="rotate(-18) translate(0 4)" />
+        <circle cx="-150" cy="-100" r="1.5" fill={SECONDARY} opacity={0.7} />
+        <circle cx="135" cy="-130" r="1" fill={SECONDARY} opacity={0.55} />
+        <circle cx="-110" cy="120" r="1.2" fill={SECONDARY} opacity={0.6} />
+        <circle cx="145" cy="110" r="1" fill={SECONDARY} opacity={0.55} />
+        <circle cx="-160" cy="40" r="0.8" fill={SECONDARY} opacity={0.45} />
+        <circle cx="160" cy="-30" r="0.8" fill={SECONDARY} opacity={0.45} />
       </g>
-      <text x="60" y="310" fill={SECONDARY} fontSize="10" style={monoStyle}>
-        LOBBY LOBSTERS / 8888
+      <text x="60" y="310" fill={SECONDARY} fontSize="11" style={monoStyle}>
+        UNIVERSE
       </text>
       <text x="60" y="328" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
         2021 / ETH / CHARITY DROP
-      </text>
-      <text x="20" y="22" fill={SECONDARY} fontSize="9" style={monoStyle}>
-        FIG. 02
-      </text>
-      <text x="380" y="22" fill={PRIMARY} fontSize="9" textAnchor="end" style={monoStyle}>
-        $4.4M RAISED
       </text>
       <text x="20" y="380" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
         BAYC FOUNDING
@@ -111,19 +110,13 @@ export function CassetteIllustration() {
         MONEY MITCH
       </text>
       <text x="60" y="130" fill={SECONDARY} fontSize="9" opacity={0.7} style={monoStyle}>
-        A1 / FLEXIN' LIKE WOAH
+        FLEXIN' LIKE WOAH
       </text>
       <circle cx="130" cy="165" r="22" fill="none" stroke={SECONDARY} strokeWidth={1.5} />
       <circle cx="130" cy="165" r="5" fill={SECONDARY} />
       <circle cx="270" cy="165" r="22" fill="none" stroke={PRIMARY} strokeWidth={1.5} />
       <circle cx="270" cy="165" r="5" fill={PRIMARY} />
       <line x1="155" y1="165" x2="245" y2="165" stroke={INK_MUTED} strokeWidth={0.7} opacity={0.4} />
-      <text x="20" y="22" fill={SECONDARY} fontSize="9" style={monoStyle}>
-        FIG. 03
-      </text>
-      <text x="380" y="22" fill={SECONDARY} fontSize="9" textAnchor="end" style={monoStyle}>
-        SIDE A
-      </text>
       <text x="20" y="230" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
         AGENT / ROAD MGR / ROLLOUTS
       </text>
@@ -164,12 +157,6 @@ export function QuantChartIllustration() {
       </text>
       <text x="355" y="215" fill={INK_MUTED} fontSize="8" opacity={0.5} textAnchor="end" style={monoStyle}>
         16:00
-      </text>
-      <text x="20" y="22" fill={SECONDARY} fontSize="9" style={monoStyle}>
-        FIG. 04
-      </text>
-      <text x="380" y="22" fill={PRIMARY} fontSize="9" textAnchor="end" style={monoStyle}>
-        LIVE CAPITAL
       </text>
       <text x="20" y="232" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
         ALPACA + KALSHI

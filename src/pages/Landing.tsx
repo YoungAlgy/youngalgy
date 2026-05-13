@@ -61,7 +61,7 @@ function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
     >
       <div className={data.flip ? "lg:order-2" : ""}>
         <div className="landing-mono mb-4" style={{ opacity: 0.7 }}>
-          CASE {data.number} &nbsp;/&nbsp; {data.category} &nbsp;/&nbsp; {data.period}
+          {data.category} &nbsp;/&nbsp; {data.period}
         </div>
         <h2 className="landing-display text-[clamp(2rem,4.2vw,3.5rem)] mb-7 period-dot">
           {data.title.replace(/\.$/, "")}

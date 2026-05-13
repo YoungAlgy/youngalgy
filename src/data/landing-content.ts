@@ -32,7 +32,7 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2025", title: "OpenSea seed", tag: "INVESTING" },
   { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
   { year: "2026", title: "Ava Health · Recruiter → Builder", tag: "HEALTHCARE" },
-  { year: "2026", title: "850K healthcare platform, rolling to 1M", tag: "NOW" },
+  { year: "2026", title: "1.4M+ healthcare professionals on the platform", tag: "NOW" },
 ];
 
 export type LoadoutRow = {
@@ -141,7 +141,7 @@ export const cases: readonly Case[] = [
     period: "2026 — NOW",
     spineLabel: "HEALTHCARE / OPERATIONS",
     title: "Ava Health.",
-    body: "Hired as a recruiter. Built the platform. An 850K-provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses & therapists across Florida. React, Node, PostgreSQL, Supabase.",
+    body: "Hired as a recruiter. Built the platform. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses & therapists across Florida. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",
   },

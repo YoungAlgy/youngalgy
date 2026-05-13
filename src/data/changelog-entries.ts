@@ -29,6 +29,12 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
+    date: "2026-05-14",
+    title: "Company view gets a mobile card layout",
+    body: "The By Company view used to force a 7-column horizontal scroll on phones. Now on mobile it renders as tap-to-expand cards (company + count, latest role, status mix bar, last-applied date) — matches the existing JobTable mobile pattern. Desktop table view unchanged.",
+    tag: "improved",
+  },
+  {
     date: "2026-05-13",
     title: "Internal Changelog page launches",
     body: "New /changelog page lives behind the dashboard's auth gate. Hand-curated list of every user-visible change to the dashboard and the public landing, newest first. Linked from the dashboard header next to Export CSV.",

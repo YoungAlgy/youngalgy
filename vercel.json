@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/alpha", "destination": "https://alpha-chi-five.vercel.app/alpha" },
+    { "source": "/alpha/:path*", "destination": "https://alpha-chi-five.vercel.app/alpha/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

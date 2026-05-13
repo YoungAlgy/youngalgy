@@ -59,75 +59,144 @@ export function CompanyTable({ jobs, onEdit, onClearFilters }: Props) {
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-8" />
-          <TableHead>Company</TableHead>
-          <TableHead className="w-16">Apps</TableHead>
-          <TableHead>Latest Role</TableHead>
-          <TableHead>Highest Salary</TableHead>
-          <TableHead>Status Mix</TableHead>
-          <TableHead>Last Applied</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <>
+      {/* Desktop: full 7-column table */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-8" />
+              <TableHead>Company</TableHead>
+              <TableHead className="w-16">Apps</TableHead>
+              <TableHead>Latest Role</TableHead>
+              <TableHead>Highest Salary</TableHead>
+              <TableHead>Status Mix</TableHead>
+              <TableHead>Last Applied</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r) => {
+              const isOpen = expanded.has(r.company);
+              return (
+                <Fragment key={r.company}>
+                  <TableRow
+                    className="cursor-pointer hover:bg-muted/40"
+                    onClick={() => toggle(r.company)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(r.company); } }}
+                    tabIndex={0}
+                    aria-expanded={isOpen}
+                    role="row"
+                  >
+                    <TableCell className="pr-0">
+                      {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden /> : <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden />}
+                    </TableCell>
+                    <TableCell className="font-medium">{r.company}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="text-xs">{r.count}</Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground max-w-[280px] truncate">{r.latestRole}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {r.highestSalary > 0 ? `$${r.highestSalary.toLocaleString()}` : "—"}
+                    </TableCell>
+                    <TableCell><StatusMixBar mix={r.mix} total={r.count} /></TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{formatRelativeDate(r.latestDate)}</TableCell>
+                  </TableRow>
+                  {isOpen && (
+                    <TableRow key={`${r.company}-detail`}>
+                      <TableCell colSpan={7} className="bg-muted/30 p-0">
+                        <div className="p-4 space-y-2">
+                          {r.jobs.map((j) => (
+                            <div key={j.id} className="flex items-center justify-between gap-3 p-2 rounded border bg-card">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium truncate">{j.position}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatRelativeDate(j.appliedDate)} · {j.salary || "—"}
+                                </p>
+                              </div>
+                              <Badge className={`${STATUS_CONFIG[j.status].className} text-[10px] border-0`}>
+                                {STATUS_CONFIG[j.status].label}
+                              </Badge>
+                              {onEdit && (
+                                <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={`Edit ${j.position} at ${r.company}`} onClick={(e) => { e.stopPropagation(); onEdit(j); }}>
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile: card stack with tap-to-expand */}
+      <div className="md:hidden space-y-3 p-3">
         {rows.map((r) => {
           const isOpen = expanded.has(r.company);
           return (
-            <Fragment key={r.company}>
-              <TableRow
-                className="cursor-pointer hover:bg-muted/40"
+            <div
+              key={r.company}
+              className="rounded-lg border bg-card overflow-hidden"
+            >
+              <button
+                type="button"
+                className="w-full flex items-start justify-between gap-3 p-3 text-left hover:bg-muted/40 transition-colors"
                 onClick={() => toggle(r.company)}
-                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(r.company); } }}
-                tabIndex={0}
                 aria-expanded={isOpen}
-                role="row"
               >
-                <TableCell className="pr-0">
-                  {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden /> : <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden />}
-                </TableCell>
-                <TableCell className="font-medium">{r.company}</TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="text-xs">{r.count}</Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground max-w-[280px] truncate">{r.latestRole}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {r.highestSalary > 0 ? `$${r.highestSalary.toLocaleString()}` : "—"}
-                </TableCell>
-                <TableCell><StatusMixBar mix={r.mix} total={r.count} /></TableCell>
-                <TableCell className="text-sm text-muted-foreground">{formatRelativeDate(r.latestDate)}</TableCell>
-              </TableRow>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-semibold truncate">{r.company}</p>
+                    <Badge variant="secondary" className="text-[10px] shrink-0">{r.count}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate mb-2">{r.latestRole}</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <StatusMixBar mix={r.mix} total={r.count} />
+                    <span className="text-[11px] text-muted-foreground shrink-0">
+                      {formatRelativeDate(r.latestDate)}
+                    </span>
+                  </div>
+                  {r.highestSalary > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Top: ${r.highestSalary.toLocaleString()}
+                    </p>
+                  )}
+                </div>
+                <span aria-hidden className="shrink-0 mt-0.5">
+                  {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                </span>
+              </button>
               {isOpen && (
-                <TableRow key={`${r.company}-detail`}>
-                  <TableCell colSpan={7} className="bg-muted/30 p-0">
-                    <div className="p-4 space-y-2">
-                      {r.jobs.map((j) => (
-                        <div key={j.id} className="flex items-center justify-between gap-3 p-2 rounded border bg-card">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium truncate">{j.position}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {formatRelativeDate(j.appliedDate)} · {j.salary || "—"}
-                            </p>
-                          </div>
-                          <Badge className={`${STATUS_CONFIG[j.status].className} text-[10px] border-0`}>
-                            {STATUS_CONFIG[j.status].label}
-                          </Badge>
-                          {onEdit && (
-                            <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={`Edit ${j.position} at ${r.company}`} onClick={(e) => { e.stopPropagation(); onEdit(j); }}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
+                <div className="bg-muted/30 p-3 space-y-2 border-t">
+                  {r.jobs.map((j) => (
+                    <div key={j.id} className="flex items-center justify-between gap-2 p-2 rounded border bg-card">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{j.position}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {formatRelativeDate(j.appliedDate)} · {j.salary || "—"}
+                        </p>
+                      </div>
+                      <Badge className={`${STATUS_CONFIG[j.status].className} text-[10px] border-0 shrink-0`}>
+                        {STATUS_CONFIG[j.status].label}
+                      </Badge>
+                      {onEdit && (
+                        <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" aria-label={`Edit ${j.position} at ${r.company}`} onClick={(e) => { e.stopPropagation(); onEdit(j); }}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </div>
-                  </TableCell>
-                </TableRow>
+                  ))}
+                </div>
               )}
-            </Fragment>
+            </div>
           );
         })}
-      </TableBody>
-    </Table>
+      </div>
+    </>
   );
 }

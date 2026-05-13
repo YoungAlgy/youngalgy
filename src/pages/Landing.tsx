@@ -130,30 +130,18 @@ const Landing = () => {
           </a>
           <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
             <a
-              href={TOGGLE_TOWN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-1"
-              style={{ color: "var(--ink)", opacity: 0.85 }}
-            >
-              TOGGLE.TOWN <ArrowUpRight className="h-3 w-3" />
-            </a>
-            <span className="landing-mono hidden sm:inline" style={{ opacity: 0.3 }}>
-              ·
-            </span>
-            <a
               href={ALPHA_URL}
               className="landing-mono inline-flex items-center gap-1"
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
               ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
-            <span className="landing-mono hidden sm:inline" style={{ opacity: 0.3 }}>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>
               ·
             </span>
             <a
               href="/dashboard"
-              className="landing-mono hidden sm:inline-flex items-center gap-1"
+              className="landing-mono inline-flex items-center gap-1"
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
               DASHBOARD <ArrowUpRight className="h-3 w-3" />

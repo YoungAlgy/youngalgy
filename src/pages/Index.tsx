@@ -18,9 +18,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Search, LayoutList, Columns3, Loader2, ArrowLeft, Download, Building2,
+  Search, LayoutList, Columns3, Loader2, ArrowLeft, Download, Building2, FileText,
 } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import { Job, JobStatus, Opportunity, mapOpportunityToJob } from "@/lib/types";
@@ -230,6 +230,14 @@ const Index = () => {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              to="/changelog"
+              className="inline-flex items-center gap-1.5 h-8 px-2 sm:px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="View changelog"
+            >
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline underline-offset-4 hover:underline">Changelog</span>
+            </Link>
             <Button
               variant="outline"
               size="sm"

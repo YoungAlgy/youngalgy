@@ -13,6 +13,7 @@ import { Loader2 } from "lucide-react";
 // pay the dashboard bundle cost. PasswordGate is cheap (no auth-ui-react
 // dependency) so it's imported eagerly along with the rest of the dashboard chunk.
 const Index = lazy(() => import("./pages/Index"));
+const Changelog = lazy(() => import("./pages/Changelog"));
 const PasswordGate = lazy(() =>
   import("./components/PasswordGate").then((m) => ({ default: m.PasswordGate }))
 );
@@ -37,6 +38,16 @@ const App = () => (
               <Suspense fallback={<DashboardFallback />}>
                 <PasswordGate>
                   <Index />
+                </PasswordGate>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/changelog"
+            element={
+              <Suspense fallback={<DashboardFallback />}>
+                <PasswordGate>
+                  <Changelog />
                 </PasswordGate>
               </Suspense>
             }

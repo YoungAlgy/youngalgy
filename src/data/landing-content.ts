@@ -140,7 +140,7 @@ export const cases: readonly Case[] = [
     category: "HEALTHCARE",
     period: "2026 — NOW",
     spineLabel: "HEALTHCARE / OPERATIONS",
-    title: "Ava Health. From spreadsheet to fifty-state CRM.",
+    title: "Ava Health.",
     body: "Hired as a recruiter. Built the platform. An 850K-provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses & therapists across Florida. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",

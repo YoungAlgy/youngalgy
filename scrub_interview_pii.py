@@ -16,7 +16,13 @@ import urllib.request
 import urllib.parse
 
 SB_URL = 'https://oydhnnqgbcsxvdttkncm.supabase.co'
-SB_KEY = os.environ.get('SUPABASE_SECRET_KEY') or 'REDACTED_ROTATED_KEY'
+SB_KEY = os.environ.get('SUPABASE_SECRET_KEY')
+if not SB_KEY:
+    raise SystemExit(
+        'SUPABASE_SECRET_KEY env var not set. '
+        'Source ~/.config/bots/.env (or set it manually) before running this script. '
+        'The hardcoded fallback was removed on 2026-05-14 after a key-rotation incident.'
+    )
 
 
 def sb(method: str, path: str, body=None):

@@ -21,9 +21,8 @@ export type TimelineEntry = {
 };
 
 export const timeline: readonly TimelineEntry[] = [
-  { year: "2015", title: "Mitch signs to Big Gates Records", tag: "MUSIC / AGENT" },
-  { year: "2017", title: "USF · B.A. Psychology (begins)", tag: "EDUCATION" },
-  { year: "2019", title: "Toggle Town founded (esports origin)", tag: "MEDIA" },
+  { year: "2015", title: "Toggle Town founded (esports origin)", tag: "MEDIA" },
+  { year: "2018", title: "Mitch signs to Big Gates Records", tag: "MUSIC / AGENT" },
   { year: "2020", title: "B.A. Psychology · USF", tag: "GRADUATED" },
   { year: "2020", title: "Holmes Builders", tag: "CONSTRUCTION / FAMILY" },
   { year: "2021", title: "Universe XYZ · PM, $4.4M Lobby Lobsters drop", tag: "WEB3" },
@@ -159,7 +158,7 @@ export const cases: readonly Case[] = [
   {
     number: "03",
     category: "MUSIC",
-    period: "2015 — PRESENT",
+    period: "2018 — PRESENT",
     spineLabel: "MUSIC / TALENT MANAGEMENT",
     title: "Money Mitch. Big Gates Records.",
     body: "Connected his younger brother to Big Gates Records — stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music — private vault, fan tiers, content drops.",

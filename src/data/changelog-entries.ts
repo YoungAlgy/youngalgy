@@ -30,6 +30,12 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-14",
+    title: "Timeline dates corrected on the landing page",
+    body: "Toggle Town's founding year moved to 2015 (esports origin). Mitch's Big Gates signing moved to 2018. The 'USF · Psychology (begins)' row was dropped — the 2020 graduation row covers the education arc on its own. The Money Mitch case-study period now reads 2018 — present to match.",
+    tag: "fixed",
+  },
+  {
+    date: "2026-05-14",
     title: "Nav and footer links open in a new tab",
     body: "Clicking Alpha, Dashboard, or Toggle.Town from the landing nav (or Alpha / Toggle.Town from the footer) now opens the destination in a fresh tab instead of replacing the landing tab. Keeps the portfolio open while you side-quest.",
     tag: "improved",

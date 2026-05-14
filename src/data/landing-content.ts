@@ -21,16 +21,23 @@ export type TimelineEntry = {
 };
 
 export const timeline: readonly TimelineEntry[] = [
-  { year: "2015", title: "Toggle Town founded (esports origin)", tag: "MEDIA" },
+  { year: "2015", title: "Toggle Money recording studio opens", tag: "MUSIC / STUDIO" },
   { year: "2018", title: "Mitch signs to Big Gates Records", tag: "MUSIC / AGENT" },
+  { year: "2019", title: "Toggle Town · esports", tag: "MEDIA" },
   { year: "2020", title: "B.A. Psychology · USF", tag: "GRADUATED" },
   { year: "2020", title: "Holmes Builders", tag: "CONSTRUCTION / FAMILY" },
   { year: "2021", title: "Universe XYZ · PM, $4.4M Lobby Lobsters drop", tag: "WEB3" },
   { year: "2021", title: "BAYC founding collective", tag: "ART" },
   { year: "2022", title: "$5M+ raised across charity drops", tag: "CHARITY" },
   { year: "2025", title: "OpenSea seed", tag: "INVESTING" },
-  { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
   { year: "2026", title: "Ava Health · Recruiter → Builder", tag: "HEALTHCARE" },
+  { year: "2026", title: "Money Mitch Vault · private artist platform", tag: "MUSIC / SOFTWARE" },
+  { year: "2026", title: "Beacon · healthcare recruiter outreach platform", tag: "RECRUITING SAAS" },
+  { year: "2026", title: "FreeJobPost + FreeResumePost launch", tag: "SEO / FREE APPS" },
+  { year: "2026", title: "Mitchmark · brother's prospect dashboard", tag: "FAMILY / SOFTWARE" },
+  { year: "2026", title: "Alpha · $5/mo digest app", tag: "DIGEST SAAS" },
+  { year: "2026", title: "Job-seeker dashboard + youngalgy.com landing", tag: "PORTFOLIO" },
+  { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
   { year: "2026", title: "1.4M+ healthcare professionals on the platform", tag: "NOW" },
 ];
 

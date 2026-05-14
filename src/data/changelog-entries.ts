@@ -30,8 +30,14 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-14",
+    title: "Timeline rebuilt: Toggle Money 2015, Toggle Town 2019, 2026 ship-list expanded",
+    body: "Toggle Money (the recording studio) now anchors 2015. Toggle Town slots into 2019 as the esports brand it actually was. 2026 picks up six more rows for the apps shipped this year: Money Mitch Vault, Beacon, FreeJobPost + FreeResumePost, Mitchmark, Alpha, and the job-seeker dashboard + youngalgy.com landing itself.",
+    tag: "improved",
+  },
+  {
+    date: "2026-05-14",
     title: "Timeline dates corrected on the landing page",
-    body: "Toggle Town's founding year moved to 2015 (esports origin). Mitch's Big Gates signing moved to 2018. The 'USF · Psychology (begins)' row was dropped — the 2020 graduation row covers the education arc on its own. The Money Mitch case-study period now reads 2018 — present to match.",
+    body: "Mitch's Big Gates signing moved to 2018. The 'USF · Psychology (begins)' row was dropped — the 2020 graduation row covers the education arc on its own. The Money Mitch case-study period now reads 2018 — present to match.",
     tag: "fixed",
   },
   {

@@ -34,11 +34,10 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2026", title: "Money Mitch Vault · private artist platform", tag: "MUSIC / SOFTWARE" },
   { year: "2026", title: "Beacon · healthcare recruiter outreach platform", tag: "RECRUITING SAAS" },
   { year: "2026", title: "FreeJobPost + FreeResumePost launch", tag: "SEO / FREE APPS" },
-  { year: "2026", title: "Mitchmark · brother's prospect dashboard", tag: "FAMILY / SOFTWARE" },
-  { year: "2026", title: "Alpha · $5/mo digest app", tag: "DIGEST SAAS" },
-  { year: "2026", title: "Job-seeker dashboard + youngalgy.com landing", tag: "PORTFOLIO" },
+  { year: "2026", title: "Mitchmark · prospect dashboard", tag: "FAMILY / SOFTWARE" },
+  { year: "2026", title: "Alpha · digest app", tag: "DIGEST SAAS" },
+  { year: "2026", title: "Job-seeker dashboard", tag: "PORTFOLIO" },
   { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
-  { year: "2026", title: "1.4M+ healthcare professionals on the platform", tag: "NOW" },
 ];
 
 export type LoadoutRow = {

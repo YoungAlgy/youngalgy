@@ -30,6 +30,12 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-14",
+    title: "Timeline tightened — labels trimmed, NOW row removed",
+    body: "Pulled the personal-relation tag off Mitchmark (now just 'prospect dashboard'), dropped the price tag off Alpha (now just 'digest app'), and trimmed the job-seeker dashboard row to its core. Removed the standalone '1.4M+ healthcare professionals — NOW' row; that stat already lives in the Ava Health case study and was double-counting on the timeline.",
+    tag: "improved",
+  },
+  {
+    date: "2026-05-14",
     title: "Timeline rebuilt: Toggle Money 2015, Toggle Town 2019, 2026 ship-list expanded",
     body: "Toggle Money (the recording studio) now anchors 2015. Toggle Town slots into 2019 as the esports brand it actually was. 2026 picks up six more rows for the apps shipped this year: Money Mitch Vault, Beacon, FreeJobPost + FreeResumePost, Mitchmark, Alpha, and the job-seeker dashboard + youngalgy.com landing itself.",
     tag: "improved",

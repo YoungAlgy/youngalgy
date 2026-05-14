@@ -131,6 +131,8 @@ const Landing = () => {
           <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
             <a
               href={ALPHA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="landing-mono inline-flex items-center gap-1"
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
@@ -141,6 +143,8 @@ const Landing = () => {
             </span>
             <a
               href="/dashboard"
+              target="_blank"
+              rel="noopener noreferrer"
               className="landing-mono inline-flex items-center gap-1"
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
@@ -346,6 +350,8 @@ const Landing = () => {
             </span>
             <a
               href={ALPHA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="landing-mono inline-flex items-center gap-1"
               style={{ color: "var(--accent-secondary)" }}
             >

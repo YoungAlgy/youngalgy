@@ -30,6 +30,12 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-14",
+    title: "Nav and footer links open in a new tab",
+    body: "Clicking Alpha, Dashboard, or Toggle.Town from the landing nav (or Alpha / Toggle.Town from the footer) now opens the destination in a fresh tab instead of replacing the landing tab. Keeps the portfolio open while you side-quest.",
+    tag: "improved",
+  },
+  {
+    date: "2026-05-14",
     title: "Company view gets a mobile card layout",
     body: "The By Company view used to force a 7-column horizontal scroll on phones. Now on mobile it renders as tap-to-expand cards (company + count, latest role, status mix bar, last-applied date) — matches the existing JobTable mobile pattern. Desktop table view unchanged.",
     tag: "improved",

@@ -141,7 +141,7 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
             s.text,
           )}
         >
-          Algy<span className="text-primary">.</span>
+          Alexander<span className="text-primary">.</span>
         </span>
       </div>
     );
@@ -157,7 +157,7 @@ export function Logo({ variant = "full", size = "md", className }: LogoProps) {
             s.text,
           )}
         >
-          Algernon<span className="text-primary">.</span>
+          Alexander<span className="text-primary">.</span>
         </span>
         <span className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-0.5 font-medium">
           Holmes · Tampa

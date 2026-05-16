@@ -15,7 +15,7 @@ export function SkullCrest({ className }: { className?: string }) {
       viewBox="0 0 480 540"
       xmlns="http://www.w3.org/2000/svg"
       className={cn("w-full h-full", className)}
-      aria-label="Algernon's psychedelic sugar-skull crest"
+      aria-label="Alexander's psychedelic sugar-skull crest"
       role="img"
     >
       <defs>

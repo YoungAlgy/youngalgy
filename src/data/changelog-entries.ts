@@ -30,6 +30,12 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-15",
+    title: "Dashboard header reads 'Alexander' to match resume + LinkedIn",
+    body: "Logo wordmark and full lockup now display 'Alexander' instead of 'Algernon' or 'Algy', matching the professional name used on the resume, LinkedIn, and job applications. SkullCrest's screen-reader label updated to match.",
+    tag: "fixed",
+  },
+  {
+    date: "2026-05-15",
     title: "Rejection log now sorts by when the rejection arrived",
     body: "Recent Rejections used to sort by submission date, so a fresh rejection of an old application would hide behind newer-but-still-open rows. Now it sorts by the reply date and shows when the rejection actually landed.",
     tag: "fixed",

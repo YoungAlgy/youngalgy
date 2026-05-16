@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import {
-  Send, CalendarRange, CalendarClock, PercentCircle,
+  Send, CalendarRange, CalendarClock, CalendarCheck, PercentCircle,
   HourglassIcon, AlertTriangle,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,8 +25,13 @@ export function StatsCards({ jobs, interviewCount }: Props) {
   const counts = useMemo(() => {
     const now = Date.now();
     const weekAgoMs = now - WEEK_MS;
+    // Local midnight — "Today" is the user's calendar day, not a 24h window.
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayStartMs = todayStart.getTime();
 
     let totalSubmitted = 0;
+    let today = 0;
     let thisWeek = 0;
     let awaitingReply = 0;
     let stale = 0;
@@ -35,6 +40,7 @@ export function StatsCards({ jobs, interviewCount }: Props) {
     for (const j of jobs) {
       totalSubmitted += 1;
       const t = new Date(j.appliedDate).getTime();
+      if (t >= todayStartMs) today += 1;
       if (t >= weekAgoMs) thisWeek += 1;
       if (j.status === "applied") {
         if (!j.firstReplyAt) {
@@ -54,6 +60,7 @@ export function StatsCards({ jobs, interviewCount }: Props) {
 
     return {
       totalSubmitted,
+      today,
       thisWeek,
       awaitingReply,
       interviews: interviewCount,
@@ -66,6 +73,7 @@ export function StatsCards({ jobs, interviewCount }: Props) {
 
   const stats = [
     { label: "Total Submitted", value: counts.totalSubmitted, icon: Send, color: "text-primary" },
+    { label: "Today",           value: counts.today,          icon: CalendarCheck, color: counts.today > 0 ? "text-success" : "text-muted-foreground" },
     { label: "This Week",       value: counts.thisWeek,       icon: CalendarRange, color: "text-info" },
     { label: "Awaiting Reply",  value: counts.awaitingReply,  icon: HourglassIcon, color: "text-warning" },
     { label: "Interviews",      value: counts.interviews,     icon: CalendarClock, color: "text-stage" },
@@ -83,9 +91,10 @@ export function StatsCards({ jobs, interviewCount }: Props) {
     },
   ];
 
-  // Mobile: 2 cols × 3 rows. ≥sm: 3 cols. ≥lg: 6 cols.
+  // Mobile: 2 cols × 4 rows (with 7 tiles the last cell hangs solo on the
+  // 4th row — still readable). ≥sm: 3 cols × 3 rows. ≥lg: 7 cols × 1 row.
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
       {stats.map((stat) => (
         <Card key={stat.label} className="border shadow-sm">
           <CardContent className="p-4 flex items-center gap-3">

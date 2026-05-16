@@ -29,6 +29,18 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
+    date: "2026-05-15",
+    title: "Rejection log now sorts by when the rejection arrived",
+    body: "Recent Rejections used to sort by submission date, so a fresh rejection of an old application would hide behind newer-but-still-open rows. Now it sorts by the reply date and shows when the rejection actually landed.",
+    tag: "fixed",
+  },
+  {
+    date: "2026-05-15",
+    title: "Added a 'Today' tile to the dashboard snapshot",
+    body: "New stat tile shows how many applications you've submitted today (local calendar day, resets at midnight). Sits next to Total Submitted and This Week so you can see at a glance whether you've hit the day's pace already.",
+    tag: "new",
+  },
+  {
     date: "2026-05-14",
     title: "Timeline tightened — labels trimmed, NOW row removed",
     body: "Pulled the personal-relation tag off Mitchmark (now just 'prospect dashboard'), dropped the price tag off Alpha (now just 'digest app'), and trimmed the job-seeker dashboard row to its core. Removed the standalone '1.4M+ healthcare professionals — NOW' row; that stat already lives in the Ava Health case study and was double-counting on the timeline.",

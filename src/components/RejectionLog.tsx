@@ -10,6 +10,7 @@ interface Row {
   id: string;
   company: string;
   created_at: string;
+  first_reply_at: string | null;
 }
 
 export function RejectionLog() {
@@ -18,11 +19,16 @@ export function RejectionLog() {
 
   useEffect(() => {
     async function load() {
+      // Sort by first_reply_at (when the rejection actually arrived), not
+      // created_at (when the app was submitted) — otherwise a fresh
+      // rejection of an old app hides behind newer-submitted-but-still-open
+      // rows. nullsFirst:false keeps any reply-less rejection at the bottom.
       const { data, error } = await supabase
         .from("opportunities")
-        .select("id,company,created_at")
+        .select("id,company,created_at,first_reply_at")
         .eq("bot_type", "manual")
         .eq("status", "rejected")
+        .order("first_reply_at", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) logError("rejection log");
@@ -50,7 +56,7 @@ export function RejectionLog() {
               <li key={r.id} className="flex items-center justify-between py-1.5 px-1 text-sm">
                 <span className="font-medium truncate">{displayCompany(r.company)}</span>
                 <span className="text-xs text-muted-foreground shrink-0 ml-3">
-                  {formatRelativeDate(r.created_at)}
+                  {formatRelativeDate(r.first_reply_at ?? r.created_at)}
                 </span>
               </li>
             ))}

@@ -30,6 +30,12 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-15",
+    title: "Landing hero gets a tagline + the work CTA scrolls to the work",
+    body: "Recruiters who land on youngalgy.com now see what you do without scrolling: 'Builds healthcare software. Places healthcare talent. Ava Health · 1.4M+ provider directory · Tampa, FL — open to remote + hybrid Tampa roles.' The 'SEE THE WORK' button now anchors to the case studies on the same page instead of bouncing to Toggle.Town (still linked in the footer).",
+    tag: "improved",
+  },
+  {
+    date: "2026-05-15",
     title: "Dashboard header reads 'Alexander' to match resume + LinkedIn",
     body: "Logo wordmark and full lockup now display 'Alexander' instead of 'Algernon' or 'Algy', matching the professional name used on the resume, LinkedIn, and job applications. SkullCrest's screen-reader label updated to match.",
     tag: "fixed",

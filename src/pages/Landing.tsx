@@ -166,11 +166,19 @@ const Landing = () => {
               <br />
               Holmes
             </h1>
+            <p
+              className="mt-6 sm:mt-8 text-base sm:text-lg lg:text-xl max-w-2xl"
+              style={{ color: "var(--ink)", opacity: 0.85, lineHeight: 1.5 }}
+            >
+              Builds healthcare software. Places healthcare talent.
+              <br className="hidden sm:inline" />
+              <span className="landing-mono text-sm sm:text-base" style={{ opacity: 0.75 }}>
+                Ava Health · 1.4M+ provider directory · Tampa, FL — open to remote + hybrid Tampa roles.
+              </span>
+            </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
               <a
-                href={TOGGLE_TOWN_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#work"
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
                 style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
               >

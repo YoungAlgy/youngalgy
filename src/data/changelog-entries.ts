@@ -29,9 +29,21 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
+    date: "2026-05-21",
+    title: "Dashboard overhaul: lanes, best-shots, stale sweep, cadence, source ROI, time-to-reply, perf",
+    body: "Biggest dashboard pass in a while. SNAPSHOT: new 'Best Shots' card surfaces the top-5 high-score (≥7) apps still awaiting a reply so Anchorage Digital (score 9) and other strongest bets stay front-of-mind instead of buried in the kanban. New 'Stale sweep' action only appears when there are apps stuck in 'Applied' for >14 days with no reply; one click bulk-marks them all ghosted (with a confirm step) so the funnel reads honest. The Pipeline funnel drops the 'Hired' bar — always 0 and just noise. Stats grid grows from 7 tiles to 8 with a new 'Days Since Last' apply cadence tile (green at 0d, info 1-3d, warning 4-7d, destructive 8+d) so the daily-discipline streak is visible at a glance. TRENDS: new 'By Lane' breakdown table groups apps as CRYPTO / OPERATOR / SUPPORT / RECRUITING / CSM / MARKETING / ENGINEERING / OTHER (derived client-side from title + company + source), showing reply-rate and positive-rate per lane so the overclaim trap is visible — the lanes you're firing into vs the lanes that actually reply. New 'Source ROI' table shows total / replied / reply% / positive% per source, sorted by reply rate so the highest-signal sources bubble to the top — apply effort should follow the signal, not the volume habit. New 'Time to First Reply' bar chart buckets replies by 0-3d (auto-bin, destructive red), 4-7d (quick human, info blue), 8-14d (slow human, warning amber), 15+d (late/backfill, muted) so it's clear whether rejections are mostly algorithmic auto-filters firing on years-in-role gates or real humans reading the apps. FILTERS: new Lane chip strip in the FilterBar — multi-select to narrow the kanban/table by lane (chip color matches the lane dot in Best Shots). Lane filter is URL-deep-linked via the ?lane= param. PERF: the Recharts-backed components (DailyApps, SourcePie, SalaryHist, TimeToReply) are now lazy-loaded behind Suspense fallbacks so the initial paint isn't blocked by the 410KB recharts chunk — the renderer no longer freezes when scrolling past the Trends section.",
+    tag: "new",
+  },
+  {
+    date: "2026-05-17",
+    title: "Route + loadout refresh, contact pitch + CTA polish, dashboard reply-time insight",
+    body: "Route timeline picks up three new 2026 rows — Studio (browser audio + mastering), The Downs (horse-racing bot dashboard), and Toggle Town pixel-art hub game — then collapses the 2026 cluster from 11 rows down to 4 by lane: Ava Health + Beacon as the healthcare row, Money Mitch Vault + Studio + Toggle Town hub as the music + audio + game row, Alpha + FreeJobPost + FreeResumePost + Mitchmark + The Downs + job-seeker dashboard as the personal SaaS + dashboards row, and Quant trading bots as its own row. The loadout reordered to lead with Software / Web3 / Markets & Quant first, with Sales & Recruiting moved last to reflect where the actual track record sits. Contact pitch now reads 'Open to operator, builder, and GTM roles. Tampa, FL — remote or hybrid' so recruiters across operator + GTM lanes see themselves in it. Footer was showing ALEXANDER HOLMES twice (in the copyright AND as a right-side wordmark); removed the right-side one and rebalanced the grid to two columns. SEE THE WORK in the hero opens Toggle.Town in a new tab again, reverting the in-page anchor from the prior day. Dashboard Snapshot adds a Median Days to Reply tile (replaced the Stale tile, which was redundant with Awaiting Reply) so it's clear at a glance whether rejections are mostly algorithmic auto-filters (<4d, shown destructive-red) or human review (7d+, shown info-blue).",
+    tag: "improved",
+  },
+  {
     date: "2026-05-16",
     title: "Hero tagline pulled back — just the name and the CTAs",
-    body: "The healthcare-software/healthcare-talent tagline shipped yesterday didn't read right. Hero is back to just ALEXANDER HOLMES. with the two CTAs underneath. The SEE THE WORK button still anchors to the case studies on the same page (yesterday's other fix, kept).",
+    body: "The healthcare-software/healthcare-talent tagline shipped yesterday didn't read right. Hero is back to just ALEXANDER HOLMES. with the two CTAs underneath.",
     tag: "fixed",
   },
   {

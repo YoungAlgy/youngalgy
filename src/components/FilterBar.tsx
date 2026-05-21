@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/types";
+import { ALL_LANES, LANE_COLOR, type Lane } from "@/lib/lane";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import type { Filters, ReplyStateFilter } from "@/lib/url-filters";
 
@@ -28,6 +29,7 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
   const activeCount =
     filters.statuses.length +
     filters.sources.length +
+    filters.lanes.length +
     (filters.dateRange !== "all" ? 1 : 0) +
     (filters.salaryMin > 0 ? 1 : 0) +
     (filters.hasUrl ? 1 : 0) +
@@ -40,6 +42,10 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
   const toggleSource = (s: string) => {
     const exists = filters.sources.includes(s);
     setFilters({ ...filters, sources: exists ? filters.sources.filter((x) => x !== s) : [...filters.sources, s] });
+  };
+  const toggleLane = (l: Lane) => {
+    const exists = filters.lanes.includes(l);
+    setFilters({ ...filters, lanes: exists ? filters.lanes.filter((x) => x !== l) : [...filters.lanes, l] });
   };
 
   return (
@@ -116,6 +122,30 @@ export function FilterBar({ filters, setFilters, availableSources, onClear }: Pr
                     }`}
                   >
                     {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Lane multi-select — derived client-side from title + source */}
+          <div>
+            <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">Lane</p>
+            <div className="flex flex-wrap gap-2">
+              {ALL_LANES.map((l) => {
+                const active = filters.lanes.includes(l);
+                const color = LANE_COLOR[l];
+                return (
+                  <button
+                    key={l}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => toggleLane(l)}
+                    className={`text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-1 rounded-md border transition-colors ${
+                      active ? color.chip + " ring-2 ring-foreground/40" : "bg-card text-muted-foreground border-border hover:bg-muted"
+                    }`}
+                  >
+                    {l}
                   </button>
                 );
               })}

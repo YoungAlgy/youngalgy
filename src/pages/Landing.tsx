@@ -168,7 +168,9 @@ const Landing = () => {
             </h1>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
               <a
-                href="#work"
+                href={TOGGLE_TOWN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
                 style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
               >
@@ -265,7 +267,7 @@ const Landing = () => {
             className="text-base lg:text-lg mb-8 sm:mb-10 mx-auto max-w-xl"
             style={{ color: "var(--ink)", opacity: 0.8 }}
           >
-            Open to GTM + Builder roles. Tampa, FL.
+            Open to operator, builder, and GTM roles. Tampa, FL — remote or hybrid.
           </p>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
             <a
@@ -327,13 +329,13 @@ const Landing = () => {
 
       <footer className="relative z-10 mt-8 sm:mt-12 pb-8 sm:pb-10">
         <div
-          className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 pt-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 items-center text-center md:text-left border-t"
+          className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 pt-6 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-center text-center md:text-left border-t"
           style={{ borderColor: "color-mix(in srgb, var(--ink) 12%, transparent)" }}
         >
           <p className="landing-mono md:text-left" style={{ opacity: 0.6 }}>
             © 2026 Alexander Holmes
           </p>
-          <p className="text-center flex items-center justify-center gap-4">
+          <p className="flex items-center justify-center md:justify-end gap-4">
             <a
               href={TOGGLE_TOWN_URL}
               target="_blank"
@@ -355,9 +357,6 @@ const Landing = () => {
             >
               ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
-          </p>
-          <p className="landing-mono md:text-right" style={{ opacity: 0.6 }}>
-            ALEXANDER HOLMES
           </p>
         </div>
       </footer>

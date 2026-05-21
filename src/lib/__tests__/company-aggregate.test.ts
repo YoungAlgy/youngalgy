@@ -27,6 +27,7 @@ function makeJob(overrides: Partial<Job> = {}): Job {
     proposal: overrides.proposal ?? null,
     firstReplyAt: overrides.firstReplyAt ?? null,
     replyKind: overrides.replyKind ?? null,
+    lane: overrides.lane ?? "OTHER",
   };
 }
 

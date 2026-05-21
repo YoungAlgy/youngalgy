@@ -34,6 +34,7 @@ function makeJob(overrides: Partial<Job> = {}): Job {
     proposal: overrides.proposal ?? null,
     firstReplyAt: overrides.firstReplyAt ?? null,
     replyKind: overrides.replyKind ?? null,
+    lane: overrides.lane ?? "OTHER",
   };
 }
 
@@ -117,6 +118,25 @@ describe("filterJobs — source", () => {
   it("excludes jobs with null source when whitelist is non-empty", () => {
     const filters: Filters = { ...DEFAULT_FILTERS, sources: ["linkedin"] };
     expect(filterJobs({ ...baseArgs, jobs, filters }).map((j) => j.id)).toEqual(["li"]);
+  });
+});
+
+describe("filterJobs — lane", () => {
+  const jobs = [
+    makeJob({ id: "crypto",   lane: "CRYPTO" }),
+    makeJob({ id: "operator", lane: "OPERATOR" }),
+    makeJob({ id: "support",  lane: "SUPPORT" }),
+    makeJob({ id: "other",    lane: "OTHER" }),
+  ];
+
+  it("empty lane whitelist matches every lane", () => {
+    expect(filterJobs({ ...baseArgs, jobs })).toHaveLength(4);
+  });
+
+  it("filters to the selected lanes only", () => {
+    const filters: Filters = { ...DEFAULT_FILTERS, lanes: ["CRYPTO", "OPERATOR"] };
+    expect(filterJobs({ ...baseArgs, jobs, filters }).map((j) => j.id))
+      .toEqual(["crypto", "operator"]);
   });
 });
 

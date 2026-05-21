@@ -1,16 +1,44 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StatsCards } from "@/components/StatsCards";
 import { JobTable } from "@/components/JobTable";
 import { CompanyTable } from "@/components/CompanyTable";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { InterviewScheduler } from "@/components/InterviewScheduler";
-import { DailyAppsChart } from "@/components/DailyAppsChart";
 import { PipelineFunnel } from "@/components/PipelineFunnel";
-import { SourcePieChart } from "@/components/SourcePieChart";
-import { SalaryHistogram } from "@/components/SalaryHistogram";
 import { RejectionLog } from "@/components/RejectionLog";
+import { BestShots } from "@/components/BestShots";
+import { LaneBreakdown } from "@/components/LaneBreakdown";
+import { SourceROI } from "@/components/SourceROI";
+import { StaleSweepCard } from "@/components/StaleSweepCard";
 import { FilterBar } from "@/components/FilterBar";
+
+// Recharts-backed components are heavy (~410KB chunk) and live below the
+// fold. Lazy-load them so the initial paint isn't blocked by chart code the
+// user may never scroll to. The Suspense fallback keeps layout from jumping.
+const DailyAppsChart = lazy(() =>
+  import("@/components/DailyAppsChart").then((m) => ({ default: m.DailyAppsChart })),
+);
+const SourcePieChart = lazy(() =>
+  import("@/components/SourcePieChart").then((m) => ({ default: m.SourcePieChart })),
+);
+const SalaryHistogram = lazy(() =>
+  import("@/components/SalaryHistogram").then((m) => ({ default: m.SalaryHistogram })),
+);
+const TimeToReplyChart = lazy(() =>
+  import("@/components/TimeToReplyChart").then((m) => ({ default: m.TimeToReplyChart })),
+);
+
+/** Skeleton placeholder while a chart's chunk is downloading. */
+function ChartSkeleton({ height = 240 }: { height?: number }) {
+  return (
+    <div
+      className="border rounded-lg bg-card shadow-sm animate-pulse"
+      style={{ height }}
+      aria-hidden
+    />
+  );
+}
 import { DEFAULT_FILTERS, type Filters } from "@/lib/url-filters";
 import { EditJobDrawer } from "@/components/EditJobDrawer";
 import { Input } from "@/components/ui/input";
@@ -176,6 +204,16 @@ const Index = () => {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...patch } : j)));
   };
 
+  // Bulk stale-sweep callback. The card updates DB in chunks then hands back
+  // the list of ids it ghosted; we sync the local jobs array so the funnel +
+  // tiles re-render without waiting for the next poll.
+  const handleStaleSwept = useCallback((updatedIds: string[]) => {
+    const set = new Set(updatedIds);
+    setJobs((prev) =>
+      prev.map((j) => (set.has(j.id) ? { ...j, status: "ghosted" as JobStatus } : j)),
+    );
+  }, []);
+
   const handleClearFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
     setSearch("");
@@ -256,12 +294,14 @@ const Index = () => {
       <main id="dashboard-main" className="container max-w-screen-2xl mx-auto px-4 py-6 space-y-8">
         {/* SECTION: Snapshot */}
         <section className="space-y-4">
-          <SectionHeading title="Snapshot" hint="Top-of-funnel + recent rejections" />
+          <SectionHeading title="Snapshot" hint="Top-of-funnel · best shots · recent rejections" />
           <StatsCards jobs={jobs} interviewCount={interviewCount} />
+          <StaleSweepCard jobs={jobs} onSwept={handleStaleSwept} />
           <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
             <PipelineFunnel jobs={jobs} interviewCount={interviewCount} onStageClick={setFunnelStage} activeStage={funnelStage} />
             <RejectionLog />
           </div>
+          <BestShots jobs={jobs} onEdit={setEditJob} />
         </section>
 
         {/* SECTION: In Motion */}
@@ -272,12 +312,25 @@ const Index = () => {
 
         {/* SECTION: Trends */}
         <section className="space-y-4">
-          <SectionHeading title="Trends" hint="Daily volume, source mix, salary spread" />
+          <SectionHeading title="Trends" hint="By lane · source ROI · time-to-reply · daily volume · salary spread" />
+          <LaneBreakdown jobs={jobs} />
+          <SourceROI jobs={jobs} />
           <div className="grid gap-4 lg:grid-cols-2">
-            <DailyAppsChart jobs={jobs} />
-            <SourcePieChart jobs={jobs} />
+            <Suspense fallback={<ChartSkeleton />}>
+              <DailyAppsChart jobs={jobs} />
+            </Suspense>
+            <Suspense fallback={<ChartSkeleton />}>
+              <TimeToReplyChart jobs={jobs} />
+            </Suspense>
           </div>
-          <SalaryHistogram jobs={jobs} />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Suspense fallback={<ChartSkeleton />}>
+              <SourcePieChart jobs={jobs} />
+            </Suspense>
+            <Suspense fallback={<ChartSkeleton />}>
+              <SalaryHistogram jobs={jobs} />
+            </Suspense>
+          </div>
         </section>
 
         {/* SECTION: All Applications */}

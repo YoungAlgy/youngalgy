@@ -60,6 +60,8 @@ export function filterJobs(args: FilterArgs): Job[] {
     const matchesSource =
       filters.sources.length === 0 ||
       (j.source ? filters.sources.includes(j.source) : false);
+    const matchesLane =
+      filters.lanes.length === 0 || filters.lanes.includes(j.lane);
 
     const t = new Date(j.appliedDate).getTime();
     let matchesDate = true;
@@ -93,6 +95,7 @@ export function filterJobs(args: FilterArgs): Job[] {
       matchesSearch &&
       matchesStatus &&
       matchesSource &&
+      matchesLane &&
       matchesDate &&
       matchesSalary &&
       matchesUrl &&

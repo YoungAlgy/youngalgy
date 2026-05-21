@@ -11,12 +11,20 @@ describe("filtersFromParams", () => {
     const f = filtersFromParams(new URLSearchParams());
     expect(f.statuses).toEqual([]);
     expect(f.sources).toEqual([]);
+    expect(f.lanes).toEqual([]);
     expect(f.dateRange).toBe("all");
     expect(f.customFrom).toBeUndefined();
     expect(f.customTo).toBeUndefined();
     expect(f.salaryMin).toBe(0);
     expect(f.hasUrl).toBe(false);
     expect(f.replyState).toBe("all");
+  });
+
+  it("parses lane= as comma-separated and drops invalid lane values", () => {
+    const f = filtersFromParams(
+      new URLSearchParams("lane=CRYPTO,SUPPORT,BOGUS,OPERATOR"),
+    );
+    expect(f.lanes).toEqual(["CRYPTO", "SUPPORT", "OPERATOR"]);
   });
 
   it("parses comma-separated statuses + sources", () => {
@@ -80,6 +88,12 @@ describe("paramsFromFilters", () => {
     expect(p.get("source")).toBe("linkedin,wellfound");
   });
 
+  it("encodes lanes as comma joins; omits when empty", () => {
+    expect(paramsFromFilters(DEFAULT_FILTERS, "", "kanban", "score").get("lane")).toBeNull();
+    const f: Filters = { ...DEFAULT_FILTERS, lanes: ["CRYPTO", "OPERATOR"] };
+    expect(paramsFromFilters(f, "", "kanban", "score").get("lane")).toBe("CRYPTO,OPERATOR");
+  });
+
   it("omits salaryMin when 0 (default), encodes when >0", () => {
     expect(paramsFromFilters({ ...DEFAULT_FILTERS, salaryMin: 0 }, "", "kanban", "score").get("salaryMin")).toBeNull();
     expect(paramsFromFilters({ ...DEFAULT_FILTERS, salaryMin: 50000 }, "", "kanban", "score").get("salaryMin")).toBe(
@@ -124,6 +138,7 @@ describe("filtersFromParams ↔ paramsFromFilters round-trip", () => {
     const original: Filters = {
       statuses: ["applied", "phone_screen"],
       sources: ["linkedin"],
+      lanes: ["CRYPTO", "OPERATOR"],
       dateRange: "custom",
       customFrom: "2026-04-01",
       customTo: "2026-04-29",

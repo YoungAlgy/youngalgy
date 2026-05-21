@@ -1,3 +1,5 @@
+import { deriveLane, type Lane } from "./lane";
+
 export type JobStatus =
   | "saved"
   | "applied"
@@ -76,6 +78,8 @@ export interface Job {
   proposal?: string | null;
   firstReplyAt?: string | null;
   replyKind?: ReplyKind | null;
+  /** Derived client-side from title + source. See src/lib/lane.ts. */
+  lane: Lane;
 }
 
 // Per the 2026-04-29 cleanup plan (S9) + 2026-05-08 full-tokenization pass:
@@ -136,5 +140,6 @@ export function mapOpportunityToJob(opp: Opportunity): Job {
     proposal: opp.proposal,
     firstReplyAt: opp.first_reply_at ?? null,
     replyKind: opp.reply_kind ?? null,
+    lane: deriveLane({ title: opp.title, company: opp.company, source: opp.source, url: opp.url }),
   };
 }

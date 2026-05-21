@@ -30,13 +30,9 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2021", title: "BAYC founding collective", tag: "ART" },
   { year: "2022", title: "$5M+ raised across charity drops", tag: "CHARITY" },
   { year: "2025", title: "OpenSea seed", tag: "INVESTING" },
-  { year: "2026", title: "Ava Health · Recruiter → Builder", tag: "HEALTHCARE" },
-  { year: "2026", title: "Money Mitch Vault · private artist platform", tag: "MUSIC / SOFTWARE" },
-  { year: "2026", title: "Beacon · healthcare recruiter outreach platform", tag: "RECRUITING SAAS" },
-  { year: "2026", title: "FreeJobPost + FreeResumePost launch", tag: "SEO / FREE APPS" },
-  { year: "2026", title: "Mitchmark · prospect dashboard", tag: "FAMILY / SOFTWARE" },
-  { year: "2026", title: "Alpha · digest app", tag: "DIGEST SAAS" },
-  { year: "2026", title: "Job-seeker dashboard", tag: "PORTFOLIO" },
+  { year: "2026", title: "Ava Health + Beacon · healthcare CRM + recruiter outreach", tag: "HEALTHCARE" },
+  { year: "2026", title: "Money Mitch Vault + Studio + Toggle Town hub · music + audio + game", tag: "MUSIC / GAME" },
+  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Mitchmark + The Downs + Job-seeker dashboard · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
   { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
 ];
 
@@ -46,22 +42,6 @@ export type LoadoutRow = {
 };
 
 export const loadout: readonly LoadoutRow[] = [
-  {
-    label: "SALES & RECRUITING",
-    chips: [
-      "Closing",
-      "Cold outreach",
-      "Pipeline design",
-      "Recruiting",
-      "Talent mgmt",
-      "A&R",
-      "Negotiation",
-      "Account mgmt",
-      "GTM strategy",
-      "Storytelling",
-      "Customer success",
-    ],
-  },
   {
     label: "SOFTWARE",
     chips: [
@@ -75,18 +55,6 @@ export const loadout: readonly LoadoutRow[] = [
       "Scikit-learn",
       "SQL",
       "Tailwind",
-    ],
-  },
-  {
-    label: "MUSIC & A&R",
-    chips: [
-      "Studio engineering",
-      "Mix / master",
-      "Catalog strategy",
-      "Artist development",
-      "Pro Tools",
-      "Distribution",
-      "Roster building",
     ],
   },
   {
@@ -114,6 +82,18 @@ export const loadout: readonly LoadoutRow[] = [
     ],
   },
   {
+    label: "MUSIC & A&R",
+    chips: [
+      "Studio engineering",
+      "Mix / master",
+      "Catalog strategy",
+      "Artist development",
+      "Pro Tools",
+      "Distribution",
+      "Roster building",
+    ],
+  },
+  {
     label: "BRAND & MARKETING",
     chips: [
       "SEO",
@@ -123,6 +103,22 @@ export const loadout: readonly LoadoutRow[] = [
       "Figma",
       "Copywriting",
       "Social rollouts",
+    ],
+  },
+  {
+    label: "SALES & RECRUITING",
+    chips: [
+      "Closing",
+      "Cold outreach",
+      "Pipeline design",
+      "Recruiting",
+      "Talent mgmt",
+      "A&R",
+      "Negotiation",
+      "Account mgmt",
+      "GTM strategy",
+      "Storytelling",
+      "Customer success",
     ],
   },
 ];

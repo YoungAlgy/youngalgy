@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import {
   Send, CalendarRange, CalendarClock, CalendarCheck, PercentCircle,
-  HourglassIcon, AlertTriangle,
+  HourglassIcon, Timer, Flame,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Job, isStale } from "@/lib/types";
+import { Job } from "@/lib/types";
 
-const STALE_DAYS = 14;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 interface Props {
   /** Already-fetched jobs from Index.tsx — derive everything client-side. */
@@ -34,25 +34,44 @@ export function StatsCards({ jobs, interviewCount }: Props) {
     let today = 0;
     let thisWeek = 0;
     let awaitingReply = 0;
-    let stale = 0;
     let rejections = 0;
+    let lastApplyMs = 0;
+    const replyDays: number[] = [];
 
     for (const j of jobs) {
       totalSubmitted += 1;
-      const t = new Date(j.appliedDate).getTime();
-      if (t >= todayStartMs) today += 1;
-      if (t >= weekAgoMs) thisWeek += 1;
-      if (j.status === "applied") {
-        if (!j.firstReplyAt) {
-          awaitingReply += 1;
-          if (isStale({
-            status: j.status,
-            first_reply_at: j.firstReplyAt ?? null,
-            created_at: j.appliedDate,
-          })) stale += 1;
-        }
-      }
+      const submittedMs = new Date(j.appliedDate).getTime();
+      if (submittedMs >= todayStartMs) today += 1;
+      if (submittedMs >= weekAgoMs) thisWeek += 1;
+      if (j.status === "applied" && !j.firstReplyAt) awaitingReply += 1;
       if (j.status === "rejected") rejections += 1;
+      if (submittedMs > lastApplyMs) lastApplyMs = submittedMs;
+      // Days from submission to first reply — only counted when a real reply
+      // landed (not for status='applied' awaiting rows). Pre-trigger backfill
+      // rows that got stamped to created_at land as 0 days, which still tells
+      // the algorithmic-auto-filter story honestly.
+      if (j.firstReplyAt) {
+        const days = Math.max(
+          0,
+          Math.round((new Date(j.firstReplyAt).getTime() - submittedMs) / DAY_MS),
+        );
+        replyDays.push(days);
+      }
+    }
+
+    // Days since the most recent application. Null when there are no apps yet.
+    const daysSinceLastApply = lastApplyMs > 0
+      ? Math.max(0, Math.floor((now - lastApplyMs) / DAY_MS))
+      : null;
+
+    // Median days to first reply across all rows that ever got a response.
+    replyDays.sort((a, b) => a - b);
+    let medianDaysToReply: number | null = null;
+    if (replyDays.length > 0) {
+      const mid = Math.floor(replyDays.length / 2);
+      medianDaysToReply = replyDays.length % 2 === 1
+        ? replyDays[mid]
+        : Math.round((replyDays[mid - 1] + replyDays[mid]) / 2);
     }
 
     const responded = interviewCount + rejections;
@@ -64,24 +83,49 @@ export function StatsCards({ jobs, interviewCount }: Props) {
       thisWeek,
       awaitingReply,
       interviews: interviewCount,
-      stale,
+      medianDaysToReply,
+      daysSinceLastApply,
       responseRate,
     };
   }, [jobs, interviewCount]);
 
   const responseRateGood = counts.responseRate > 5;
+  // Sub-4d median = mostly algorithmic auto-filter (warning signal).
+  // 7d+ median = mostly human review (decent signal).
+  const medianFast = counts.medianDaysToReply !== null && counts.medianDaysToReply < 4;
+  // Cadence color ramp: 0d green, 1-3d info, 4-7d warning, 8+d destructive.
+  const cadenceColor = counts.daysSinceLastApply === null
+    ? "text-muted-foreground"
+    : counts.daysSinceLastApply === 0
+      ? "text-success"
+      : counts.daysSinceLastApply <= 3
+        ? "text-info"
+        : counts.daysSinceLastApply <= 7
+          ? "text-warning"
+          : "text-destructive";
 
   const stats = [
     { label: "Total Submitted", value: counts.totalSubmitted, icon: Send, color: "text-primary" },
     { label: "Today",           value: counts.today,          icon: CalendarCheck, color: counts.today > 0 ? "text-success" : "text-muted-foreground" },
     { label: "This Week",       value: counts.thisWeek,       icon: CalendarRange, color: "text-info" },
+    {
+      label: "Days Since Last",
+      value: counts.daysSinceLastApply === null ? "—" : `${counts.daysSinceLastApply}d`,
+      icon: Flame,
+      color: cadenceColor,
+    },
     { label: "Awaiting Reply",  value: counts.awaitingReply,  icon: HourglassIcon, color: "text-warning" },
     { label: "Interviews",      value: counts.interviews,     icon: CalendarClock, color: "text-stage" },
     {
-      label: `Stale (>${STALE_DAYS}d)`,
-      value: counts.stale,
-      icon: AlertTriangle,
-      color: counts.stale > 0 ? "text-destructive" : "text-muted-foreground",
+      label: "Median Days to Reply",
+      value: counts.medianDaysToReply === null ? "—" : `${counts.medianDaysToReply}d`,
+      icon: Timer,
+      // Fast median = auto-filter rejection-bots fired; lean toward warning color.
+      color: counts.medianDaysToReply === null
+        ? "text-muted-foreground"
+        : medianFast
+          ? "text-destructive"
+          : "text-info",
     },
     {
       label: "Response Rate",
@@ -91,10 +135,9 @@ export function StatsCards({ jobs, interviewCount }: Props) {
     },
   ];
 
-  // Mobile: 2 cols × 4 rows (with 7 tiles the last cell hangs solo on the
-  // 4th row — still readable). ≥sm: 3 cols × 3 rows. ≥lg: 7 cols × 1 row.
+  // Mobile: 2 cols × 4 rows. ≥sm: 4 cols × 2 rows. ≥lg: 8 cols × 1 row.
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
       {stats.map((stat) => (
         <Card key={stat.label} className="border shadow-sm">
           <CardContent className="p-4 flex items-center gap-3">

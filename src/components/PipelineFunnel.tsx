@@ -20,12 +20,14 @@ interface Props {
   activeStage?: string | null;
 }
 
+// "Hired" was dropped 2026-05-21 — it's not in the JobStatus union and was
+// always rendering as 0, just adding visual noise. Wire it back if/when a
+// distinct hired status lands (e.g. status='hired' or a hire_date column).
 const BASE: Omit<Stage, "count">[] = [
   { key: "applied",      label: "Submitted",    fill: "bg-info" },
   { key: "phone_screen", label: "Phone Screen", fill: "bg-screen" },
   { key: "interview",    label: "Interview",    fill: "bg-stage" },
   { key: "offer",        label: "Offer",        fill: "bg-success" },
-  { key: "hired",        label: "Hired",        fill: "bg-success" },
 ];
 
 /**
@@ -38,7 +40,6 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
     let phoneScreen = 0;
     let interview = 0;
     let offer = 0;
-    const hired = 0;
 
     for (const j of jobs) {
       submitted += 1; // total ever submitted == count in opportunities table (manual)
@@ -47,8 +48,6 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
         case "interview":    interview += 1; break;
         case "offer":        offer += 1; break;
       }
-      // hired isn't in the JobStatus union as a distinct value; left at 0
-      // unless we add it. Keeping the bar so the funnel shape is stable.
     }
 
     return [
@@ -59,7 +58,6 @@ export function PipelineFunnel({ jobs, interviewCount, onStageClick, activeStage
       // pre-interview-scheduled and actually-scheduled).
       { ...BASE[2], count: Math.max(interview, interviewCount) },
       { ...BASE[3], count: offer },
-      { ...BASE[4], count: hired },
     ];
   }, [jobs, interviewCount]);
 

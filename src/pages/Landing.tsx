@@ -267,7 +267,7 @@ const Landing = () => {
             className="text-base lg:text-lg mb-8 sm:mb-10 mx-auto max-w-xl"
             style={{ color: "var(--ink)", opacity: 0.8 }}
           >
-            Open to operator, builder, and GTM roles. Tampa, FL — remote or hybrid.
+            Open to operator, builder, and GTM roles. Available for select freelance app builds. Tampa, FL — remote or hybrid.
           </p>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
             <a

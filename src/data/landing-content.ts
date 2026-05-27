@@ -32,7 +32,7 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2025", title: "OpenSea seed", tag: "INVESTING" },
   { year: "2026", title: "Ava Health + Beacon · healthcare CRM + recruiter outreach", tag: "HEALTHCARE" },
   { year: "2026", title: "Money Mitch Vault + Studio + Toggle Town hub · music + audio + game", tag: "MUSIC / GAME" },
-  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Mitchmark + The Downs + Job-seeker dashboard · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
+  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Mitchmark + The Downs + Bay Bite + Job-seeker dashboard · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
   { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
 ];
 

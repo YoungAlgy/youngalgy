@@ -30,6 +30,12 @@ export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-26",
+    title: "Route picks up Bay Bite (toggle.town/fishing) in the 2026 SaaS row",
+    body: "The 2026 'personal SaaS + dashboards' row now lists Bay Bite alongside The Downs and the other niche-hobby tool apps — natural pairing since both Bay Bite (Tampa Bay fishing log) and The Downs (horse-racing bot dashboard) are passion-project apps shipped through Toggle Town. Bay Bite v0.2.0 went live 2026-05-24 at toggle.town/fishing with tab-bar nav, shared catch log on Supabase, and the first three layers of the learning loop active.",
+    tag: "improved",
+  },
+  {
+    date: "2026-05-26",
     title: "Contact pitch now opens the freelance lane alongside W-2 roles",
     body: "Contact section subtitle adds 'Available for select freelance app builds' between the operator/builder/GTM line and the Tampa location line. Net-new lane signal — until now the landing only invited recruiters for full-time roles, with no surface for founders or operators who want a build done on contract. The 'select' framing keeps it from sounding spammy/hungry; the existing operator/builder/GTM line still leads so the W-2 positioning isn't diluted.",
     tag: "improved",

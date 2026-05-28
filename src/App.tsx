@@ -17,11 +17,20 @@ const Changelog = lazy(() => import("./pages/Changelog"));
 const PasswordGate = lazy(() =>
   import("./components/PasswordGate").then((m) => ({ default: m.PasswordGate }))
 );
+// Public legal pages — NOT behind the password gate. Lazy so the landing
+// bundle stays lean, but reachable by anyone (footer links, the gate screen,
+// and direct URLs all point here).
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 
 const DashboardFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
     <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading dashboard" />
   </div>
+);
+
+const PageFallback = () => (
+  <div className="min-h-screen" aria-hidden />
 );
 
 const App = () => (
@@ -49,6 +58,22 @@ const App = () => (
                 <PasswordGate>
                   <Changelog />
                 </PasswordGate>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/privacy"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Privacy />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Terms />
               </Suspense>
             }
           />

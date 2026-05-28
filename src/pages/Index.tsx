@@ -397,6 +397,18 @@ const Index = () => {
         </section>
       </main>
 
+      <footer className="border-t border-border/60 mt-8">
+        <div className="container max-w-screen-2xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <span>© 2026 Alexander Holmes</span>
+          <nav className="flex items-center gap-4">
+            <Link to="/privacy" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Terms</Link>
+            <Link to="/changelog" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Changelog</Link>
+            <Link to="/" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Home</Link>
+          </nav>
+        </div>
+      </footer>
+
       <EditJobDrawer
         job={editJob}
         onClose={() => setEditJob(null)}

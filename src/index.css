@@ -108,6 +108,29 @@ html[data-mode] .bg-accent-primary { background: var(--accent-primary); transiti
 html[data-mode] .border-accent-primary { border-color: var(--accent-primary); transition: border-color 400ms ease; }
 html[data-mode] .border-accent-secondary { border-color: var(--accent-secondary); transition: border-color 400ms ease; }
 
+/* Legal pages (/privacy, /terms) — readable themed prose. */
+html[data-mode] .legal-body { font-family: var(--font-body); font-size: 0.95rem; }
+html[data-mode] .legal-body p { margin: 0 0 1rem 0; }
+html[data-mode] .legal-body h2 {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  color: var(--accent-secondary);
+  margin: 2rem 0 0.6rem 0;
+}
+html[data-mode] .legal-body ul { margin: 0 0 1rem 0; padding-left: 1.1rem; list-style: disc; }
+html[data-mode] .legal-body li { margin: 0 0 0.4rem 0; }
+html[data-mode] .legal-body a { color: var(--accent-secondary); text-decoration: underline; text-underline-offset: 2px; }
+html[data-mode] .legal-body strong { color: var(--ink); font-weight: 700; }
+html[data-mode] .legal-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.05em 0.35em;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
 html[data-mode="miami"] .landing-stat-number {
   text-shadow: var(--glow);
 }

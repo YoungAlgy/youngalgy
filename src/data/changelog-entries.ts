@@ -29,6 +29,18 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
+    date: "2026-05-28",
+    title: "Privacy Policy + Terms of Use shipped (public, covering the site and the dashboard)",
+    body: "youngalgy.com now has real /privacy and /terms pages instead of dead footer links. They're public (reachable without the dashboard password — legal pages always should be) and styled to match the landing's Miami/Pirate theme. Each policy explicitly covers both surfaces: the public portfolio (no signup, no tracking beyond privacy-friendly Vercel Analytics, theme preference stored locally) and the private password-gated dashboard (a single-operator job tracker backed by Supabase — not a data-collecting product). Footer links now appear on the landing, the dashboard, the changelog, and the password gate, so you can reach the policies from anywhere. Governing law is Florida; contact routes to the site email.",
+    tag: "new",
+  },
+  {
+    date: "2026-05-28",
+    title: "Web3 case study + route now lead with Futureverse and the advisory track record",
+    body: "The internet-art case study was under-selling the Web3 era — it only named Universe XYZ, BAYC, and OpenSea. It now leads with Futureverse (core/early contributor — minted the first NFT from Pixel Of The Apes, then helped steer Fluf World, Altered State Machines, and The Root Network L1) and folds in the full advisory track record: advisor + seed backer across 5 Web3 projects plus hundreds of founders pro bono. The card period widened from 2021–2022 to 2021–2025 to cover the whole run, and the Polymorphs shipping credit (first changeable-outfit character NFTs on Ethereum) is now stated outright. The Route timeline picks up two matching rows — a 2021 Futureverse core-contributor row and a 2022 'advisor + seed · 5 Web3 projects + 100s of founders' row — and the Web3 loadout adds Metaverse / L1 and Advisory + seed chips. Brings the landing in line with the resume + LinkedIn + Indeed, where Futureverse was added across the board.",
+    tag: "improved",
+  },
+  {
     date: "2026-05-26",
     title: "Route picks up Bay Bite (toggle.town/fishing) in the 2026 SaaS row",
     body: "The 2026 'personal SaaS + dashboards' row now lists Bay Bite alongside The Downs and the other niche-hobby tool apps — natural pairing since both Bay Bite (Tampa Bay fishing log) and The Downs (horse-racing bot dashboard) are passion-project apps shipped through Toggle Town. Bay Bite v0.2.0 went live 2026-05-24 at toggle.town/fishing with tab-bar nav, shared catch log on Supabase, and the first three layers of the learning loop active.",

@@ -128,6 +128,17 @@ const Changelog = () => {
           ))}
         </div>
       </main>
+
+      <footer className="border-t border-border/60 mt-4">
+        <div className="container max-w-3xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <span>© 2026 Alexander Holmes</span>
+          <nav className="flex items-center gap-4">
+            <Link to="/privacy" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Terms</Link>
+            <Link to="/dashboard" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Dashboard</Link>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 };

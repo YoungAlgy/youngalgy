@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { BoatLogo } from "@/components/landing/BoatLogo";
 import { ThemeToggle, type Mode } from "@/components/landing/ThemeToggle";
@@ -335,7 +336,27 @@ const Landing = () => {
           <p className="landing-mono md:text-left" style={{ opacity: 0.6 }}>
             © 2026 Alexander Holmes
           </p>
-          <p className="flex items-center justify-center md:justify-end gap-4">
+          <p className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2">
+            <Link
+              to="/privacy"
+              className="landing-mono"
+              style={{ color: "var(--accent-secondary)", textDecoration: "none" }}
+            >
+              PRIVACY
+            </Link>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>
+              ·
+            </span>
+            <Link
+              to="/terms"
+              className="landing-mono"
+              style={{ color: "var(--accent-secondary)", textDecoration: "none" }}
+            >
+              TERMS
+            </Link>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>
+              ·
+            </span>
             <a
               href={TOGGLE_TOWN_URL}
               target="_blank"

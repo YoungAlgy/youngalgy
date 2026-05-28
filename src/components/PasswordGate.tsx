@@ -128,6 +128,13 @@ export function PasswordGate({ children }: PasswordGateProps) {
           </Button>
         </form>
         <p className="text-xs text-muted-foreground">Sessions persist for ~7 days.</p>
+        <nav className="flex items-center justify-center gap-3 text-[11px] text-muted-foreground/80">
+          <a href="/privacy" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Privacy</a>
+          <span aria-hidden>·</span>
+          <a href="/terms" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Terms</a>
+          <span aria-hidden>·</span>
+          <a href="/" className="hover:text-foreground underline-offset-4 hover:underline transition-colors">Home</a>
+        </nav>
       </Card>
     </div>
   );

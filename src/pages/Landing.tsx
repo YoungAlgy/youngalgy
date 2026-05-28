@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { BoatLogo } from "@/components/landing/BoatLogo";
-import { ThemeToggle, type Mode } from "@/components/landing/ThemeToggle";
+import { ThemeToggle } from "@/components/landing/ThemeToggle";
+import { useThemeMode } from "@/components/landing/useThemeMode";
 import {
   AvaMapIllustration,
   NftFrameIllustration,
@@ -21,33 +21,6 @@ import {
   cases,
   type Case,
 } from "@/data/landing-content";
-
-const STORAGE_KEY = "landing-mode";
-
-function useLandingMode(): [Mode, (m: Mode) => void] {
-  const [mode, setMode] = useState<Mode>("pirate");
-
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    const next: Mode = saved === "miami" || saved === "pirate" ? saved : "pirate";
-    setMode(next);
-    document.documentElement.setAttribute("data-mode", next);
-    return () => {
-      document.documentElement.removeAttribute("data-mode");
-    };
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-mode", mode);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, mode);
-    } catch {
-      // ignore quota / private-mode errors — preference just won't persist
-    }
-  }, [mode]);
-
-  return [mode, setMode];
-}
 
 function Illustration({ name }: { name: Case["illustration"] }) {
   if (name === "ava-map") return <AvaMapIllustration />;
@@ -107,7 +80,7 @@ function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
 }
 
 const Landing = () => {
-  const [mode, setMode] = useLandingMode();
+  const [mode, setMode] = useThemeMode();
 
   return (
     <div className="min-h-screen relative" style={{ background: "var(--bg)", color: "var(--ink)" }}>

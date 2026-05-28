@@ -15,21 +15,46 @@ import { useThemeMode } from "./useThemeMode";
  */
 type LegalLayoutProps = {
   title: string;
+  description: string;
   lastUpdated: string;
   children: ReactNode;
 };
 
-export function LegalLayout({ title, lastUpdated, children }: LegalLayoutProps) {
+export function LegalLayout({ title, description, lastUpdated, children }: LegalLayoutProps) {
   const [mode, setMode] = useThemeMode();
 
-  // Per-route document title; restored on unmount.
+  // Per-route head tags: title, meta description, and canonical. Without these
+  // the legal pages inherit index.html's landing description and
+  // canonical=https://youngalgy.com/, so Google would canonicalize /privacy
+  // and /terms back to the homepage and never index them on their own. All
+  // restored on unmount so other routes aren't affected.
   useEffect(() => {
-    const prev = document.title;
+    const prevTitle = document.title;
     document.title = `${title} · Alexander Holmes`;
+
+    const descEl = document.head.querySelector<HTMLMetaElement>('meta[name="description"]');
+    const prevDesc = descEl?.getAttribute("content") ?? null;
+    if (descEl) descEl.setAttribute("content", description);
+
+    let canonicalEl = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const createdCanonical = !canonicalEl;
+    const prevCanonical = canonicalEl?.getAttribute("href") ?? null;
+    if (!canonicalEl) {
+      canonicalEl = document.createElement("link");
+      canonicalEl.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute("href", window.location.origin + window.location.pathname);
+
     return () => {
-      document.title = prev;
+      document.title = prevTitle;
+      if (descEl && prevDesc !== null) descEl.setAttribute("content", prevDesc);
+      if (canonicalEl) {
+        if (createdCanonical) canonicalEl.remove();
+        else if (prevCanonical !== null) canonicalEl.setAttribute("href", prevCanonical);
+      }
     };
-  }, [title]);
+  }, [title, description]);
 
   return (
     <div className="relative z-10 min-h-screen" style={{ color: "var(--ink)" }}>

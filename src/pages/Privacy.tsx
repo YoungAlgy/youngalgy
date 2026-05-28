@@ -12,7 +12,11 @@ import { CONTACT_EMAIL } from "@/data/landing-content";
  * tracker is added.
  */
 const Privacy = () => (
-  <LegalLayout title="Privacy" lastUpdated="2026-05-28">
+  <LegalLayout
+    title="Privacy"
+    description="Privacy policy for youngalgy.com — what the public portfolio and the private job-tracking dashboard do (and don't) collect. Operated solely by Alexander Holmes."
+    lastUpdated="2026-05-28"
+  >
     <p>
       <strong>Short version:</strong> youngalgy.com is a personal site run by
       Alexander Holmes (Tampa, FL). The public landing page collects no

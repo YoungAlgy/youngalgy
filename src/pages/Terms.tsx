@@ -11,7 +11,11 @@ import { CONTACT_EMAIL } from "@/data/landing-content";
  * not a commercial service with users. Governing law: Florida, USA.
  */
 const Terms = () => (
-  <LegalLayout title="Terms" lastUpdated="2026-05-28">
+  <LegalLayout
+    title="Terms"
+    description="Terms of use for youngalgy.com — Alexander Holmes's personal portfolio and private job-tracking tool. Provided as-is; governing law Florida."
+    lastUpdated="2026-05-28"
+  >
     <p>
       <strong>Short version:</strong> youngalgy.com is Alexander Holmes&apos;s
       personal portfolio, plus a private job-tracking tool for my own use.

@@ -131,7 +131,6 @@ export type Case = {
   number: string;
   category: string;
   period: string;
-  spineLabel: string;
   title: string;
   body: string;
   stats: ReadonlyArray<{ value: string; label: string; sub: string }>;
@@ -144,7 +143,6 @@ export const cases: readonly Case[] = [
     number: "01",
     category: "HEALTHCARE",
     period: "2026 — NOW",
-    spineLabel: "HEALTHCARE / OPERATIONS",
     title: "Ava Health.",
     body: "Hired as a recruiter. Built the platform. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses & therapists across Florida. React, Node, PostgreSQL, Supabase.",
     stats: [],
@@ -154,7 +152,6 @@ export const cases: readonly Case[] = [
     number: "02",
     category: "INTERNET ART",
     period: "2021 — 2025",
-    spineLabel: "WEB3 / DROPS",
     title: "Futureverse. Universe XYZ. BAYC.",
     body: "Core contributor at Futureverse — minted the first NFT from Pixel Of The Apes, then helped steer Fluf World, Altered State Machines, and The Root Network (an L1 chain). Project-managed Universe XYZ's $5M+ in charity drops (Lobby Lobsters alone hit $4.4M) and shipped Polymorphs — the first changeable-outfit character NFTs on Ethereum. Founding-collective member of Bored Ape Yacht Club, OpenSea seed investor, and advisor + seed backer across 5 Web3 projects plus hundreds of founders pro bono.",
     stats: [],
@@ -165,7 +162,6 @@ export const cases: readonly Case[] = [
     number: "03",
     category: "MUSIC",
     period: "2018 — PRESENT",
-    spineLabel: "MUSIC / TALENT MANAGEMENT",
     title: "Money Mitch. Big Gates Records.",
     body: "Connected his younger brother to Big Gates Records — stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music — private vault, fan tiers, content drops.",
     stats: [],
@@ -175,7 +171,6 @@ export const cases: readonly Case[] = [
     number: "04",
     category: "QUANT",
     period: "PARALLEL · ALWAYS",
-    spineLabel: "QUANT",
     title: "Quant Trading. Live capital.",
     body: "Built in Python on his own time: backtesting harness, regime detection (Kalman filter + HMM), VWAP bands, drawdown controller. Trades on Alpaca (equities) and Kalshi (prediction markets) with real capital.",
     stats: [],

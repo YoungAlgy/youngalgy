@@ -95,6 +95,24 @@ const Index = () => {
   const [editJob, setEditJob] = useState<Job | null>(null);
   const navigate = useNavigate();
 
+  // Per-route <title> (the dashboard never set one, so it inherited a stale
+  // title after navigating back from the legal/changelog pages, which restore
+  // the previous title on unmount). Also inject a belt-and-suspenders noindex:
+  // robots.txt already disallows /dashboard, but this guards a leaked URL from
+  // being indexed via a path robots.txt doesn't cover.
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = "Dashboard · Alexander Holmes";
+    const robots = document.createElement("meta");
+    robots.name = "robots";
+    robots.content = "noindex, nofollow";
+    document.head.appendChild(robots);
+    return () => {
+      document.title = prevTitle;
+      robots.remove();
+    };
+  }, []);
+
   const fetchJobs = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
 

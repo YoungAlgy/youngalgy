@@ -13,6 +13,7 @@ import {
   CONTACT_EMAIL,
   TOGGLE_TOWN_URL,
   ALPHA_URL,
+  ALPHA_SAMPLE_URL,
   FACEBOOK_URL,
   LINKEDIN_URL,
   GITHUB_URL,
@@ -159,6 +160,66 @@ const Landing = () => {
                 }}
               >
                 GET IN TOUCH <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <div className="landing-divider border-t" />
+
+        {/* alpha. — the one thing on this site you can buy right now. Prime
+            real estate after the hero, conversion-focused (sample + subscribe),
+            without displacing the Ava Health flagship in the case studies. */}
+        <section aria-labelledby="alpha-heading" className="py-12 sm:py-16">
+          <div
+            className="rounded-2xl px-6 sm:px-10 py-10 sm:py-12"
+            style={{
+              border: "1px solid color-mix(in srgb, var(--ink) 12%, transparent)",
+              background: "color-mix(in srgb, var(--accent-primary) 7%, transparent)",
+            }}
+          >
+            <div
+              className="landing-mono mb-5 inline-flex items-center gap-2"
+              style={{ color: "var(--accent-secondary)" }}
+            >
+              <span
+                className="inline-block rounded-full"
+                style={{ width: 6, height: 6, background: "var(--accent-secondary)" }}
+              />
+              NOW LIVE · A WEEKLY LETTER
+            </div>
+            <h2
+              id="alpha-heading"
+              className="landing-display text-[clamp(2.5rem,7vw,4.5rem)] period-dot mb-5"
+              style={{ color: "var(--ink)" }}
+            >
+              alpha
+            </h2>
+            <p
+              className="text-base lg:text-lg max-w-xl mb-9"
+              style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
+            >
+              A $5/month personal letter on the five topics you care about —
+              sourced, edited, and worth your time. Every Sunday. My own
+              product, built and run end to end.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <a
+                href={ALPHA_URL}
+                className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
+                style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
+              >
+                SUBSCRIBE · $5/MO <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+              <a
+                href={ALPHA_SAMPLE_URL}
+                className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
+                style={{
+                  border: "1px solid var(--accent-secondary)",
+                  color: "var(--accent-secondary)",
+                }}
+              >
+                READ A SAMPLE <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
             </div>
           </div>

@@ -10,6 +10,7 @@
 export const CONTACT_EMAIL = "alex@avahealth.co";
 export const TOGGLE_TOWN_URL = "https://toggle.town";
 export const ALPHA_URL = "/alpha";
+export const ALPHA_SAMPLE_URL = "/alpha/sample";
 export const FACEBOOK_URL = "https://facebook.com/youngalgy";
 export const LINKEDIN_URL = "https://linkedin.com/in/youngalgy";
 export const GITHUB_URL = "https://github.com/youngalgy";

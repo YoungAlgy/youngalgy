@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 /**
  * Cosmetic-but-RLS-backed password gate for /dashboard.
  *
- * UX: type a passcode (toggle813), click Unlock, you're in. No email, no magic link.
+ * UX: type the dashboard passcode, click Unlock, you're in. No email, no magic link.
  *
  * Implementation: the typed passcode is the actual Supabase Auth password for a
  * fixed dashboard identity (`dashboard@youngalgy.local`). On Unlock we call

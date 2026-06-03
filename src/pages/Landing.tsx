@@ -152,6 +152,16 @@ const Landing = () => {
               <br />
               Holmes
             </h1>
+            <p
+              className="text-lg sm:text-xl lg:text-2xl max-w-2xl mt-6 sm:mt-7"
+              style={{ lineHeight: 1.5, color: "var(--ink)", opacity: 0.9 }}
+            >
+              Full-stack product engineer who ships solo —{" "}
+              <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>
+                ~12 products live
+              </span>{" "}
+              across healthcare data, music, quant, and web3.
+            </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
               <a
                 href={TOGGLE_TOWN_URL}

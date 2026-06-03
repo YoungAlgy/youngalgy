@@ -27,6 +27,19 @@ export interface ChangelogEntry {
 }
 
 export const changelogEntries: readonly ChangelogEntry[] = [
+  // ─── June 2026 ───────────────────────────────────────────────────────
+  {
+    date: "2026-06-02",
+    title: "Landing hero now says what I actually do",
+    body: "The homepage hero was just my name and two buttons — a first-time visitor (or a founder I'd just messaged) had no idea what I do until they scrolled. Added one understated line right under the name: full-stack product engineer who ships solo, ~12 products live across healthcare data, music, quant, and web3. States the work and stops — the case studies below carry the proof. Theme-agnostic — reads right in both the Pirate and Miami palettes.",
+    tag: "improved",
+  },
+  {
+    date: "2026-06-02",
+    title: "\"Saved\" is now a status you can set on a lead",
+    body: "You can now mark an opportunity as Saved — a lead you want to act on but haven't applied to yet — right from the status dropdown. Previously Saved rows could exist but you couldn't select the status in the UI, so researched-but-not-yet-sent leads had nowhere clean to live. Now they sit at the top of the status list, distinct from Applied, so your queue of \"go fire these\" targets is visible and trackable alongside everything in flight.",
+    tag: "improved",
+  },
   // ─── May 2026 ────────────────────────────────────────────────────────
   {
     date: "2026-05-28",

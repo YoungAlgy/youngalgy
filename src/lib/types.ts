@@ -11,6 +11,7 @@ export type JobStatus =
   | "withdrew";
 
 export const ALL_STATUSES: JobStatus[] = [
+  "saved",
   "applied",
   "phone_screen",
   "interview",

@@ -8,7 +8,10 @@
  */
 
 export const CONTACT_EMAIL = "alex@avahealth.co";
-export const TOGGLE_TOWN_URL = "https://toggle.town";
+// UTM-tagged 2026-06-01 (cross-promo engine) so toggle.town's analytics
+// attributes portfolio traffic — closes the youngalgy → hub loop. Used as
+// the href on the two portfolio CTAs that point at the hub.
+export const TOGGLE_TOWN_URL = "https://toggle.town/?utm_source=youngalgy&utm_medium=backlink";
 export const MONEY_MITCH_URL = "https://moneymitch.music";
 export const ALPHA_URL = "/alpha";
 export const ALPHA_SAMPLE_URL = "/alpha/sample";

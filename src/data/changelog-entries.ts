@@ -29,6 +29,12 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── June 2026 ───────────────────────────────────────────────────────
   {
+    date: "2026-06-03",
+    title: "Added the local-food marketplace to the timeline",
+    body: "New 2026 entry on the route/timeline: a two-sided local-food marketplace — Stripe Connect payouts, farm storefronts, pickup/delivery. Another shipped product in the builder story.",
+    tag: "improved",
+  },
+  {
     date: "2026-06-02",
     title: "Landing hero now says what I actually do",
     body: "The homepage hero was just my name and two buttons — a first-time visitor (or a founder I'd just messaged) had no idea what I do until they scrolled. Added one understated line right under the name: full-stack product engineer who ships solo, ~12 products live across healthcare data, music, quant, and web3. States the work and stops — the case studies below carry the proof. Theme-agnostic — reads right in both the Pirate and Miami palettes.",

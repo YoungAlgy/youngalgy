@@ -69,6 +69,17 @@ function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
             ))}
           </ul>
         )}
+        {data.link && (
+          <a
+            href={data.link.url}
+            target="_blank"
+            rel="noopener"
+            className="landing-mono inline-flex items-center gap-2 mt-8 text-sm hover:opacity-100 transition-opacity"
+            style={{ color: "var(--accent-primary)", opacity: 0.9 }}
+          >
+            Visit {data.link.label} &nbsp;&rarr;
+          </a>
+        )}
       </div>
 
       <div className={`flex items-center justify-center ${data.flip ? "lg:order-1" : ""}`}>

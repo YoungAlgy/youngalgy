@@ -9,6 +9,7 @@
 
 export const CONTACT_EMAIL = "alex@avahealth.co";
 export const TOGGLE_TOWN_URL = "https://toggle.town";
+export const MONEY_MITCH_URL = "https://moneymitch.music";
 export const ALPHA_URL = "/alpha";
 export const ALPHA_SAMPLE_URL = "/alpha/sample";
 export const FACEBOOK_URL = "https://facebook.com/youngalgy";
@@ -137,6 +138,7 @@ export type Case = {
   stats: ReadonlyArray<{ value: string; label: string; sub: string }>;
   illustration: "ava-map" | "nft-frame" | "cassette" | "quant-chart";
   flip?: boolean;
+  link?: { url: string; label: string };
 };
 
 export const cases: readonly Case[] = [
@@ -167,6 +169,7 @@ export const cases: readonly Case[] = [
     body: "Connected his younger brother to Big Gates Records — stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music — private vault, fan tiers, content drops.",
     stats: [],
     illustration: "cassette",
+    link: { url: MONEY_MITCH_URL, label: "moneymitch.music" },
   },
   {
     number: "04",

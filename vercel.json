@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/creditkit", "destination": "https://youngalgy.gumroad.com/l/creditkit", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/alpha", "destination": "https://alpha-chi-five.vercel.app/alpha" },
     { "source": "/alpha/:path*", "destination": "https://alpha-chi-five.vercel.app/alpha/:path*" },

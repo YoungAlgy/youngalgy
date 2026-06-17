@@ -52,7 +52,7 @@ const Terms = () => (
     <h2>Intellectual property</h2>
     <p>
       The site&apos;s copy, design, code, and the project names referenced
-      (Toggle Town, Bay Bite, The Downs, Alpha, and the rest) belong to
+      (Toggle Town, The Downs, Alpha, and the rest) belong to
       Alexander Holmes unless attributed otherwise. Third-party names,
       trademarks, and logos mentioned (employers, platforms, collections)
       remain the property of their respective owners and are used for

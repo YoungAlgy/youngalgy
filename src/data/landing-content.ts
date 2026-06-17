@@ -39,7 +39,7 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2025", title: "Floor / Rally acquired by OpenSea · received equity allocation", tag: "EXIT" },
   { year: "2026", title: "Ava Health + Beacon · healthcare CRM + recruiter outreach", tag: "HEALTHCARE" },
   { year: "2026", title: "Money Mitch Vault + Studio + Toggle Town hub · music + audio + game", tag: "MUSIC / GAME" },
-  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Mitchmark + The Downs + Bay Bite + Job-seeker dashboard · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
+  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Mitchmark + The Downs + Toggle + Job-seeker dashboard · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
   { year: "2026", title: "Local-food marketplace · two-sided platform, Stripe Connect payouts, farm storefronts + pickup/delivery", tag: "MARKETPLACE" },
   { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
 ];

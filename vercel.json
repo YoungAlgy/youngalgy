@@ -1,6 +1,7 @@
 {
   "redirects": [
-    { "source": "/creditkit", "destination": "https://youngalgy.gumroad.com/l/creditkit", "permanent": false }
+    { "source": "/creditkit", "destination": "https://youngalgy.gumroad.com/l/creditkit", "permanent": false },
+    { "source": "/hitlist", "destination": "https://mitchmark.vercel.app/", "permanent": false }
   ],
   "rewrites": [
     { "source": "/alpha", "destination": "https://alpha-chi-five.vercel.app/alpha" },

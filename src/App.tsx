@@ -22,6 +22,9 @@ const PasswordGate = lazy(() =>
 // and direct URLs all point here).
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+// Public freelance / "work with me" page — healthcare-data pipeline lead-gen.
+// Lazy + ungated like the legal pages; reachable from the landing nav + footer.
+const Freelance = lazy(() => import("./pages/Freelance"));
 
 const DashboardFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -74,6 +77,14 @@ const App = () => (
             element={
               <Suspense fallback={<PageFallback />}>
                 <Terms />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/freelance"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Freelance />
               </Suspense>
             }
           />

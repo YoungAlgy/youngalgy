@@ -1,6 +1,6 @@
 /**
  * Landing-page content. Edit here, no component edits.
- * v7 dual-theme (Miami/Pirate) — content is theme-agnostic; the visual
+ * v8 dual-theme (Alpha/Money Mitch) — content is theme-agnostic; the visual
  * layer (palette, type, glow) flips via [data-mode] on <html>.
  *
  * Per S10 standards, every claim here must match the canonical resume PDF
@@ -27,6 +27,7 @@ export type TimelineEntry = {
 
 export const timeline: readonly TimelineEntry[] = [
   { year: "2015", title: "Toggle Money recording studio opens", tag: "MUSIC / STUDIO" },
+  { year: "2016", title: "Pinellas Safe Harbor · ran support groups solo, SPC psych internship", tag: "PSYCH / SERVICE" },
   { year: "2018", title: "Mitch signs to Big Gates Records", tag: "MUSIC / AGENT" },
   { year: "2019", title: "Toggle Town · esports", tag: "MEDIA" },
   { year: "2020", title: "B.A. Psychology · USF", tag: "GRADUATED" },
@@ -149,18 +150,18 @@ export const cases: readonly Case[] = [
   {
     number: "01",
     category: "HEALTHCARE",
-    period: "2026 — NOW",
+    period: "2026 - NOW",
     title: "Ava Health.",
-    body: "Hired as a recruiter. Built the platform. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses & therapists across Florida. React, Node, PostgreSQL, Supabase.",
+    body: "Built and run the whole platform solo, then work the recruiting against it. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses and therapists across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",
   },
   {
     number: "02",
     category: "INTERNET ART",
-    period: "2021 — 2025",
+    period: "2021 - 2025",
     title: "Futureverse. Universe XYZ. BAYC.",
-    body: "Core contributor at Futureverse — minted the first NFT from Pixel Of The Apes, then helped steer Fluf World, Altered State Machines, and The Root Network (an L1 chain). Project-managed Universe XYZ's $5M+ in charity drops (Lobby Lobsters alone hit $4.4M) and shipped Polymorphs — the first changeable-outfit character NFTs on Ethereum. Founding-collective member of Bored Ape Yacht Club. Advisor + seed investor in Floor (later Rally) — acquired by OpenSea in 2025, received an equity allocation — plus 5 more Web3 projects and hundreds of founders pro bono.",
+    body: "Core contributor at Futureverse. Minted the first NFT from Pixel Of The Apes, then helped steer Fluf World, Altered State Machines, and The Root Network (an L1 chain). Project-managed Universe XYZ's $5M+ in charity drops (Lobby Lobsters alone hit $4.4M) and shipped Polymorphs, the first changeable-outfit character NFTs on Ethereum. Founding-collective member of Bored Ape Yacht Club. Advisor and seed investor in Floor (later Rally), acquired by OpenSea in 2025, received an equity allocation. Plus 5 more Web3 projects and hundreds of founders helped pro bono. An original character universe got built too: over 1,000 pages of comics and lore, 69 characters across 3 planets, each a different species with its own design. Written and designed, but never launched.",
     stats: [],
     illustration: "nft-frame",
     flip: true,
@@ -168,9 +169,9 @@ export const cases: readonly Case[] = [
   {
     number: "03",
     category: "MUSIC",
-    period: "2018 — PRESENT",
+    period: "2018 - PRESENT",
     title: "Money Mitch. Big Gates Records.",
-    body: "Connected his younger brother to Big Gates Records — stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music — private vault, fan tiers, content drops.",
+    body: "Connected his younger brother to Big Gates Records and stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music, with a private vault, fan tiers, and content drops. He writes too. Around 200 songs so far, many recorded. Lyrics are what he does best.",
     stats: [],
     illustration: "cassette",
     link: { url: MONEY_MITCH_URL, label: "moneymitch.music" },

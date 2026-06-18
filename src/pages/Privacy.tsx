@@ -27,7 +27,7 @@ const Privacy = () => (
 
     <h2>Who runs this site</h2>
     <p>
-      youngalgy.com is operated solely by Alexander Holmes — a personal
+      youngalgy.com is operated solely by Alexander Holmes, a personal
       portfolio plus a private tool, not a company or a multi-user service.
       Questions go to{" "}
       <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
@@ -39,7 +39,7 @@ const Privacy = () => (
       and no account system. It doesn&apos;t set advertising cookies or run
       fingerprinting. The only thing stored in your browser is a single{" "}
       <code>localStorage</code> entry remembering your theme choice
-      (Miami / Pirate) — it never leaves your device.
+      (Alpha / Money Mitch). It never leaves your device.
     </p>
     <p>
       The site is hosted on <strong>Vercel</strong> and uses{" "}

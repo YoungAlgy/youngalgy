@@ -2,23 +2,24 @@ import { useEffect, useState } from "react";
 import type { Mode } from "./ThemeToggle";
 
 /**
- * Shared Miami/Pirate theme hook.
+ * Shared Alpha / Money Mitch theme hook.
  *
  * Reads the persisted choice from localStorage ("landing-mode"), defaults to
- * "pirate", and reflects it onto <html data-mode> so the index.css theme vars
- * (--ink, --accent-primary, etc.) resolve. Persists on change. Used by the
- * landing page and the public legal pages so the theme choice carries across
- * them. Removes the attribute on unmount so a non-themed route doesn't inherit
- * stale vars.
+ * "alpha" (the house brand that ties youngalgy.com into the Toggle family),
+ * and reflects it onto <html data-mode> so the index.css theme vars (--ink,
+ * --accent-primary, etc.) resolve. Persists on change. Used by the landing
+ * page and the public legal pages so the theme choice carries across them.
+ * Removes the attribute on unmount so a non-themed route doesn't inherit
+ * stale vars. Old saved values (pirate/miami) fall back to the default.
  */
 const STORAGE_KEY = "landing-mode";
 
 export function useThemeMode(): [Mode, (m: Mode) => void] {
-  const [mode, setMode] = useState<Mode>("pirate");
+  const [mode, setMode] = useState<Mode>("alpha");
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    const next: Mode = saved === "miami" || saved === "pirate" ? saved : "pirate";
+    const next: Mode = saved === "alpha" || saved === "moneymitch" ? saved : "alpha";
     setMode(next);
     document.documentElement.setAttribute("data-mode", next);
     return () => {

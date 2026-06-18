@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Mail } from "lucide-react";
-import { BoatLogo } from "@/components/landing/BoatLogo";
+import { Monogram } from "@/components/landing/Monogram";
 import { ThemeToggle } from "@/components/landing/ThemeToggle";
 import { useThemeMode } from "@/components/landing/useThemeMode";
 import {
@@ -99,7 +99,7 @@ const Landing = () => {
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:rounded focus:font-semibold focus:outline-none"
-        style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
+        style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
       >
         Skip to content
       </a>
@@ -112,9 +112,19 @@ const Landing = () => {
             className="block shrink-0"
             style={{ color: "var(--accent-secondary)" }}
           >
-            <BoatLogo />
+            <Monogram />
           </a>
           <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
+            <Link
+              to="/freelance"
+              className="landing-mono inline-flex items-center gap-1"
+              style={{ color: "var(--ink)", opacity: 0.85 }}
+            >
+              FREELANCE
+            </Link>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>
+              ·
+            </span>
             <a
               href={ALPHA_URL}
               target="_blank"
@@ -156,9 +166,9 @@ const Landing = () => {
               className="text-lg sm:text-xl lg:text-2xl max-w-2xl mt-6 sm:mt-7"
               style={{ lineHeight: 1.5, color: "var(--ink)", opacity: 0.9 }}
             >
-              Full-stack product engineer who ships solo —{" "}
+              Solutions engineer who builds whole products solo, and can sell them too.{" "}
               <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>
-                ~12 products live
+                Over a dozen products live
               </span>{" "}
               across healthcare data, music, quant, and web3.
             </p>
@@ -168,7 +178,7 @@ const Landing = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
-                style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
+                style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
               >
                 SEE THE WORK <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
@@ -220,15 +230,15 @@ const Landing = () => {
               className="text-base lg:text-lg max-w-xl mb-9"
               style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
             >
-              A $5/month personal letter on the five topics you care about —
-              sourced, edited, and worth your time. Every Sunday. My own
-              product, built and run end to end.
+              A $5 a month letter on the five topics you care about. Sourced and
+              edited so it's worth your time. Comes every Sunday. My own product.
+              I built it and I run it.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <a
                 href={ALPHA_URL}
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
-                style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
+                style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
               >
                 SUBSCRIBE · $5/MO <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
@@ -323,13 +333,17 @@ const Landing = () => {
             className="text-base lg:text-lg mb-8 sm:mb-10 mx-auto max-w-xl"
             style={{ color: "var(--ink)", opacity: 0.8 }}
           >
-            Open to operator, builder, and GTM roles. Available for select freelance app builds. Tampa, FL — remote or hybrid.
+            Open to solutions, forward-deployed, and product engineering roles at early startups. I also take{" "}
+            <Link to="/freelance" style={{ color: "var(--accent-secondary)", fontWeight: 600, textDecoration: "none" }}>
+              freelance healthcare-data and app builds
+            </Link>
+            . Based in Tampa, remote.
           </p>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5 break-all sm:break-normal"
-              style={{ background: "var(--accent-primary)", color: "var(--ink)" }}
+              style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
             >
               <Mail className="h-4 w-4 shrink-0" /> {CONTACT_EMAIL} <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
             </a>

@@ -1,17 +1,17 @@
 ### Hi, I'm Alex (Algernon) Holmes 👋
 
-**Full-stack product engineer who ships solo, end to end — ~12 products live across healthcare data, music, quant, and web3.** Tampa-based, remote.
+**Full-stack product engineer who ships solo, start to finish. Over a dozen products live across healthcare data, music, quant, and web3.** Tampa-based, remote.
 
-I build the whole stack in one head: frontend → backend → data → infra → ship. Most of what I build runs real users and real money today.
+I build the whole stack myself, from the frontend to the backend to the data to the servers. Most of what I build runs real users and real money today.
 
 **🛠 Stack:** TypeScript · React · Next.js · Python · FastAPI · PostgreSQL · Supabase · Vercel · Fly.io · Stripe
 
 **🚀 A few things I've shipped:**
-- **avahealth.co** — healthcare data platform: a 1.4M-record provider directory from federal NPPES data, plus a CRM, automated outreach + 10DLC SMS, and a drip scheduler with reply auto-pause.
-- **[freejobpost.co + freeresumepost.co](https://github.com/YoungAlgy/freejobpost)** — two-sided job marketplace, thousands of live listings via reciprocal ATS bridging (Greenhouse / Lever / Workday).
-- **Local-food marketplace** — two-sided platform connecting local farms to nearby shoppers: farm storefronts, Stripe Connect payouts + KYC onboarding, pickup & delivery. Next.js + Supabase.
-- **[toggle.town](https://toggle.town)** — product hub: in-browser audio mastering (Web Audio + FastAPI/ffmpeg), and more.
+- **avahealth.co**. Healthcare data platform. A 1.4M-record provider directory built from federal NPPES data, plus a CRM, automated outreach and 10DLC texting, and a scheduler that pauses itself when someone replies.
+- **[freejobpost.co + freeresumepost.co](https://github.com/YoungAlgy/freejobpost)**. Two-sided job marketplace with thousands of live listings, pulled from ATS feeds like Greenhouse, Lever, and Workday.
+- **Local-food marketplace**. Connects local farms to nearby shoppers. Farm storefronts, Stripe Connect payouts and KYC onboarding, pickup and delivery. Next.js and Supabase.
+- **[toggle.town](https://toggle.town)**. My product hub. In-browser audio mastering (Web Audio and a Python worker), and more.
 
-**⚡ How I work:** I've moved past AI-as-autocomplete — I break problems into specs, run agents in parallel, then review and own the output. The judgment is the job; the tooling is the multiplier.
+**⚡ How I work:** I'm past using AI as autocomplete. I break problems into specs, run agents in parallel, then review and own what comes out. The judgment is the real work. The tools just make it faster.
 
 **📫** [youngalgy.com](https://youngalgy.com) · [LinkedIn](https://www.linkedin.com/in/youngalgy)

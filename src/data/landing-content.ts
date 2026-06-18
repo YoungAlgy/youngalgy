@@ -7,7 +7,7 @@
  * and LinkedIn profile. Plain-English labels for non-insider audiences.
  */
 
-export const CONTACT_EMAIL = "alex@avahealth.co";
+export const CONTACT_EMAIL = "youngalgy@gmail.com";
 // UTM-tagged 2026-06-01 (cross-promo engine) so toggle.town's analytics
 // attributes portfolio traffic — closes the youngalgy → hub loop. Used as
 // the href on the two portfolio CTAs that point at the hub.

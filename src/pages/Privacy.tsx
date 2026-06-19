@@ -14,14 +14,14 @@ import { CONTACT_EMAIL } from "@/data/landing-content";
 const Privacy = () => (
   <LegalLayout
     title="Privacy"
-    description="Privacy policy for youngalgy.com — what the public portfolio and the private job-tracking dashboard do (and don't) collect. Operated solely by Alexander Holmes."
+    description="Privacy policy for youngalgy.com: what the public portfolio and the private job-tracking dashboard do (and don't) collect. Operated solely by Alexander Holmes."
     lastUpdated="2026-05-28"
   >
     <p>
       <strong>Short version:</strong> youngalgy.com is a personal site run by
       Alexander Holmes (Tampa, FL). The public landing page collects no
       personal information from visitors. The dashboard behind it is a private,
-      password-gated tool I use to track my own job search — it isn&apos;t a
+      password-gated tool I use to track my own job search. It isn&apos;t a
       product that collects data about you.
     </p>
 
@@ -53,7 +53,7 @@ const Privacy = () => (
     <h2>The dashboard (private)</h2>
     <p>
       <code>youngalgy.com/dashboard</code> (and the related changelog) sit
-      behind a password gate. It&apos;s a single-operator tool — I use it to
+      behind a password gate. It&apos;s a single-operator tool. I use it to
       track <em>my own</em> job applications. It is not a sign-up product and
       does not collect, profile, or store information about visitors or third
       parties.
@@ -62,13 +62,13 @@ const Privacy = () => (
       The application records I enter (job title, company, listing URL, source,
       status, my own notes, and draft cover letters) are stored in a{" "}
       <strong>Supabase</strong> Postgres database. That data is mine, about my
-      own job search; it is not sold, shared, or used for advertising.
+      own job search. It is not sold, shared, or used for advertising.
     </p>
 
     <h2>Third parties</h2>
     <ul>
-      <li><strong>Vercel</strong> — hosting + privacy-friendly analytics for the whole site.</li>
-      <li><strong>Supabase</strong> — database for the private dashboard only.</li>
+      <li><strong>Vercel</strong>: hosting + privacy-friendly analytics for the whole site.</li>
+      <li><strong>Supabase</strong>: database for the private dashboard only.</li>
     </ul>
     <p>
       Each has its own privacy practices. No analytics or advertising networks

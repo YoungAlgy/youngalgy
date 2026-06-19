@@ -13,7 +13,7 @@ import { CONTACT_EMAIL } from "@/data/landing-content";
 const Terms = () => (
   <LegalLayout
     title="Terms"
-    description="Terms of use for youngalgy.com — Alexander Holmes's personal portfolio and private job-tracking tool. Provided as-is; governing law Florida."
+    description="Terms of use for youngalgy.com: Alexander Holmes's personal portfolio and private job-tracking tool. Provided as-is. Governing law Florida."
     lastUpdated="2026-05-28"
   >
     <p>
@@ -32,7 +32,7 @@ const Terms = () => (
 
     <h2>The public landing page</h2>
     <p>
-      The landing page is an informational portfolio — a record of projects
+      The landing page is an informational portfolio, a record of projects
       I&apos;ve built and roles I&apos;ve held. Details and metrics are
       accurate to the best of my knowledge at the time of writing and may
       change. Nothing here is an offer, a guarantee of results, or
@@ -56,7 +56,7 @@ const Terms = () => (
       Alexander Holmes unless attributed otherwise. Third-party names,
       trademarks, and logos mentioned (employers, platforms, collections)
       remain the property of their respective owners and are used for
-      identification only — no affiliation or endorsement is implied.
+      identification only. No affiliation or endorsement is implied.
     </p>
 
     <h2>External links</h2>
@@ -72,7 +72,7 @@ const Terms = () => (
       The site and the tool are provided &quot;as is&quot; and &quot;as
       available,&quot; without warranties of any kind. To the fullest extent
       allowed by law, Alexander Holmes isn&apos;t liable for any damages
-      arising from your use of — or inability to use — the site.
+      arising from your use of (or inability to use) the site.
     </p>
 
     <h2>Governing law</h2>
@@ -83,7 +83,7 @@ const Terms = () => (
 
     <h2>Changes &amp; contact</h2>
     <p>
-      These terms may be updated; the date at the top reflects the latest
+      These terms may be updated. The date at the top reflects the latest
       version. Questions go to{" "}
       <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
     </p>

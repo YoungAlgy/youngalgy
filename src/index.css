@@ -38,12 +38,12 @@ html[data-mode="alpha"] {
 }
 
 html[data-mode="moneymitch"] {
-  --bg: #0C0C0E;
-  --ink: #EFE7D6;
-  --ink-muted: #A89C84;
+  --bg: #0A0A0A;
+  --ink: #F5EFE6;
+  --ink-muted: #C7BFB2;
   --accent-primary: #D4B373;
   --accent-secondary: #D4B373;
-  --accent-ink: #0C0C0E;
+  --accent-ink: #0A0A0A;
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "Inter", "GT Walsheim", system-ui, sans-serif;
   --font-mono: "Bebas Neue", "JetBrains Mono", sans-serif;

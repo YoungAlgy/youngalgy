@@ -40,8 +40,8 @@ export function PasswordGate({ children }: PasswordGateProps) {
   useEffect(() => {
     const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
     const apple = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
-    const prev = link?.href ?? "/boat.svg";
-    const prevApple = apple?.href ?? "/boat.svg";
+    const prev = link?.href ?? "/icon.svg";
+    const prevApple = apple?.href ?? "/icon.svg";
     if (link) link.href = "/logo.svg";
     if (apple) apple.href = "/logo.svg";
     return () => {

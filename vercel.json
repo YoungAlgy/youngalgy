@@ -1,6 +1,5 @@
 {
   "redirects": [
-    { "source": "/creditkit", "destination": "https://youngalgy.gumroad.com/l/creditkit", "permanent": false },
     { "source": "/hitlist", "destination": "https://mitchmark.vercel.app/", "permanent": false },
     { "source": "/fishing", "destination": "https://toggle.town/fishing", "permanent": true },
     { "source": "/fishing/:path*", "destination": "https://toggle.town/fishing/:path*", "permanent": true },
@@ -8,6 +7,7 @@
     { "source": "/studio/:path*", "destination": "https://toggle.town/studio/:path*", "permanent": false }
   ],
   "rewrites": [
+    { "source": "/creditkit", "destination": "/creditkit.html" },
     { "source": "/alpha", "destination": "https://alpha-chi-five.vercel.app/alpha" },
     { "source": "/alpha/:path*", "destination": "https://alpha-chi-five.vercel.app/alpha/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }

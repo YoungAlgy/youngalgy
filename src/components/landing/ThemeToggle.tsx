@@ -49,42 +49,65 @@ type ThemeToggleProps = {
   onChange: (mode: Mode) => void;
 };
 
+/**
+ * The canonical Toggle switch (Concept A, the shared Toggle brand mark): a pill
+ * track with a knob that flips between the two themes. The switch is literally
+ * the Toggle logo, so adopting it here ties youngalgy.com into the Toggle family
+ * without overriding the Alexander Holmes identity. Flipping it swaps the active
+ * theme (alpha <-> moneymitch). The knob carries the active theme's icon + accent;
+ * the far end faintly previews the theme you'd switch to.
+ */
 export function ThemeToggle({ mode, onChange }: ThemeToggleProps) {
+  const isMM = mode === "moneymitch";
   return (
-    <div className="flex items-center gap-3">
-      <button
-        type="button"
-        onClick={() => onChange("alpha")}
-        aria-label="Switch to Alpha theme"
-        aria-pressed={mode === "alpha"}
-        className="relative flex items-center justify-center p-1 transition-opacity"
-        style={{ color: "var(--accent-secondary)", opacity: mode === "alpha" ? 1 : 0.55 }}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isMM}
+      aria-label={`Theme: ${isMM ? "Money Mitch" : "Alpha"}. Tap to switch to ${isMM ? "Alpha" : "Money Mitch"}.`}
+      onClick={() => onChange(isMM ? "alpha" : "moneymitch")}
+      className="relative inline-flex items-center shrink-0"
+      style={{
+        width: 64,
+        height: 32,
+        padding: 0,
+        border: 0,
+        borderRadius: 999,
+        cursor: "pointer",
+        background: "var(--accent-soft, color-mix(in srgb, var(--accent-secondary) 16%, transparent))",
+        boxShadow: "inset 0 0 0 1px var(--rule, rgba(127,127,127,0.28))",
+        transition: "background 180ms cubic-bezier(.2,.7,.2,1)",
+      }}
+    >
+      <span
+        aria-hidden="true"
+        className="absolute flex items-center justify-center"
+        style={{ left: 9, top: 0, bottom: 0, color: "var(--accent-secondary)", opacity: isMM ? 0.5 : 0, transition: "opacity 180ms" }}
       >
-        <AlphaMark />
-        {mode === "alpha" && (
-          <span
-            className="absolute -bottom-2 left-1/2 -translate-x-1/2 block rounded-full"
-            style={{ width: 4, height: 4, background: "var(--accent-primary)" }}
-          />
-        )}
-      </button>
-      <button
-        type="button"
-        onClick={() => onChange("moneymitch")}
-        aria-label="Switch to Money Mitch theme"
-        aria-pressed={mode === "moneymitch"}
-        className="relative flex items-center justify-center p-1 transition-opacity"
-        style={{ color: "var(--accent-secondary)", opacity: mode === "moneymitch" ? 1 : 0.55 }}
+        <AlphaMark size={15} />
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute flex items-center justify-center"
+        style={{ right: 9, top: 0, bottom: 0, color: "var(--accent-secondary)", opacity: isMM ? 0 : 0.5, transition: "opacity 180ms" }}
       >
-        <DiamondIcon />
-        {mode === "moneymitch" && (
-          <span
-            className="absolute -bottom-2 left-1/2 -translate-x-1/2 block rounded-full"
-            style={{ width: 4, height: 4, background: "var(--accent-primary)" }}
-          />
-        )}
-      </button>
-    </div>
+        <DiamondIcon size={15} />
+      </span>
+      <span
+        className="absolute flex items-center justify-center rounded-full"
+        style={{
+          top: 4,
+          left: isMM ? 36 : 4,
+          width: 24,
+          height: 24,
+          background: "var(--accent-primary)",
+          color: "var(--accent-ink, #ffffff)",
+          transition: "left 180ms cubic-bezier(.2,.7,.2,1)",
+        }}
+      >
+        {isMM ? <DiamondIcon size={14} /> : <AlphaMark size={15} />}
+      </span>
+    </button>
   );
 }
 

@@ -1,47 +1,3 @@
-type IconProps = { size?: number };
-
-/**
- * The Alpha mark: a lowercase Greek alpha set in the display serif. It nods to
- * the Alpha brand (the house style) without redrawing the real alpha logo.
- */
-function AlphaMark({ size = 22 }: IconProps) {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        fontFamily: '"Source Serif 4", Georgia, serif',
-        fontWeight: 700,
-        fontSize: size,
-        lineHeight: 1,
-        display: "inline-block",
-      }}
-    >
-      α
-    </span>
-  );
-}
-
-/** A faceted diamond for the Money Mitch theme. */
-function DiamondIcon({ size = 22 }: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.4}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M6 3h12l4 6-10 13L2 9Z" />
-      <path d="M11 3 8 9l4 13 4-13-3-6" />
-      <path d="M2 9h20" />
-    </svg>
-  );
-}
-
 type Mode = "alpha" | "moneymitch";
 
 type ThemeToggleProps = {
@@ -50,63 +6,77 @@ type ThemeToggleProps = {
 };
 
 /**
- * The canonical Toggle switch (Concept A, the shared Toggle brand mark): a pill
- * track with a knob that flips between the two themes. The switch is literally
- * the Toggle logo, so adopting it here ties youngalgy.com into the Toggle family
- * without overriding the Alexander Holmes identity. Flipping it swaps the active
- * theme (alpha <-> moneymitch). The knob carries the active theme's icon + accent;
- * the far end faintly previews the theme you'd switch to.
+ * The canonical Toggle switch — a faithful match of toggle.town/casino's
+ * ToggleThemeSwitch (the shared Toggle brand gesture). One pill, the knob flips
+ * the skin: Money Mitch (dark) = knob LEFT, glyph diamond; Alpha (light) = knob
+ * RIGHT, glyph alpha. Gold-gradient knob on a quiet track, with a faint gold
+ * inset ring on the light side. youngalgy maps alpha->light, moneymitch->dark,
+ * so the gesture reads identically to the casino while using youngalgy's own
+ * gold (--accent-secondary: champagne in MM, muted gold in Alpha).
  */
 export function ThemeToggle({ mode, onChange }: ThemeToggleProps) {
-  const isMM = mode === "moneymitch";
+  const isAlpha = mode === "alpha"; // alpha = light, moneymitch = dark
+  const W = 58;
+  const H = 30;
+  const knob = H - 8; // 22
+
   return (
     <button
       type="button"
       role="switch"
-      aria-checked={isMM}
-      aria-label={`Theme: ${isMM ? "Money Mitch" : "Alpha"}. Tap to switch to ${isMM ? "Alpha" : "Money Mitch"}.`}
-      onClick={() => onChange(isMM ? "alpha" : "moneymitch")}
-      className="relative inline-flex items-center shrink-0"
+      aria-checked={isAlpha}
+      aria-label={isAlpha ? "Switch to the Money Mitch (dark) theme" : "Switch to the Alpha (light) theme"}
+      title={isAlpha ? "Switch to dark (Money Mitch)" : "Switch to light (Alpha)"}
+      onClick={() => onChange(isAlpha ? "moneymitch" : "alpha")}
+      className="inline-flex shrink-0"
       style={{
-        width: 64,
-        height: 32,
+        width: W,
+        height: H,
+        borderRadius: H,
+        position: "relative",
         padding: 0,
-        border: 0,
-        borderRadius: 999,
         cursor: "pointer",
-        background: "var(--accent-soft, color-mix(in srgb, var(--accent-secondary) 16%, transparent))",
-        boxShadow: "inset 0 0 0 1px var(--rule, rgba(127,127,127,0.28))",
-        transition: "background 180ms cubic-bezier(.2,.7,.2,1)",
+        border: "1px solid color-mix(in srgb, var(--ink) 18%, transparent)",
+        background: "color-mix(in srgb, var(--ink) 7%, transparent)",
       }}
     >
       <span
         aria-hidden="true"
-        className="absolute flex items-center justify-center"
-        style={{ left: 9, top: 0, bottom: 0, color: "var(--accent-secondary)", opacity: isMM ? 0.5 : 0, transition: "opacity 180ms" }}
+        style={{
+          position: "absolute",
+          top: 3,
+          left: isAlpha ? W - knob - 3 : 3,
+          width: knob,
+          height: knob,
+          borderRadius: "50%",
+          background:
+            "linear-gradient(180deg, color-mix(in srgb, var(--accent-secondary) 82%, #ffffff), var(--accent-secondary))",
+          boxShadow: "0 1px 3px rgba(0,0,0,.45)",
+          transition: "left .2s cubic-bezier(.3,1.4,.5,1)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#1b1205",
+          lineHeight: 1,
+        }}
       >
-        <AlphaMark size={15} />
+        {isAlpha ? (
+          <span style={{ fontFamily: '"Source Serif 4", Georgia, serif', fontWeight: 700, fontSize: knob * 0.62 }}>α</span>
+        ) : (
+          <span style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: knob * 0.5 }}>◆</span>
+        )}
       </span>
       <span
         aria-hidden="true"
-        className="absolute flex items-center justify-center"
-        style={{ right: 9, top: 0, bottom: 0, color: "var(--accent-secondary)", opacity: isMM ? 0 : 0.5, transition: "opacity 180ms" }}
-      >
-        <DiamondIcon size={15} />
-      </span>
-      <span
-        className="absolute flex items-center justify-center rounded-full"
         style={{
-          top: 4,
-          left: isMM ? 36 : 4,
-          width: 24,
-          height: 24,
-          background: "var(--accent-primary)",
-          color: "var(--accent-ink, #ffffff)",
-          transition: "left 180ms cubic-bezier(.2,.7,.2,1)",
+          position: "absolute",
+          inset: 0,
+          borderRadius: H,
+          boxShadow: isAlpha
+            ? "inset 0 0 0 1px color-mix(in srgb, var(--accent-secondary) 24%, transparent)"
+            : "none",
         }}
-      >
-        {isMM ? <DiamondIcon size={14} /> : <AlphaMark size={15} />}
-      </span>
+      />
     </button>
   );
 }

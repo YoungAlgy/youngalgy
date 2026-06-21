@@ -4,7 +4,7 @@ import { ArrowUpRight, Mail, Database, Network, ShieldCheck, Boxes } from "lucid
 import { Monogram } from "@/components/landing/Monogram";
 import { ThemeToggle } from "@/components/landing/ThemeToggle";
 import { useThemeMode } from "@/components/landing/useThemeMode";
-import { CONTACT_EMAIL, GITHUB_URL, TOGGLE_TOWN_URL } from "@/data/landing-content";
+import { CONTACT_EMAIL, GITHUB_URL } from "@/data/landing-content";
 
 /**
  * Freelance, the public "work with me" page. Sells the sharpest, least-crowded
@@ -34,8 +34,8 @@ const services: readonly Service[] = [
   },
   {
     icon: ShieldCheck,
-    title: "PHI-safe masking and de-identification",
-    body: "Private data handled carefully. Scrubbing PII and PHI, de-identifying records, and locking down who can see what with row-level security.",
+    title: "Sensitive data handling and access control",
+    body: "Private data handled carefully. Scrubbing and de-identifying records, masking PII, and locking down who can see what with row-level security.",
   },
   {
     icon: Boxes,
@@ -150,15 +150,13 @@ const Freelance = () => {
             <a href={MAILTO} className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto" style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}>
               START A PROJECT <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
-            <a
-              href={TOGGLE_TOWN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/"
               className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
               style={{ border: "1px solid var(--accent-secondary)", color: "var(--accent-secondary)" }}
             >
               SEE THE WORK <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
+            </Link>
           </div>
         </section>
 

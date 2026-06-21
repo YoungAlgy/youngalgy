@@ -38,9 +38,9 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2022", title: "$5M+ raised across charity drops", tag: "CHARITY" },
   { year: "2022", title: "Advisor + seed · Floor/Rally + 5 more Web3 projects + 100s of founders", tag: "WEB3 / ADVISING" },
   { year: "2025", title: "Floor / Rally acquired by OpenSea · received equity allocation", tag: "EXIT" },
-  { year: "2026", title: "Ava Health + Beacon · healthcare CRM + recruiter outreach", tag: "HEALTHCARE" },
+  { year: "2026", title: "Ava Health · provider data platform, CRM + recruiter engine", tag: "HEALTHCARE" },
   { year: "2026", title: "Money Mitch Vault + Studio + Toggle Town hub · music + audio + game", tag: "MUSIC / GAME" },
-  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Worksites + The Downs + Toggle + Job-seeker dashboard · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
+  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Worksites + The Downs + Toggle · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
   { year: "2026", title: "Local-food marketplace · two-sided platform, Stripe Connect payouts, farm storefronts + pickup/delivery", tag: "MARKETPLACE" },
   { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
 ];

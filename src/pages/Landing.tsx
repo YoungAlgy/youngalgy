@@ -134,18 +134,6 @@ const Landing = () => {
             >
               ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
-            <span className="landing-mono" style={{ opacity: 0.3 }}>
-              ·
-            </span>
-            <a
-              href="/dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-1"
-              style={{ color: "var(--ink)", opacity: 0.85 }}
-            >
-              DASHBOARD <ArrowUpRight className="h-3 w-3" />
-            </a>
             <ThemeToggle mode={mode} onChange={setMode} />
           </nav>
         </div>

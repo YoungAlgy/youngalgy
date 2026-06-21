@@ -8,8 +8,8 @@ type ThemeToggleProps = {
 /**
  * The canonical Toggle switch — a faithful match of toggle.town/casino's
  * ToggleThemeSwitch (the shared Toggle brand gesture). One pill, the knob flips
- * the skin: Money Mitch (dark) = knob LEFT, glyph diamond; Alpha (light) = knob
- * RIGHT, glyph alpha. Gold-gradient knob on a quiet track, with a faint gold
+ * the skin: Alpha (light) = knob LEFT, glyph alpha; Money Mitch (dark) = knob
+ * RIGHT, glyph diamond (sides match toggle.town's ToggleThemeSwitch). Gold-gradient knob on a quiet track, with a faint gold
  * inset ring on the light side. youngalgy maps alpha->light, moneymitch->dark,
  * so the gesture reads identically to the casino while using youngalgy's own
  * gold (--accent-secondary: champagne in MM, muted gold in Alpha).
@@ -45,7 +45,7 @@ export function ThemeToggle({ mode, onChange }: ThemeToggleProps) {
         style={{
           position: "absolute",
           top: 3,
-          left: isAlpha ? W - knob - 3 : 3,
+          left: isAlpha ? 3 : W - knob - 3,
           width: knob,
           height: knob,
           borderRadius: "50%",

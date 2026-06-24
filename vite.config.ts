@@ -17,6 +17,13 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      // Two HTML entry points that share the same SPA bundle. index.html is the
+      // default; creditkit.html is a prerendered OG shell for /creditkit (real
+      // static meta for link-preview scrapers) that still boots the React app.
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        creditkit: path.resolve(__dirname, "creditkit.html"),
+      },
       output: {
         manualChunks: (id) => {
           if (id.includes("node_modules/recharts")) return "recharts";

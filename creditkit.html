@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Prerendered OG shell for /creditkit. This static head is what link-preview
+      scrapers (facebookexternalhit, Twitterbot, Slack, etc.) read, since they do
+      not run JavaScript. The same /src/main.tsx boots the SPA, React Router sees
+      /creditkit, and the CreditKit page renders for humans. vercel.json rewrites
+      /creditkit to this file.
+    -->
+    <title>CreditKit, credits and billing for AI apps</title>
+    <meta name="description" content="A Next.js, Supabase, and Stripe starter that ships the usage-credits and billing layer AI apps actually need. Atomic spend, idempotent Stripe webhooks, and a worker that refunds on failure. $129, full source." />
+    <meta name="author" content="Alexander Holmes" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#1F3D2E" />
+    <link rel="canonical" href="https://youngalgy.com/creditkit" />
+
+    <meta property="og:type" content="product" />
+    <meta property="og:url" content="https://youngalgy.com/creditkit" />
+    <meta property="og:title" content="CreditKit, credits and billing for AI apps" />
+    <meta property="og:description" content="The plumbing that breaks every AI app, done right. Atomic credit spend, idempotent Stripe webhooks, and a worker that refunds on failure. $129, full source you own." />
+    <meta property="og:image" content="https://youngalgy.com/creditkit-og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="CreditKit, the credits and billing engine for AI apps." />
+    <meta property="og:site_name" content="Alexander Holmes" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@youngalgy" />
+    <meta name="twitter:creator" content="@youngalgy" />
+    <meta name="twitter:title" content="CreditKit, credits and billing for AI apps" />
+    <meta name="twitter:description" content="The plumbing that breaks every AI app, done right. Next.js, Supabase, Stripe. $129, full source." />
+    <meta name="twitter:image" content="https://youngalgy.com/creditkit-og.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "CreditKit",
+        "description": "A Next.js, Supabase, and Stripe starter that ships the usage-credits and billing layer AI apps need. Atomic credit spend, idempotent Stripe webhooks, and a background worker that refunds on failure.",
+        "image": "https://youngalgy.com/creditkit-og.png",
+        "brand": { "@type": "Brand", "name": "youngalgy" },
+        "url": "https://youngalgy.com/creditkit",
+        "offers": {
+          "@type": "Offer",
+          "price": "129",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "url": "https://youngalgy.com/creditkit"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="max-width:560px;margin:4rem auto;padding:2rem;font-family:Georgia,serif;color:#1F3D2E;background:#F4EFE0;border:1px solid #C9A961;border-radius:4px;text-align:center">
+        <h1 style="margin:0 0 1rem;font-size:1.75rem;color:#1F3D2E">CreditKit</h1>
+        <p style="margin:0 0 1rem;line-height:1.6">
+          A Next.js, Supabase, and Stripe starter with a real usage-credits system,
+          Stripe billing, and a worker that refunds the user when a job fails.
+          $129, full source you own.
+        </p>
+        <p style="margin:0 0 1rem;line-height:1.6">
+          This page uses JavaScript to render. Get CreditKit at
+          <a href="https://youngalgy.gumroad.com/l/creditkit" style="color:#1F3D2E">youngalgy.gumroad.com/l/creditkit</a>.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -25,6 +25,10 @@ const Terms = lazy(() => import("./pages/Terms"));
 // Public freelance / "work with me" page — healthcare-data pipeline lead-gen.
 // Lazy + ungated like the legal pages; reachable from the landing nav + footer.
 const Freelance = lazy(() => import("./pages/Freelance"));
+// Public CreditKit product page — the Next.js/Supabase/Stripe starter Algy sells.
+// Lazy + ungated; reachable from the landing nav. Replaces the old vercel.json
+// rewrite to public/creditkit.html (that rewrite was removed).
+const CreditKit = lazy(() => import("./pages/CreditKit"));
 
 const DashboardFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -85,6 +89,14 @@ const App = () => (
             element={
               <Suspense fallback={<PageFallback />}>
                 <Freelance />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/creditkit"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <CreditKit />
               </Suspense>
             }
           />

@@ -7,7 +7,6 @@
     { "source": "/studio/:path*", "destination": "https://toggle.town/studio/:path*", "permanent": false }
   ],
   "rewrites": [
-    { "source": "/creditkit", "destination": "/creditkit.html" },
     { "source": "/alpha", "destination": "https://alpha-chi-five.vercel.app/alpha" },
     { "source": "/alpha/:path*", "destination": "https://alpha-chi-five.vercel.app/alpha/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }

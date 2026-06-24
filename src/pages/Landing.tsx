@@ -125,15 +125,13 @@ const Landing = () => {
             <span className="landing-mono" style={{ opacity: 0.3 }}>
               ·
             </span>
-            <a
-              href={ALPHA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/creditkit"
               className="landing-mono inline-flex items-center gap-1"
               style={{ color: "var(--ink)", opacity: 0.85 }}
             >
-              ALPHA <ArrowUpRight className="h-3 w-3" />
-            </a>
+              CREDITKIT
+            </Link>
             <ThemeToggle mode={mode} onChange={setMode} />
           </nav>
         </div>
@@ -218,7 +216,7 @@ const Landing = () => {
               className="text-base lg:text-lg max-w-xl mb-9"
               style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
             >
-              A $5 a month letter on the five topics you care about. Sourced and
+              A letter on the five topics you care about. Sourced and
               edited so it's worth your time. Comes every Sunday. My own product.
               I built it and I run it.
             </p>
@@ -228,7 +226,7 @@ const Landing = () => {
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
                 style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
               >
-                SUBSCRIBE · $5/MO <ArrowUpRight className="h-3.5 w-3.5" />
+                SUBSCRIBE <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
               <a
                 href={ALPHA_SAMPLE_URL}
@@ -422,18 +420,6 @@ const Landing = () => {
               style={{ color: "var(--accent-secondary)" }}
             >
               TOGGLE.TOWN <ArrowUpRight className="h-3 w-3" />
-            </a>
-            <span className="landing-mono" style={{ opacity: 0.3 }}>
-              ·
-            </span>
-            <a
-              href={ALPHA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-1"
-              style={{ color: "var(--accent-secondary)" }}
-            >
-              ALPHA <ArrowUpRight className="h-3 w-3" />
             </a>
           </p>
         </div>

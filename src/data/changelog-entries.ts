@@ -29,6 +29,12 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── June 2026 ───────────────────────────────────────────────────────
   {
+    date: "2026-06-24",
+    title: "New CreditKit page, cleaner top nav",
+    body: "Added a CreditKit page at youngalgy.com/creditkit. It is the credits and billing starter I sell, and the page now matches the rest of the site instead of the old standalone one. Put CreditKit in the top nav next to Freelance. Dropped the Alpha link from the nav and footer to keep things simple, and took the price out of the Alpha blurb on the homepage.",
+    tag: "new",
+  },
+  {
     date: "2026-06-03",
     title: "Added the local-food marketplace to the timeline",
     body: "New 2026 entry on the route/timeline: a two-sided local-food marketplace — Stripe Connect payouts, farm storefronts, pickup/delivery. Another shipped product in the builder story.",

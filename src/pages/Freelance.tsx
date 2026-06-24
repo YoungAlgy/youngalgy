@@ -9,7 +9,8 @@ import { CONTACT_EMAIL, GITHUB_URL } from "@/data/landing-content";
 /**
  * Freelance, the public "work with me" page. Sells the sharpest, least-crowded
  * lane: healthcare and provider-data pipeline work. Leads with the NPPES hook
- * (32GB to 1.4M records, solo, in production), which screens people in by itself.
+ * (a ~9 GB / ~9M-record federal file cleaned to a 1.4M active directory, solo,
+ * in production), which screens people in by itself.
  *
  * Public on purpose (not behind the dashboard gate), themed via useThemeMode so
  * it matches the landing look. Every claim matches the resume and the Ava Health
@@ -25,7 +26,7 @@ const services: readonly Service[] = [
   {
     icon: Database,
     title: "Provider data and NPPES pipelines",
-    body: "I take the raw 32GB federal NPPES file, or your own provider data, and turn it into a clean directory you can actually query. NPI matching, fixing taxonomies, cleaning up addresses, checking licenses.",
+    body: "I take the raw federal NPPES file, about 9 GB unzipped, or your own provider data, and turn it into a clean directory you can actually query. NPI matching, fixing taxonomies, cleaning up addresses, checking licenses.",
   },
   {
     icon: Network,
@@ -45,7 +46,7 @@ const services: readonly Service[] = [
 ];
 
 const proof: readonly { value: string; label: string }[] = [
-  { value: "32GB to 1.4M", label: "The raw federal NPPES file, loaded and cleaned into a live provider directory." },
+  { value: "9M to 1.4M", label: "The raw federal NPPES file holds close to 9 million records. I cleaned it into a 1.4 million active provider directory." },
   { value: "12+", label: "Products I shipped this past year, by myself, with AI tools." },
   { value: "16 x 51", label: "Healthcare jobs across every state plus DC, with the licensing content to match." },
   { value: "Solo", label: "I own the whole stack, from the database to the servers it runs on." },
@@ -135,10 +136,10 @@ const Freelance = () => {
             pipelines
           </h1>
           <p className="text-lg sm:text-xl max-w-2xl mt-6 sm:mt-8" style={{ lineHeight: 1.55, color: "var(--ink)", opacity: 0.9 }}>
-            The raw federal <strong>NPPES</strong> provider file is{" "}
-            <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>about 32GB and 5 million records</span>.
-            {" "}It's too big to open in Excel. You need a data engineer for it. I loaded and cleaned it into a{" "}
-            <strong>1.4 million record</strong> provider directory that runs in production, by myself. That's the kind of work I take on.
+            The raw federal <strong>NPPES</strong> provider file is a 1 GB download that unzips to about 9 GB, with{" "}
+            <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>close to 9 million provider records</span>.
+            {" "}That's every provider ID ever issued. It's too big to open in Excel. You need a data engineer for it. I loaded and cleaned it into a{" "}
+            <strong>1.4 million record</strong> active directory that runs in production, by myself. That's the kind of work I take on.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
             <a href={MAILTO} className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto" style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}>

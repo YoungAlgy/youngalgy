@@ -114,15 +114,9 @@ const Freelance = () => {
               ← PORTFOLIO
             </Link>
             <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="landing-mono inline-flex items-center gap-1"
-              style={{ color: "var(--ink)", opacity: 0.85 }}
-            >
-              GITHUB <ArrowUpRight className="h-3 w-3" />
-            </a>
+            <Link to="/creditkit" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--ink)", opacity: 0.85 }}>
+              CREDITKIT
+            </Link>
             <ThemeToggle mode={mode} onChange={setMode} />
           </nav>
         </div>
@@ -242,13 +236,24 @@ const Freelance = () => {
             Tell me what you're dealing with. I'll give you an honest read on whether I can help and how I'd go about it.
             I'm remote, based in Tampa, and fine across US time zones.
           </p>
-          <a
-            href={MAILTO}
-            className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5 break-all sm:break-normal"
-            style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
-          >
-            <Mail className="h-4 w-4 shrink-0" /> {CONTACT_EMAIL} <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
+            <a
+              href={MAILTO}
+              className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5 break-all sm:break-normal"
+              style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
+            >
+              <Mail className="h-4 w-4 shrink-0" /> {CONTACT_EMAIL} <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
+            </a>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="landing-mono inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5"
+              style={{ border: "1px solid var(--accent-secondary)", color: "var(--accent-secondary)" }}
+            >
+              GITHUB <ArrowUpRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
         </section>
       </main>
 

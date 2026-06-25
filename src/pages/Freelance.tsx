@@ -48,7 +48,7 @@ const services: readonly Service[] = [
 const proof: readonly { value: string; label: string }[] = [
   { value: "9M to 1.4M", label: "The raw federal NPPES file holds close to 9 million records. I cleaned it into a 1.4 million active provider directory." },
   { value: "12+", label: "Products I shipped this past year, by myself, with AI tools." },
-  { value: "16 x 51", label: "Healthcare jobs across every state plus DC, with the licensing content to match." },
+  { value: "40+ x 51", label: "Healthcare specialties with jobs and licensing guides across every state plus DC." },
   { value: "Solo", label: "I own the whole stack, from the database to the servers it runs on." },
 ];
 

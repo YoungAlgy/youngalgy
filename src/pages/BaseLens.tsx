@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Monogram } from "@/components/landing/Monogram";
 import { ThemeToggle } from "@/components/landing/ThemeToggle";
+import { SectionNav } from "@/components/landing/SectionNav";
 import { useThemeMode } from "@/components/landing/useThemeMode";
 
 /**
@@ -125,17 +126,7 @@ const BaseLens = () => {
             <Monogram />
           </a>
           <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
-            <Link to="/" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--ink)", opacity: 0.85 }}>
-              ← PORTFOLIO
-            </Link>
-            <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
-            <Link to="/freelance" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--ink)", opacity: 0.85 }}>
-              FREELANCE
-            </Link>
-            <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
-            <Link to="/creditkit" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--ink)", opacity: 0.85 }}>
-              CREDITKIT
-            </Link>
+            <SectionNav />
             <ThemeToggle mode={mode} onChange={setMode} />
           </nav>
         </div>

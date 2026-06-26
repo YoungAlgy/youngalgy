@@ -12,6 +12,7 @@ import {
 import {
   CONTACT_EMAIL,
   TOGGLE_TOWN_URL,
+  TOGGLE_TOWN_BASIC_URL,
   ALPHA_URL,
   ALPHA_SAMPLE_URL,
   FACEBOOK_URL,
@@ -160,7 +161,7 @@ const Landing = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
               <a
-                href={TOGGLE_TOWN_URL}
+                href={TOGGLE_TOWN_BASIC_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"

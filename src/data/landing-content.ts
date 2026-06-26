@@ -12,6 +12,8 @@ export const CONTACT_EMAIL = "youngalgy@gmail.com";
 // attributes portfolio traffic — closes the youngalgy → hub loop. Used as
 // the href on the two portfolio CTAs that point at the hub.
 export const TOGGLE_TOWN_URL = "https://toggle.town/?utm_source=youngalgy&utm_medium=backlink";
+// The hero "See the work" CTA points at the Basic hub view (Algy, 2026-06-24).
+export const TOGGLE_TOWN_BASIC_URL = "https://toggle.town/basic?utm_source=youngalgy&utm_medium=backlink";
 export const MONEY_MITCH_URL = "https://moneymitch.music";
 export const AVA_PROVIDERS_URL = "https://providers.avahealth.co";
 export const ALPHA_URL = "/alpha";

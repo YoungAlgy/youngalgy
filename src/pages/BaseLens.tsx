@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
   Search,
@@ -296,6 +297,14 @@ const BaseLens = () => {
             <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--accent-secondary)" }}>
               GITHUB <ArrowUpRight className="h-3 w-3" />
             </a>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
+            <Link to="/privacy" className="landing-mono" style={{ color: "var(--accent-secondary)", textDecoration: "none" }}>
+              PRIVACY
+            </Link>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
+            <Link to="/terms" className="landing-mono" style={{ color: "var(--accent-secondary)", textDecoration: "none" }}>
+              TERMS
+            </Link>
           </p>
         </div>
       </footer>

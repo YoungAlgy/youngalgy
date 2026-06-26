@@ -13,6 +13,7 @@ export const CONTACT_EMAIL = "youngalgy@gmail.com";
 // the href on the two portfolio CTAs that point at the hub.
 export const TOGGLE_TOWN_URL = "https://toggle.town/?utm_source=youngalgy&utm_medium=backlink";
 export const MONEY_MITCH_URL = "https://moneymitch.music";
+export const AVA_PROVIDERS_URL = "https://providers.avahealth.co";
 export const ALPHA_URL = "/alpha";
 export const ALPHA_SAMPLE_URL = "/alpha/sample";
 export const FACEBOOK_URL = "https://facebook.com/youngalgy";
@@ -155,6 +156,7 @@ export const cases: readonly Case[] = [
     body: "Built and run the whole platform solo, then work the recruiting against it. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses and therapists across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",
+    link: { url: AVA_PROVIDERS_URL, label: "providers.avahealth.co" },
   },
   {
     number: "02",

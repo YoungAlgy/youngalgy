@@ -262,9 +262,7 @@ const Freelance = () => {
             © 2026 Alexander Holmes
           </p>
           <p className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2">
-            <Link to="/" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--accent-secondary)", textDecoration: "none" }}>
-              ← PORTFOLIO
-            </Link>
+            <SectionNav variant="footer" />
             <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
             <Link to="/privacy" className="landing-mono" style={{ color: "var(--accent-secondary)", textDecoration: "none" }}>
               PRIVACY

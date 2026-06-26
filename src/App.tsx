@@ -29,6 +29,9 @@ const Freelance = lazy(() => import("./pages/Freelance"));
 // Lazy + ungated; reachable from the landing nav. Replaces the old vercel.json
 // rewrite to public/creditkit.html (that rewrite was removed).
 const CreditKit = lazy(() => import("./pages/CreditKit"));
+// Public BaseLens project page — the x402/Base/AI agent tool. Lazy + ungated,
+// reachable from the landing nav. React route (no vercel.json rewrite).
+const BaseLens = lazy(() => import("./pages/BaseLens"));
 
 const DashboardFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -97,6 +100,14 @@ const App = () => (
             element={
               <Suspense fallback={<PageFallback />}>
                 <CreditKit />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/baselens"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <BaseLens />
               </Suspense>
             }
           />

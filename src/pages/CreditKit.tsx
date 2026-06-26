@@ -155,6 +155,10 @@ const CreditKit = () => {
             <Link to="/freelance" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--ink)", opacity: 0.85 }}>
               FREELANCE
             </Link>
+            <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
+            <Link to="/baselens" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--ink)", opacity: 0.85 }}>
+              BASELENS
+            </Link>
             <ThemeToggle mode={mode} onChange={setMode} />
           </nav>
         </div>

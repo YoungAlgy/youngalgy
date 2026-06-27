@@ -29,10 +29,70 @@ export interface ChangelogEntry {
 export const changelogEntries: readonly ChangelogEntry[] = [
   // ─── June 2026 ───────────────────────────────────────────────────────
   {
+    date: "2026-06-26",
+    title: "New BaseLens project page",
+    body: "Added a BaseLens page at youngalgy.com/baselens. BaseLens is a pay-per-call AI endpoint that reads any Base address and hands back a plain risk and activity summary, paid in USDC. The page walks through how it works, what it reads onchain, and shows a sample response. It is open source, not a paid product. Linked from the top nav.",
+    tag: "new",
+  },
+  {
+    date: "2026-06-26",
+    title: "Every page nav and footer now lists every section",
+    body: "The Freelance, CreditKit, and BaseLens pages each only showed a slice of the section links in their nav and footer, and the new BaseLens tab was missing from all of them. Now every page header and footer lists Portfolio plus all the product pages from one shared list, so nothing goes missing when a page gets added.",
+    tag: "improved",
+  },
+  {
+    date: "2026-06-26",
+    title: "Ava Health card now links to the live providers site",
+    body: "The Ava Health case study described the platform but had no link out. It now links to providers.avahealth.co so you can go see the live product, same as the Money Mitch card links to its site.",
+    tag: "improved",
+  },
+  {
+    date: "2026-06-26",
+    title: "Hero \"See the work\" button points at the Basic hub view",
+    body: "The hero \"See the work\" button now opens toggle.town/basic instead of the plain hub. The footer toggle.town link is unchanged.",
+    tag: "improved",
+  },
+  {
+    date: "2026-06-25",
+    title: "Freelance page NPPES numbers corrected",
+    body: "The Freelance page claimed the raw federal NPPES file was 32GB and 5 million records. The real file is about a 1GB download that unzips to roughly 9GB with close to 9 million records, every provider ID ever issued. Fixed the hero, the service card, and the proof stat, and kept the cleaned 1.4 million active directory as the honest contrast. Also bumped the stale \"16 specialties\" stat to 40+ across every state plus DC to match the resume.",
+    tag: "fixed",
+  },
+  {
     date: "2026-06-24",
     title: "New CreditKit page, cleaner top nav",
     body: "Added a CreditKit page at youngalgy.com/creditkit. It is the credits and billing starter I sell, and the page now matches the rest of the site instead of the old standalone one. Put CreditKit in the top nav next to Freelance. Dropped the Alpha link from the nav and footer to keep things simple, and took the price out of the Alpha blurb on the homepage.",
     tag: "new",
+  },
+  {
+    date: "2026-06-24",
+    title: "Freelance page puts CreditKit in the nav, GitHub by the contact button",
+    body: "The Freelance page top nav now links CreditKit where GitHub used to sit. GitHub moved down next to the email button under the contact heading, the same paired-button style as the homepage.",
+    tag: "improved",
+  },
+  {
+    date: "2026-06-21",
+    title: "Dashboard link pulled from the public landing nav, timeline refreshed",
+    body: "Removed the Dashboard link from the public landing nav. Also updated the timeline: the 2026 healthcare row now reads as the Ava Health provider data platform on its own, and the job-seeker dashboard came off the SaaS row.",
+    tag: "improved",
+  },
+  {
+    date: "2026-06-21",
+    title: "Landing theme switch matches the toggle.town apps",
+    body: "The theme toggle on the landing had its two sides backwards from every toggle.town app. Flipped it so Alpha sits on the left and Money Mitch on the right, so the switch works the same way everywhere.",
+    tag: "fixed",
+  },
+  {
+    date: "2026-06-21",
+    title: "Timeline renames Mitchmark to Worksites",
+    body: "The prospect dashboard moved off the Mitchmark name. The Route timeline now calls it Worksites, its current name under the Toggle brand.",
+    tag: "fixed",
+  },
+  {
+    date: "2026-06-20",
+    title: "Branded social share card",
+    body: "The link preview image was a generic skull placeholder hosted on an outside bucket, and its alt text did not even match the picture. Replaced it with a proper Alexander Holmes wordmark card hosted on the site, so links to youngalgy.com now preview on brand.",
+    tag: "improved",
   },
   {
     date: "2026-06-03",

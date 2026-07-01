@@ -40,7 +40,7 @@ const features: readonly Feature[] = [
   { icon: MessageSquareText, title: "Interview prep", body: "The questions this posting will probably lead to, with a tip on how to answer each." },
   { icon: Sparkles, title: "Powered by Gemini", body: "Structured output, not a chat window. It only uses what's actually in your resume." },
   { icon: Gift, title: "First one's free", body: "No card required to try it once. $9/mo unlimited after that." },
-  { icon: Code2, title: "Built solo, in the open", body: "Next.js, Gemini, Stripe. No database, no account required to try it." },
+  { icon: Code2, title: "Built in the open", body: "Next.js, Gemini, Stripe. No database, no account required to try it." },
 ];
 
 const ApplyKit = () => {

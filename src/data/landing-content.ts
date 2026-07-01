@@ -30,7 +30,7 @@ export type TimelineEntry = {
 
 export const timeline: readonly TimelineEntry[] = [
   { year: "2015", title: "Toggle Money recording studio opens", tag: "MUSIC / STUDIO" },
-  { year: "2016", title: "Pinellas Safe Harbor · ran support groups solo, SPC psych internship", tag: "PSYCH / SERVICE" },
+  { year: "2016", title: "Pinellas Safe Harbor · facilitated support groups, SPC psych internship", tag: "PSYCH / SERVICE" },
   { year: "2018", title: "Mitch signs to Big Gates Records", tag: "MUSIC / AGENT" },
   { year: "2019", title: "Toggle Town · esports", tag: "MEDIA" },
   { year: "2020", title: "B.A. Psychology · USF", tag: "GRADUATED" },
@@ -155,7 +155,7 @@ export const cases: readonly Case[] = [
     category: "HEALTHCARE",
     period: "2026 - NOW",
     title: "Ava Health.",
-    body: "Built and run the whole platform solo, then work the recruiting against it. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses and therapists across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
+    body: "Built and run the whole platform, then work the recruiting against it. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses and therapists across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",
     link: { url: AVA_PROVIDERS_URL, label: "providers.avahealth.co" },

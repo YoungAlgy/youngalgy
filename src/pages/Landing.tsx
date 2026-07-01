@@ -138,7 +138,7 @@ const Landing = () => {
               className="text-lg sm:text-xl lg:text-2xl max-w-2xl mt-6 sm:mt-7"
               style={{ lineHeight: 1.5, color: "var(--ink)", opacity: 0.9 }}
             >
-              Entrepreneur who builds whole products solo, and can sell them too.{" "}
+              Entrepreneur who builds whole products, and can sell them too.{" "}
               <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>
                 Over a dozen products live
               </span>{" "}
@@ -203,8 +203,8 @@ const Landing = () => {
               style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
             >
               A letter on the five topics you care about. Sourced and
-              edited so it's worth your time. Comes every Sunday. My own product.
-              I built it and I run it.
+              edited so it's worth your time. Comes every Sunday, written
+              and sent by me.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <a

@@ -168,7 +168,7 @@ const CreditKit = () => {
             billing for AI apps
           </h1>
           <p className="text-lg sm:text-xl max-w-2xl mt-6 sm:mt-8" style={{ lineHeight: 1.55, color: "var(--ink)", opacity: 0.9 }}>
-            CreditKit ships the part nobody else does. A real{" "}
+            CreditKit ships the part most starter kits skip. A real{" "}
             <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>usage-credits system</span>, Stripe billing,
             and a background worker that refunds the user when a job fails. It's the code that already runs in my own apps.
           </p>

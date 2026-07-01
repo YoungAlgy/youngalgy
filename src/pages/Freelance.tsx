@@ -42,15 +42,15 @@ const services: readonly Service[] = [
   {
     icon: Boxes,
     title: "Full-stack health-tech builds",
-    body: "The whole thing. A CRM, automated texting and email to clinicians, dashboards, and the servers under it. Built and run by one person.",
+    body: "The whole thing. A CRM, automated texting and email to clinicians, dashboards, and the servers under it. No vendor hand-offs, one point of contact start to finish.",
   },
 ];
 
 const proof: readonly { value: string; label: string }[] = [
   { value: "9M to 1.4M", label: "The raw federal NPPES file holds close to 9 million records. I cleaned it into a 1.4 million active provider directory." },
-  { value: "12+", label: "Products I shipped this past year, by myself, with AI tools." },
+  { value: "12+", label: "Products I shipped this past year, end to end, with AI tools." },
   { value: "40+ x 51", label: "Healthcare specialties with jobs and licensing guides across every state plus DC." },
-  { value: "Solo", label: "I own the whole stack, from the database to the servers it runs on." },
+  { value: "Full-stack", label: "I own the whole stack, from the database to the servers it runs on." },
 ];
 
 const how: readonly [string, string][] = [
@@ -73,7 +73,7 @@ const Freelance = () => {
     const descEl = document.head.querySelector<HTMLMetaElement>('meta[name="description"]');
     const prevDesc = descEl?.getAttribute("content") ?? null;
     const desc =
-      "Freelance and contract healthcare-data engineering. NPPES and provider-data pipelines, moving data from old systems to the cloud, PHI-safe de-identification, and full-stack health-tech builds. Built solo, running in production. Remote from Tampa, FL.";
+      "Freelance and contract healthcare-data engineering. NPPES and provider-data pipelines, moving data from old systems to the cloud, PHI-safe de-identification, and full-stack health-tech builds. Built end to end, running in production. Remote from Tampa, FL.";
     if (descEl) descEl.setAttribute("content", desc);
 
     let canonicalEl = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
@@ -134,7 +134,7 @@ const Freelance = () => {
             The raw federal <strong>NPPES</strong> provider file is a 1 GB download that unzips to about 9 GB, with{" "}
             <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>close to 9 million provider records</span>.
             {" "}That's every provider ID ever issued. It's too big to open in Excel. You need a data engineer for it. I loaded and cleaned it into a{" "}
-            <strong>1.4 million record</strong> active directory that runs in production, by myself. That's the kind of work I take on.
+            <strong>1.4 million record</strong> active directory that runs in production. That's the kind of work I take on.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
             <a href={MAILTO} className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto" style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}>

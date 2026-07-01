@@ -15,6 +15,7 @@ const SECTIONS = [
   { to: "/freelance", label: "FREELANCE" },
   { to: "/creditkit", label: "CREDITKIT" },
   { to: "/baselens", label: "BASELENS" },
+  { to: "/applykit", label: "APPLYKIT" },
 ] as const;
 
 export function SectionNav({ variant = "header" }: { variant?: "header" | "footer" }) {

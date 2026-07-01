@@ -138,7 +138,7 @@ const Landing = () => {
               className="text-lg sm:text-xl lg:text-2xl max-w-2xl mt-6 sm:mt-7"
               style={{ lineHeight: 1.5, color: "var(--ink)", opacity: 0.9 }}
             >
-              Solutions engineer who builds whole products solo, and can sell them too.{" "}
+              Entrepreneur who builds whole products solo, and can sell them too.{" "}
               <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>
                 Over a dozen products live
               </span>{" "}
@@ -305,7 +305,7 @@ const Landing = () => {
             className="text-base lg:text-lg mb-8 sm:mb-10 mx-auto max-w-xl"
             style={{ color: "var(--ink)", opacity: 0.8 }}
           >
-            Open to solutions, forward-deployed, and product engineering roles at early startups. I also take{" "}
+            Open to interesting work of any kind. I also take{" "}
             <Link to="/freelance" style={{ color: "var(--accent-secondary)", fontWeight: 600, textDecoration: "none" }}>
               freelance healthcare-data and app builds
             </Link>

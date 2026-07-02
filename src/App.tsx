@@ -7,41 +7,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
-import { Loader2 } from "lucide-react";
 
-// Lazy-load Index so the public landing (which most visitors hit) doesn't
-// pay the dashboard bundle cost. PasswordGate is cheap (no auth-ui-react
-// dependency) so it's imported eagerly along with the rest of the dashboard chunk.
-const Index = lazy(() => import("./pages/Index"));
-const Changelog = lazy(() => import("./pages/Changelog"));
-const PasswordGate = lazy(() =>
-  import("./components/PasswordGate").then((m) => ({ default: m.PasswordGate }))
-);
-// Public legal pages — NOT behind the password gate. Lazy so the landing
-// bundle stays lean, but reachable by anyone (footer links, the gate screen,
-// and direct URLs all point here).
+// Public legal pages — reachable by anyone (footer links + direct URLs).
+// Lazy so the landing bundle stays lean.
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 // Public freelance / "work with me" page — healthcare-data pipeline lead-gen.
-// Lazy + ungated like the legal pages; reachable from the landing nav + footer.
 const Freelance = lazy(() => import("./pages/Freelance"));
 // Public CreditKit product page — the Next.js/Supabase/Stripe starter Algy sells.
-// Lazy + ungated; reachable from the landing nav. Replaces the old vercel.json
-// rewrite to public/creditkit.html (that rewrite was removed).
 const CreditKit = lazy(() => import("./pages/CreditKit"));
-// Public BaseLens project page — the x402/Base/AI agent tool. Lazy + ungated,
-// reachable from the landing nav. React route (no vercel.json rewrite).
+// Public BaseLens project page — the x402/Base/AI agent tool.
 const BaseLens = lazy(() => import("./pages/BaseLens"));
-// Public ApplyKit product page — the Gemini resume-tailoring tool. Lazy +
-// ungated, reachable from the landing nav. Links out to the live app
-// (applykit-beryl.vercel.app), same pattern as CreditKit -> Gumroad.
+// Public ApplyKit product page — the Gemini resume-tailoring tool. Links out
+// to the live app (applykit-beryl.vercel.app), same pattern as CreditKit.
 const ApplyKit = lazy(() => import("./pages/ApplyKit"));
-
-const DashboardFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading dashboard" />
-  </div>
-);
 
 const PageFallback = () => (
   <div className="min-h-screen" aria-hidden />
@@ -55,26 +34,6 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route
-            path="/dashboard"
-            element={
-              <Suspense fallback={<DashboardFallback />}>
-                <PasswordGate>
-                  <Index />
-                </PasswordGate>
-              </Suspense>
-            }
-          />
-          <Route
-            path="/changelog"
-            element={
-              <Suspense fallback={<DashboardFallback />}>
-                <PasswordGate>
-                  <Changelog />
-                </PasswordGate>
-              </Suspense>
-            }
-          />
           <Route
             path="/privacy"
             element={

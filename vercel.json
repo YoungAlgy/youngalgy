@@ -4,11 +4,12 @@
     { "source": "/fishing", "destination": "https://toggle.town/fishing", "permanent": true },
     { "source": "/fishing/:path*", "destination": "https://toggle.town/fishing/:path*", "permanent": true },
     { "source": "/studio", "destination": "https://toggle.town/studio", "permanent": false },
-    { "source": "/studio/:path*", "destination": "https://toggle.town/studio/:path*", "permanent": false }
+    { "source": "/studio/:path*", "destination": "https://toggle.town/studio/:path*", "permanent": false },
+    { "source": "/alpha", "destination": "https://alpha.everyday.report", "permanent": true },
+    { "source": "/alpha/((?!api/).*)", "destination": "https://alpha.everyday.report/$1", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/alpha", "destination": "https://alpha-chi-five.vercel.app/alpha" },
-    { "source": "/alpha/:path*", "destination": "https://alpha-chi-five.vercel.app/alpha/:path*" },
+    { "source": "/alpha/api/:path*", "destination": "https://alpha-chi-five.vercel.app/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

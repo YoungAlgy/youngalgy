@@ -6,7 +6,7 @@
     { "source": "/studio", "destination": "https://toggle.town/studio", "permanent": false },
     { "source": "/studio/:path*", "destination": "https://toggle.town/studio/:path*", "permanent": false },
     { "source": "/alpha", "destination": "https://alpha.everyday.report", "permanent": true },
-    { "source": "/alpha/((?!api/).*)", "destination": "https://alpha.everyday.report/$1", "permanent": true }
+    { "source": "/alpha/((?!api(?:/|$)).*)", "destination": "https://alpha.everyday.report/$1", "permanent": true }
   ],
   "rewrites": [
     { "source": "/alpha/api/:path*", "destination": "https://alpha-chi-five.vercel.app/api/:path*" },

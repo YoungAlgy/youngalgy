@@ -16,8 +16,10 @@ export const TOGGLE_TOWN_URL = "https://toggle.town/?utm_source=youngalgy&utm_me
 export const TOGGLE_TOWN_BASIC_URL = "https://toggle.town/basic?utm_source=youngalgy&utm_medium=backlink";
 export const MONEY_MITCH_URL = "https://moneymitch.music";
 export const AVA_PROVIDERS_URL = "https://providers.avahealth.co";
-export const ALPHA_URL = "/alpha";
-export const ALPHA_SAMPLE_URL = "/alpha/sample";
+// alpha. lives on its own domain now — link straight there instead of
+// bouncing through the /alpha 308 redirect this site keeps for old links.
+export const ALPHA_URL = "https://alpha.everyday.report";
+export const ALPHA_SAMPLE_URL = "https://alpha.everyday.report/sample";
 export const FACEBOOK_URL = "https://facebook.com/youngalgy";
 export const LINKEDIN_URL = "https://linkedin.com/in/youngalgy";
 export const GITHUB_URL = "https://github.com/youngalgy";

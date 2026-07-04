@@ -189,7 +189,7 @@ const Landing = () => {
                 className="inline-block rounded-full"
                 style={{ width: 6, height: 6, background: "var(--accent-secondary)" }}
               />
-              NOW LIVE · A WEEKLY LETTER
+              NOW LIVE · A DAILY LETTER
             </div>
             <h2
               id="alpha-heading"
@@ -203,7 +203,7 @@ const Landing = () => {
               style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
             >
               A letter on the five topics you care about. Sourced and
-              edited so it's worth your time. Comes every Sunday, written
+              edited so it's worth your time. Comes every day, written
               and sent by me.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">

@@ -6,7 +6,7 @@ import {
   Mail,
   MessageSquareText,
   Sparkles,
-  Gift,
+  Wallet,
   Code2,
 } from "lucide-react";
 import { Monogram } from "@/components/landing/Monogram";
@@ -17,7 +17,7 @@ import { useThemeMode } from "@/components/landing/useThemeMode";
 /**
  * ApplyKit, the product page. ApplyKit is a Gemini-powered tool that tailors a
  * resume and cover letter to one specific job posting, plus interview prep.
- * $9/mo, first tailoring free. Built for the XPRIZE Build with Gemini
+ * $1 to try it once, $7 for ten. Built for the XPRIZE Build with Gemini
  * competition (Entrepreneurship & Job Creation category).
  *
  * Public and ungated, themed via useThemeMode so it matches the landing,
@@ -39,7 +39,7 @@ const features: readonly Feature[] = [
   { icon: Mail, title: "A real cover letter", body: "Written for this job and this company, not a fill-in-the-blank template." },
   { icon: MessageSquareText, title: "Interview prep", body: "The questions this posting will probably lead to, with a tip on how to answer each." },
   { icon: Sparkles, title: "Powered by Gemini", body: "Structured output, not a chat window. It only uses what's actually in your resume." },
-  { icon: Gift, title: "First one's free", body: "No card required to try it once. $9/mo unlimited after that." },
+  { icon: Wallet, title: "Pay per use", body: "$1 to try it once, $7 for ten if you're applying to a lot of places." },
   { icon: Code2, title: "Built in the open", body: "Next.js, Gemini, Stripe. No database, no account required to try it." },
 ];
 
@@ -75,7 +75,7 @@ const ApplyKit = () => {
     };
 
     const desc =
-      "ApplyKit tailors your resume and writes a real cover letter for one specific job posting, plus interview prep for it, powered by Gemini. First one free, then $9/month unlimited.";
+      "ApplyKit tailors your resume and writes a real cover letter for one specific job posting, plus interview prep for it, powered by Gemini. $1 to try it once, $7 for ten.";
     const title = "ApplyKit, tailor your resume to any job";
     const url = window.location.origin + "/applykit";
 
@@ -143,7 +143,7 @@ const ApplyKit = () => {
             Paste a job posting and your resume. ApplyKit rewrites your bullets to match what that job actually wants,
             writes you a{" "}
             <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>real cover letter</span>, and preps you
-            for the interview. First one's free.
+            for the interview. $1 to try it once.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
             <a
@@ -153,7 +153,7 @@ const ApplyKit = () => {
               className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
               style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
             >
-              TRY APPLYKIT FREE <ArrowUpRight className="h-3.5 w-3.5" />
+              TRY APPLYKIT <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
             <a
               href="#how"
@@ -164,7 +164,7 @@ const ApplyKit = () => {
             </a>
           </div>
           <p className="landing-mono mt-5" style={{ color: "var(--ink)", opacity: 0.6 }}>
-            First tailoring free. $9/month unlimited after that.
+            $1 to try it once. $7 for ten.
           </p>
         </section>
 
@@ -241,10 +241,10 @@ const ApplyKit = () => {
               className="landing-display landing-stat-number text-[clamp(3rem,9vw,5rem)]"
               style={{ color: "var(--accent-primary)" }}
             >
-              $9/mo
+              $1
             </div>
             <p className="landing-mono mt-2 mb-8" style={{ color: "var(--ink)", opacity: 0.7 }}>
-              First tailoring free. Unlimited after that.
+              To try it once. $7 for ten if you need more.
             </p>
             <a
               href={APPLYKIT_URL}

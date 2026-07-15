@@ -78,13 +78,16 @@ const ApplyKit = () => {
       "ApplyKit tailors your resume and writes a real cover letter for one specific job posting, plus interview prep for it, powered by Gemini. $1 to try it once, $7 for ten.";
     const title = "ApplyKit, tailor your resume to any job";
     const url = window.location.origin + "/applykit";
+    const ogImage = window.location.origin + "/applykit-og.png";
 
     setMeta("name", "description", desc);
     setMeta("property", "og:title", title);
     setMeta("property", "og:description", desc);
     setMeta("property", "og:url", url);
+    setMeta("property", "og:image", ogImage);
     setMeta("name", "twitter:title", title);
     setMeta("name", "twitter:description", desc);
+    setMeta("name", "twitter:image", ogImage);
 
     let canonicalEl = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     const createdCanonical = !canonicalEl;

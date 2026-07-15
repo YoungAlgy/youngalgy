@@ -10,6 +10,8 @@
   ],
   "rewrites": [
     { "source": "/alpha/api/:path*", "destination": "https://alpha-chi-five.vercel.app/api/:path*" },
+    { "source": "/creditkit", "destination": "/creditkit.html" },
+    { "source": "/applykit", "destination": "/applykit.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

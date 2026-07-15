@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Prerendered OG shell for /applykit. This static head is what link-preview
+      scrapers (facebookexternalhit, Twitterbot, Slack, etc.) read, since they do
+      not run JavaScript. The same /src/main.tsx boots the SPA, React Router sees
+      /applykit, and the ApplyKit page renders for humans. vercel.json rewrites
+      /applykit to this file.
+    -->
+    <title>ApplyKit, tailor your resume to any job</title>
+    <meta name="description" content="ApplyKit tailors your resume and writes a real cover letter for one specific job posting, plus interview prep for it, powered by Gemini. $1 to try it once, $7 for ten." />
+    <meta name="author" content="Alexander Holmes" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#1F3D2E" />
+    <link rel="canonical" href="https://youngalgy.com/applykit" />
+
+    <meta property="og:type" content="product" />
+    <meta property="og:url" content="https://youngalgy.com/applykit" />
+    <meta property="og:title" content="ApplyKit, tailor your resume to any job" />
+    <meta property="og:description" content="Paste a job posting and your resume. Get a resume rewritten for that job, a real cover letter, and interview prep. $1 to try it once, $7 for ten." />
+    <meta property="og:image" content="https://youngalgy.com/applykit-og.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="ApplyKit, tailor your resume to any job." />
+    <meta property="og:site_name" content="Alexander Holmes" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@youngalgy" />
+    <meta name="twitter:creator" content="@youngalgy" />
+    <meta name="twitter:title" content="ApplyKit, tailor your resume to any job" />
+    <meta name="twitter:description" content="Paste a job posting and your resume. Get a resume rewritten for that job, a real cover letter, and interview prep. $1 to try it once, $7 for ten." />
+    <meta name="twitter:image" content="https://youngalgy.com/applykit-og.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "ApplyKit",
+        "description": "A Gemini-powered tool that tailors a resume and cover letter to one specific job posting, plus interview prep.",
+        "image": "https://youngalgy.com/applykit-og.png",
+        "brand": { "@type": "Brand", "name": "youngalgy" },
+        "url": "https://youngalgy.com/applykit",
+        "offers": {
+          "@type": "Offer",
+          "price": "1",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "url": "https://youngalgy.com/applykit"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="max-width:560px;margin:4rem auto;padding:2rem;font-family:Georgia,serif;color:#1F3D2E;background:#F4EFE0;border:1px solid #C9A961;border-radius:4px;text-align:center">
+        <h1 style="margin:0 0 1rem;font-size:1.75rem;color:#1F3D2E">ApplyKit</h1>
+        <p style="margin:0 0 1rem;line-height:1.6">
+          Paste a job posting and your resume. Get a resume rewritten for that job,
+          a real cover letter, and interview prep. $1 to try it once, $7 for ten.
+        </p>
+        <p style="margin:0 0 1rem;line-height:1.6">
+          This page uses JavaScript to render. Try ApplyKit at
+          <a href="https://applykit-beryl.vercel.app" style="color:#1F3D2E">applykit-beryl.vercel.app</a>.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -42,12 +42,10 @@ const Privacy = () => (
       (Alpha / Money Mitch). It never leaves your device.
     </p>
     <p>
-      The site is hosted on <strong>Vercel</strong> and uses{" "}
-      <strong>Vercel Analytics</strong>, which records privacy-friendly,
-      aggregate pageview metrics without cookies and without identifying
-      individual visitors. Vercel also keeps standard server request logs
-      (IP, user-agent, referrer) for security and abuse prevention, as any web
-      host does.
+      The site is hosted on <strong>Cloudflare Pages</strong> and runs no
+      analytics or tracking scripts. Cloudflare keeps standard server request
+      logs (IP, user-agent, referrer) for security and abuse prevention, as
+      any web host does.
     </p>
 
     <h2>The dashboard (private)</h2>
@@ -67,7 +65,7 @@ const Privacy = () => (
 
     <h2>Third parties</h2>
     <ul>
-      <li><strong>Vercel</strong>: hosting + privacy-friendly analytics for the whole site.</li>
+      <li><strong>Cloudflare Pages</strong>: hosting for the whole site, no analytics.</li>
       <li><strong>Supabase</strong>: database for the private dashboard only.</li>
     </ul>
     <p>

@@ -15,19 +15,20 @@ import { SectionNav } from "@/components/landing/SectionNav";
 import { useThemeMode } from "@/components/landing/useThemeMode";
 
 /**
- * ApplyKit, the product page. ApplyKit is a Gemini-powered tool that tailors a
- * resume and cover letter to one specific job posting, plus interview prep.
- * $1 to try it once, $7 for ten. Built for the XPRIZE Build with Gemini
- * competition (Entrepreneurship & Job Creation category).
+ * ApplyKit, the case-study page. ApplyKit was a standalone Gemini-powered
+ * tool that tailored a resume and cover letter to one specific job posting,
+ * plus interview prep. Retired as its own paid product on 2026-07-24 (wasn't
+ * making money standalone); the tailoring feature lives on for free inside
+ * FreeResumePost's /account/tailor, for candidates who already have a resume
+ * on file there. This page now tells that story and points to the new home.
  *
  * Public and ungated, themed via useThemeMode so it matches the landing,
- * freelance, creditkit, and baselens pages. Every claim matches the real
- * product (applykit-beryl.vercel.app). Copy is in Alex's voice.
+ * freelance, creditkit, and baselens pages. Copy is in Alex's voice.
  */
-const APPLYKIT_URL = "https://applykit-beryl.vercel.app";
+const APPLYKIT_URL = "https://www.freeresumepost.co/account/tailor";
 
 const steps: readonly { n: string; title: string; body: string }[] = [
-  { n: "1", title: "Paste the job and your resume", body: "Drop in the job posting and your current resume. No account needed for the first one." },
+  { n: "1", title: "Paste the job", body: "Drop in the job posting. It reads your resume straight from your FreeResumePost account, no re-pasting it." },
   { n: "2", title: "Gemini reads both", body: "It matches your real experience against what the posting actually asks for, no invented skills." },
   { n: "3", title: "Get three things back", body: "Tailored resume bullets, a real cover letter, and the interview questions you'll probably get asked." },
 ];
@@ -39,8 +40,8 @@ const features: readonly Feature[] = [
   { icon: Mail, title: "A real cover letter", body: "Written for this job and this company, not a fill-in-the-blank template." },
   { icon: MessageSquareText, title: "Interview prep", body: "The questions this posting will probably lead to, with a tip on how to answer each." },
   { icon: Sparkles, title: "Powered by Gemini", body: "Structured output, not a chat window. It only uses what's actually in your resume." },
-  { icon: Wallet, title: "Pay per use", body: "$1 to try it once, $7 for ten if you're applying to a lot of places." },
-  { icon: Code2, title: "Built in the open", body: "Next.js, Gemini, Stripe. No database, no account required to try it." },
+  { icon: Wallet, title: "Free now", body: "Folded into FreeResumePost as a free account feature. No separate payment, no separate account." },
+  { icon: Code2, title: "Built in the open", body: "Next.js, Gemini. Originally its own Stripe-billed app, since simplified." },
 ];
 
 const ApplyKit = () => {
@@ -75,7 +76,7 @@ const ApplyKit = () => {
     };
 
     const desc =
-      "ApplyKit tailors your resume and writes a real cover letter for one specific job posting, plus interview prep for it, powered by Gemini. $1 to try it once, $7 for ten.";
+      "ApplyKit tailored a resume and wrote a real cover letter for one specific job posting, plus interview prep, powered by Gemini. Now a free feature inside FreeResumePost.";
     const title = "ApplyKit, tailor your resume to any job";
     const url = window.location.origin + "/applykit";
     const ogImage = window.location.origin + "/applykit-og.png";
@@ -143,10 +144,10 @@ const ApplyKit = () => {
             same resume everywhere
           </h1>
           <p className="text-lg sm:text-xl max-w-2xl mt-6 sm:mt-8" style={{ lineHeight: 1.55, color: "var(--ink)", opacity: 0.9 }}>
-            Paste a job posting and your resume. ApplyKit rewrites your bullets to match what that job actually wants,
-            writes you a{" "}
+            Paste a job posting. It rewrites your resume bullets to match what that job actually wants, writes you
+            a{" "}
             <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>real cover letter</span>, and preps you
-            for the interview. $1 to try it once.
+            for the interview. Now a free feature inside FreeResumePost.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
             <a
@@ -156,7 +157,7 @@ const ApplyKit = () => {
               className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
               style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
             >
-              TRY APPLYKIT <ArrowUpRight className="h-3.5 w-3.5" />
+              TRY IT FREE <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
             <a
               href="#how"
@@ -167,7 +168,7 @@ const ApplyKit = () => {
             </a>
           </div>
           <p className="landing-mono mt-5" style={{ color: "var(--ink)", opacity: 0.6 }}>
-            $1 to try it once. $7 for ten.
+            Free, built into FreeResumePost. No separate account, no payment.
           </p>
         </section>
 
@@ -179,7 +180,7 @@ const ApplyKit = () => {
             One job posting, one real answer
           </h2>
           <p className="text-base lg:text-lg max-w-2xl mb-10 sm:mb-14" style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.8 }}>
-            No account needed to try it. Paste, wait a few seconds, get a tailored application back.
+            Free for anyone with a FreeResumePost account. Paste, wait a few seconds, get a tailored application back.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10">
             {steps.map((s) => (
@@ -244,10 +245,10 @@ const ApplyKit = () => {
               className="landing-display landing-stat-number text-[clamp(3rem,9vw,5rem)]"
               style={{ color: "var(--accent-primary)" }}
             >
-              $1
+              FREE
             </div>
             <p className="landing-mono mt-2 mb-8" style={{ color: "var(--ink)", opacity: 0.7 }}>
-              To try it once. $7 for ten if you need more.
+              Built into your FreeResumePost account.
             </p>
             <a
               href={APPLYKIT_URL}
@@ -256,10 +257,10 @@ const ApplyKit = () => {
               className="landing-mono inline-flex items-center justify-center gap-2 px-8 py-4"
               style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
             >
-              TRY APPLYKIT <ArrowUpRight className="h-3.5 w-3.5" />
+              TRY IT FREE <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
             <div className="flex flex-wrap justify-center gap-2 mt-10">
-              {["Next.js", "Gemini", "Stripe", "TypeScript"].map((chip) => (
+              {["Next.js", "Gemini", "TypeScript"].map((chip) => (
                 <span key={chip} className="landing-pill">
                   {chip}
                 </span>
@@ -281,7 +282,7 @@ const ApplyKit = () => {
             <SectionNav variant="footer" />
             <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
             <a href={APPLYKIT_URL} target="_blank" rel="noopener noreferrer" className="landing-mono inline-flex items-center gap-1" style={{ color: "var(--accent-secondary)" }}>
-              TRY APPLYKIT <ArrowUpRight className="h-3 w-3" />
+              TRY IT FREE <ArrowUpRight className="h-3 w-3" />
             </a>
             <span className="landing-mono" style={{ opacity: 0.3 }}>·</span>
             <Link to="/privacy" className="landing-mono" style={{ color: "var(--accent-secondary)", textDecoration: "none" }}>

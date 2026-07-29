@@ -41,7 +41,7 @@ export function AvaMapIllustration() {
         TAMPA
       </text>
       <text x="20" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
-        1.4M+ / 50 STATES
+        9M PARSED / 50 STATES
       </text>
       <text x="345" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} textAnchor="end" style={monoStyle}>
         NODE / PG / SUPABASE

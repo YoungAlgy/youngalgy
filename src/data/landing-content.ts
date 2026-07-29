@@ -157,7 +157,7 @@ export const cases: readonly Case[] = [
     category: "HEALTHCARE",
     period: "2026 - NOW",
     title: "Ava Health.",
-    body: "Built and run the whole platform, then work the recruiting against it. A 1.4M+ provider directory spun up from raw federal data, wired into a full-stack CRM that places physicians nationwide and ships nurses and therapists across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
+    body: "Built and run the whole platform, then work the recruiting against it. A pipeline that matches and cleans the raw federal NPPES provider file, wired into a full-stack CRM that places physicians nationwide and ships nurses and therapists across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",
     link: { url: AVA_PROVIDERS_URL, label: "providers.avahealth.co" },

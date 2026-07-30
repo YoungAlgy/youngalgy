@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Prerendered OG shell for /baselens. This static head is what link-preview
+      scrapers (facebookexternalhit, Twitterbot, Slack, etc.) read, since they do
+      not run JavaScript. The same /src/main.tsx boots the SPA, React Router sees
+      /baselens, and the BaseLens page renders for humans. vercel.json rewrites
+      /baselens to this file.
+    -->
+    <title>BaseLens, onchain risk analysis for AI agents</title>
+    <meta name="description" content="BaseLens is a pay-per-call AI endpoint that reads any Base address and returns a structured risk and activity summary. Built on x402, Coinbase CDP, and Claude, for the agent economy." />
+    <meta name="author" content="Alexander Holmes" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#1F3D2E" />
+    <link rel="canonical" href="https://youngalgy.com/baselens" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://youngalgy.com/baselens" />
+    <meta property="og:title" content="BaseLens, onchain risk analysis for AI agents" />
+    <meta property="og:description" content="Reads any wallet or contract on Base and returns a plain-English risk read, paid a few cents in USDC over x402. No account, no API key. Open source." />
+    <meta property="og:image" content="https://youngalgy.com/baselens-og.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="BaseLens, onchain risk analysis for AI agents." />
+    <meta property="og:site_name" content="Alexander Holmes" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@youngalgy" />
+    <meta name="twitter:creator" content="@youngalgy" />
+    <meta name="twitter:title" content="BaseLens, onchain risk analysis for AI agents" />
+    <meta name="twitter:description" content="Reads any wallet or contract on Base and returns a plain-English risk read, paid a few cents in USDC over x402. No account, no API key. Open source." />
+    <meta name="twitter:image" content="https://youngalgy.com/baselens-og.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "BaseLens",
+        "description": "A pay-per-call AI endpoint that reads any Base address and returns a structured risk and activity summary. Built on x402, Coinbase CDP, and Claude, for the agent economy.",
+        "image": "https://youngalgy.com/baselens-og.png",
+        "author": { "@type": "Person", "name": "Alexander Holmes" },
+        "url": "https://youngalgy.com/baselens",
+        "codeRepository": "https://github.com/YoungAlgy/baselens",
+        "programmingLanguage": "TypeScript"
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="max-width:560px;margin:4rem auto;padding:2rem;font-family:Georgia,serif;color:#1F3D2E;background:#F4EFE0;border:1px solid #C9A961;border-radius:4px;text-align:center">
+        <h1 style="margin:0 0 1rem;font-size:1.75rem;color:#1F3D2E">BaseLens</h1>
+        <p style="margin:0 0 1rem;line-height:1.6">
+          Reads any wallet or contract on Base and returns a plain-English risk read,
+          paid a few cents in USDC over x402. No account, no API key. Open source.
+        </p>
+        <p style="margin:0 0 1rem;line-height:1.6">
+          This page uses JavaScript to render. View the source at
+          <a href="https://github.com/YoungAlgy/baselens" style="color:#1F3D2E">github.com/YoungAlgy/baselens</a>.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

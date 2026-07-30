@@ -18,12 +18,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       // Multiple HTML entry points that share the same SPA bundle. index.html is
-      // the default; creditkit.html / applykit.html are prerendered OG shells
-      // (real static meta for link-preview scrapers) that still boot the React app.
+      // the default; creditkit.html / applykit.html / baselens.html are prerendered
+      // OG shells (real static meta for link-preview scrapers) that still boot the
+      // React app.
       input: {
         main: path.resolve(__dirname, "index.html"),
         creditkit: path.resolve(__dirname, "creditkit.html"),
         applykit: path.resolve(__dirname, "applykit.html"),
+        baselens: path.resolve(__dirname, "baselens.html"),
       },
       output: {
         manualChunks: (id) => {

@@ -3,9 +3,7 @@ import { LegalLayout } from "@/components/landing/LegalLayout";
 import { CONTACT_EMAIL } from "@/data/landing-content";
 
 /**
- * Privacy — public policy covering both surfaces of youngalgy.com:
- *   1. the public portfolio landing ("/")
- *   2. the password-gated personal job-tracking dashboard ("/dashboard")
+ * Privacy — public policy for youngalgy.com, a static personal portfolio.
  *
  * Written to match what the site actually does — no boilerplate about data
  * we don't collect. Update if/when a contact form, signup, or third-party
@@ -14,26 +12,23 @@ import { CONTACT_EMAIL } from "@/data/landing-content";
 const Privacy = () => (
   <LegalLayout
     title="Privacy"
-    description="Privacy policy for youngalgy.com: what the public portfolio and the private job-tracking dashboard do (and don't) collect. Operated solely by Alexander Holmes."
-    lastUpdated="2026-05-28"
+    description="Privacy policy for youngalgy.com: what the public portfolio does (and doesn't) collect. Operated solely by Alexander Holmes."
+    lastUpdated="2026-08-05"
   >
     <p>
       <strong>Short version:</strong> youngalgy.com is a personal site run by
-      Alexander Holmes (Tampa, FL). The public landing page collects no
-      personal information from visitors. The dashboard behind it is a private,
-      password-gated tool I use to track my own job search. It isn&apos;t a
-      product that collects data about you.
+      Alexander Holmes (Tampa, FL). It collects no personal information from
+      visitors.
     </p>
 
     <h2>Who runs this site</h2>
     <p>
-      youngalgy.com is operated solely by Alexander Holmes, a personal
-      portfolio plus a private tool, not a company or a multi-user service.
-      Questions go to{" "}
+      youngalgy.com is operated solely by Alexander Holmes — a personal
+      portfolio, not a company or a multi-user service. Questions go to{" "}
       <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
     </p>
 
-    <h2>The public landing page</h2>
+    <h2>The site</h2>
     <p>
       The page at <code>youngalgy.com</code> has no signup, no contact form,
       and no account system. It doesn&apos;t set advertising cookies or run
@@ -48,44 +43,24 @@ const Privacy = () => (
       any web host does.
     </p>
 
-    <h2>The dashboard (private)</h2>
-    <p>
-      <code>youngalgy.com/dashboard</code> (and the related changelog) sit
-      behind a password gate. It&apos;s a single-operator tool. I use it to
-      track <em>my own</em> job applications. It is not a sign-up product and
-      does not collect, profile, or store information about visitors or third
-      parties.
-    </p>
-    <p>
-      The application records I enter (job title, company, listing URL, source,
-      status, my own notes, and draft cover letters) are stored in a{" "}
-      <strong>Supabase</strong> Postgres database. That data is mine, about my
-      own job search. It is not sold, shared, or used for advertising.
-    </p>
-
     <h2>Third parties</h2>
-    <ul>
-      <li><strong>Cloudflare Pages</strong>: hosting for the whole site, no analytics.</li>
-      <li><strong>Supabase</strong>: database for the private dashboard only.</li>
-    </ul>
     <p>
-      Each has its own privacy practices. No analytics or advertising networks
-      beyond the above are embedded.
+      <strong>Cloudflare Pages</strong> hosts the site, with no analytics.
+      That&apos;s the only third party involved — no analytics or advertising
+      networks are embedded.
     </p>
 
     <h2>Cookies &amp; storage</h2>
     <p>
-      No advertising or cross-site tracking cookies. The site uses only
-      functional browser storage: the theme preference described above, and a
-      session flag that remembers you&apos;ve passed the dashboard password gate
-      so you don&apos;t have to re-enter it on every page.
+      No advertising or cross-site tracking cookies. The only browser storage
+      is the theme preference described above.
     </p>
 
     <h2>Your choices</h2>
     <p>
-      Because the public site collects no personal data, there&apos;s nothing
-      to request or delete. You can clear the theme/gate storage anytime via
-      your browser. If you&apos;ve emailed me, you can ask me to delete that
+      Because the site collects no personal data, there&apos;s nothing to
+      request or delete. You can clear the theme storage anytime via your
+      browser. If you&apos;ve emailed me, you can ask me to delete that
       correspondence at{" "}
       <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
     </p>

@@ -3,24 +3,21 @@ import { LegalLayout } from "@/components/landing/LegalLayout";
 import { CONTACT_EMAIL } from "@/data/landing-content";
 
 /**
- * Terms — public terms of use covering both surfaces of youngalgy.com:
- *   1. the public portfolio landing ("/")
- *   2. the password-gated personal job-tracking dashboard ("/dashboard")
+ * Terms — public terms of use for youngalgy.com, a static personal portfolio.
  *
- * Plain-English, honest about scope: this is a personal site + private tool,
- * not a commercial service with users. Governing law: Florida, USA.
+ * Plain-English, honest about scope: this is a personal site, not a
+ * commercial service with users. Governing law: Florida, USA.
  */
 const Terms = () => (
   <LegalLayout
     title="Terms"
-    description="Terms of use for youngalgy.com: Alexander Holmes's personal portfolio and private job-tracking tool. Provided as-is. Governing law Florida."
-    lastUpdated="2026-05-28"
+    description="Terms of use for youngalgy.com: Alexander Holmes's personal portfolio. Provided as-is. Governing law Florida."
+    lastUpdated="2026-08-05"
   >
     <p>
       <strong>Short version:</strong> youngalgy.com is Alexander Holmes&apos;s
-      personal portfolio, plus a private job-tracking tool for my own use.
-      You&apos;re welcome to look around the public side. The dashboard is
-      gated and not meant for public use. Everything is provided as-is.
+      personal portfolio. You&apos;re welcome to look around. Everything is
+      provided as-is.
     </p>
 
     <h2>Accepting these terms</h2>
@@ -30,23 +27,13 @@ const Terms = () => (
       please don&apos;t use the site.
     </p>
 
-    <h2>The public landing page</h2>
+    <h2>The site</h2>
     <p>
       The landing page is an informational portfolio, a record of projects
       I&apos;ve built and roles I&apos;ve held. Details and metrics are
       accurate to the best of my knowledge at the time of writing and may
       change. Nothing here is an offer, a guarantee of results, or
       professional advice.
-    </p>
-
-    <h2>The dashboard (private)</h2>
-    <p>
-      <code>youngalgy.com/dashboard</code> is a personal tool behind a password
-      gate. It&apos;s provided for my own use, with no uptime guarantee, no
-      support commitment, and no warranty. Don&apos;t attempt to bypass the
-      gate, access data that isn&apos;t yours, or probe the tool for
-      vulnerabilities. If you reached it by mistake, just head back to the{" "}
-      <Link to="/">home page</Link>.
     </p>
 
     <h2>Intellectual property</h2>

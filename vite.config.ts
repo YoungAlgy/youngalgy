@@ -29,8 +29,6 @@ export default defineConfig({
       },
       output: {
         manualChunks: (id) => {
-          if (id.includes("node_modules/recharts")) return "recharts";
-          if (id.includes("node_modules/@hello-pangea")) return "dnd";
           if (id.includes("node_modules/@radix-ui")) return "radix";
         },
       },

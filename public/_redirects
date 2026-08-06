@@ -1,4 +1,3 @@
-/hitlist https://mitchmark.vercel.app/ 302
 /fishing https://toggle.town/fishing 301
 /fishing/* https://toggle.town/fishing/:splat 301
 /studio https://toggle.town/studio 302

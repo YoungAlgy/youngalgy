@@ -12,8 +12,10 @@
       Prerendered OG shell for /creditkit. This static head is what link-preview
       scrapers (facebookexternalhit, Twitterbot, Slack, etc.) read, since they do
       not run JavaScript. The same /src/main.tsx boots the SPA, React Router sees
-      /creditkit, and the CreditKit page renders for humans. vercel.json rewrites
-      /creditkit to this file.
+      /creditkit, and the CreditKit page renders for humans. Cloudflare Pages serves
+      this file for clean-URL requests to /creditkit automatically (it looks for
+      an exact <path>.html match before falling through to the SPA catch-all in
+      _redirects) — no rewrite rule needed.
     -->
     <title>CreditKit, credits and billing for AI apps</title>
     <meta name="description" content="A Next.js, Supabase, and Stripe starter that ships the usage-credits and billing layer AI apps actually need. Atomic spend, idempotent Stripe webhooks, and a worker that refunds on failure. $129, full source." />

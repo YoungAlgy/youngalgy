@@ -83,13 +83,16 @@ const BaseLens = () => {
       "BaseLens is a pay-per-call AI endpoint that reads any Base address and returns a structured risk and activity summary. Built on x402, Coinbase CDP, and Claude, for the agent economy.";
     const title = "BaseLens, onchain risk analysis for AI agents";
     const url = window.location.origin + "/baselens";
+    const ogImage = window.location.origin + "/baselens-og.png";
 
     setMeta("name", "description", desc);
     setMeta("property", "og:title", title);
     setMeta("property", "og:description", desc);
     setMeta("property", "og:url", url);
+    setMeta("property", "og:image", ogImage);
     setMeta("name", "twitter:title", title);
     setMeta("name", "twitter:description", desc);
+    setMeta("name", "twitter:image", ogImage);
 
     let canonicalEl = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     const createdCanonical = !canonicalEl;

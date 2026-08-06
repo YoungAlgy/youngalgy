@@ -12,8 +12,10 @@
       Prerendered OG shell for /applykit. This static head is what link-preview
       scrapers (facebookexternalhit, Twitterbot, Slack, etc.) read, since they do
       not run JavaScript. The same /src/main.tsx boots the SPA, React Router sees
-      /applykit, and the ApplyKit page renders for humans. vercel.json rewrites
-      /applykit to this file.
+      /applykit, and the ApplyKit page renders for humans. Cloudflare Pages serves
+      this file for clean-URL requests to /applykit automatically (it looks for
+      an exact <path>.html match before falling through to the SPA catch-all in
+      _redirects) — no rewrite rule needed.
     -->
     <title>ApplyKit, tailor your resume to any job</title>
     <meta name="description" content="ApplyKit tailored a resume and wrote a real cover letter for one specific job posting, plus interview prep, powered by Gemini. Now a free feature inside FreeResumePost." />

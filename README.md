@@ -7,7 +7,7 @@ I build the whole stack myself, from the frontend to the backend to the data to 
 **🛠 Stack:** TypeScript · React · Next.js · Python · FastAPI · PostgreSQL · Supabase · Vercel · Fly.io · Stripe
 
 **🚀 A few things I've shipped:**
-- **avahealth.co**. Healthcare data platform. A 1.4M-record provider directory built from federal NPPES data, plus a CRM, automated outreach and 10DLC texting, and a scheduler that pauses itself when someone replies.
+- **avahealth.co**. Healthcare staffing platform. Built off the federal NPPES provider file (about 9 million records), with a CRM, automated outreach and 10DLC texting, and a scheduler that pauses itself when someone replies.
 - **[freejobpost.co + freeresumepost.co](https://github.com/YoungAlgy/freejobpost)**. Two-sided job marketplace with thousands of live listings, pulled from ATS feeds like Greenhouse, Lever, and Workday.
 - **Local-food marketplace**. Connects local farms to nearby shoppers. Farm storefronts, Stripe Connect payouts and KYC onboarding, pickup and delivery. Next.js and Supabase.
 - **[toggle.town](https://toggle.town)**. My product hub. In-browser audio mastering (Web Audio and a Python worker), and more.

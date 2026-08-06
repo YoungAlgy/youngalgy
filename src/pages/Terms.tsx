@@ -56,7 +56,7 @@ const Terms = () => (
 
     <h2>Disclaimer &amp; liability</h2>
     <p>
-      The site and the tool are provided &quot;as is&quot; and &quot;as
+      The site is provided &quot;as is&quot; and &quot;as
       available,&quot; without warranties of any kind. To the fullest extent
       allowed by law, Alexander Holmes isn&apos;t liable for any damages
       arising from your use of (or inability to use) the site.

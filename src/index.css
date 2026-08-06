@@ -94,6 +94,12 @@ html[data-mode] .landing-mono {
   transition: color 400ms ease;
 }
 
+/* Tabular nums for stat figures — aligned digits, no character drift. */
+html[data-mode] .landing-stat-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
 html[data-mode] .period-dot::after {
   content: '.';
   color: var(--period-color);

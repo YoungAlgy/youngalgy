@@ -9,9 +9,8 @@ import { useThemeMode } from "./useThemeMode";
  *
  * Matches the landing's Miami/Pirate dual-theme (via useThemeMode → data-mode)
  * so the legal pages feel part of youngalgy.com rather than a bolt-on. Public
- * by design — legal pages must stay reachable without passing the dashboard
- * password gate, and they're linked from the landing footer, the dashboard,
- * the changelog, and the gate screen.
+ * by design — legal pages must stay reachable to anyone, and they're linked
+ * from the landing and product-page footers.
  */
 type LegalLayoutProps = {
   title: string;

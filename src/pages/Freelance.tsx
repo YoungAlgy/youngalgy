@@ -13,8 +13,8 @@ import { CONTACT_EMAIL, GITHUB_URL } from "@/data/landing-content";
  * (a ~9 GB / ~9M-record federal file, matched, cleaned, and fed into a real
  * production CRM), which screens people in by itself.
  *
- * Public on purpose (not behind the dashboard gate), themed via useThemeMode so
- * it matches the landing look. Every claim matches the resume and the Ava Health
+ * Public on purpose, themed via useThemeMode so it matches the landing look.
+ * Every claim matches the resume and the Ava Health
  * case study on "/". Contact is the site's CONTACT_EMAIL. Copy is in Alex's voice.
  */
 const MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(

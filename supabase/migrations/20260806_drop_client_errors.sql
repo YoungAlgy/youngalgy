@@ -1,0 +1,22 @@
+-- 2026-08-06: Drop the orphaned client_errors table.
+--
+-- client_errors existed to back the log sink in src/lib/log.ts (see
+-- 20260420_client_errors.sql: "Drop this table at any time to disable the
+-- log sink"). Commit 5290b92 ("sunset: remove the private job-search
+-- dashboard") deleted src/lib/log.ts AND src/lib/supabase.ts in the same
+-- commit, and removed @supabase/supabase-js from package.json entirely.
+--
+-- No file in the current repo references client_errors, clientErrors, or
+-- log.ts, and there is no api/, functions/, or workers/ directory that
+-- could be an alternate writer. There is no code path left, client or
+-- server, that can write to this table. Safe to drop.
+--
+-- Before running: confirm the table is empty/stale in the Supabase Studio
+-- table editor (or `select count(*) from public.client_errors;`) if you
+-- want a final live check — this migration proceeds either way since no
+-- writer has existed since 5290b92.
+--
+-- PASTE THIS ENTIRE FILE INTO https://supabase.com/dashboard/project/oydhnnqgbcsxvdttkncm/sql/new AND CLICK "RUN".
+-- (Supabase will show a "destructive operation" confirmation because of the DROP TABLE.)
+
+drop table if exists public.client_errors;

@@ -1,8 +1,8 @@
 /**
  * Case-study signature illustrations. All four SVGs use currentColor and CSS
- * vars so they auto-recolor when the dual-theme toggle flips between Pirate
- * (wine + gold) and Miami (magenta + cyan). No per-illustration JS swap
- * needed — strokes and fills consume var(--accent-primary) and
+ * vars so they auto-recolor when the dual-theme toggle flips between Alpha
+ * (dark green + gold on cream) and Money Mitch (champagne gold on obsidian).
+ * No per-illustration JS swap needed — strokes and fills consume var(--accent-primary) and
  * var(--accent-secondary).
  *
  * All SVGs use preserveAspectRatio so text positions are safely inside the
@@ -138,7 +138,6 @@ export function QuantChartIllustration() {
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="landing-quant-chart-line"
       />
       <line x1="125" y1="55" x2="125" y2="195" stroke={SECONDARY} strokeWidth={0.7} strokeDasharray="3 3" opacity={0.5} />
       <text x="100" y="50" fill={SECONDARY} fontSize="8" style={monoStyle}>

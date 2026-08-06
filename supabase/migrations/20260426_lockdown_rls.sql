@@ -1,5 +1,12 @@
 -- 2026-04-26: Lock down dashboard tables to authenticated reads only.
 --
+-- NOTE: this file (and every other migration touching these two tables)
+-- only ALTERs/indexes/adds RLS to opportunities + interviews — there is no
+-- CREATE TABLE for either one anywhere in this folder's history. They were
+-- created out-of-band on the live DB before migrations existed here. See
+-- supabase/migrations/README.md for details before treating this folder as
+-- a full schema source.
+--
 -- Before this migration: anon SELECT on opportunities + interviews returns
 -- the full dataset, including job-application notes. The PasswordGate at
 -- /dashboard was cosmetic only.

@@ -8,7 +8,8 @@
 --
 -- Pre-existing select_algy_* policies are preserved (they target the
 -- youngalgy@gmail.com magic-link account UID 34d884ec...).
--- New select_dashboard_* policies allow the toggle813 PasswordGate identity
+-- New select_dashboard_* policies allow the [REDACTED, see 2026-08-14 note
+-- in docs/decisions/20260508_reopen_anon_read.md] PasswordGate identity
 -- (UID 89c79ed9-fafd-48a7-b414-d76a03a97de4 = dashboard@youngalgy.local).
 --
 -- After this:

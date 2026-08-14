@@ -10,7 +10,7 @@
 --
 -- Net effect of yesterday's bug: the update_algy_* / insert_algy_* policies were
 -- dead code (never matched any real session). The dashboard@youngalgy.local path
--- (89c79ed9-...) was correct and is what the live toggle813 PasswordGate uses,
+-- (89c79ed9-...) was correct and is what the live PasswordGate identity used,
 -- so the dashboard-save persistence fix still landed. This cleanup makes the
 -- algy magic-link path real for any future session signed in as
 -- youngalgy@gmail.com.

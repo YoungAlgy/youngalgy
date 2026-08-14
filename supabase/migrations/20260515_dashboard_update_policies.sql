@@ -20,7 +20,8 @@
 -- that already hold SELECT policies via select_algy_* and select_dashboard_*.
 --
 --   34d884ec-7e9f-4d8e-8df5-e36f4a5fce10  → youngalgy@gmail.com  (Algy magic-link)
---   89c79ed9-fafd-48a7-b414-d76a03a97de4  → dashboard@youngalgy.local (toggle813 PasswordGate)
+--   89c79ed9-fafd-48a7-b414-d76a03a97de4  → dashboard@youngalgy.local (PasswordGate, credential
+--                                            REDACTED 2026-08-14 -- see docs/decisions/20260508_reopen_anon_read.md)
 --
 -- service_role still bypasses RLS, so the existing bots that INSERT new
 -- opportunity rows (insert_applied_jobs_*.py) continue to work as before.
@@ -92,6 +93,6 @@ where schemaname = 'public'
   and tablename in ('opportunities','interviews')
 order by tablename, cmd, policyname;
 
--- Smoke test (run as the toggle813 / Algy session via the dashboard):
+-- Smoke test (run as the dashboard-identity / Algy session via the dashboard):
 -- update public.opportunities set notes = notes where id = '<any-id>';
 -- → should return 1 row affected, not 0

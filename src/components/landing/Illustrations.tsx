@@ -68,7 +68,7 @@ export function MascBadgeIllustration() {
         NATIONWIDE / MD + DO
       </text>
       <text x="345" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} textAnchor="end" style={monoStyle}>
-        DOXIMITY + FETCH
+        MULTI-CHANNEL OUTREACH
       </text>
     </svg>
   );

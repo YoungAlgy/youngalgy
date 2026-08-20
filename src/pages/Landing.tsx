@@ -6,6 +6,7 @@ import { SectionNav } from "@/components/landing/SectionNav";
 import { useThemeMode } from "@/components/landing/useThemeMode";
 import {
   AvaMapIllustration,
+  MascBadgeIllustration,
   NftFrameIllustration,
   CassetteIllustration,
   QuantChartIllustration,
@@ -27,6 +28,7 @@ import {
 
 function Illustration({ name }: { name: Case["illustration"] }) {
   if (name === "ava-map") return <AvaMapIllustration />;
+  if (name === "masc-badge") return <MascBadgeIllustration />;
   if (name === "nft-frame") return <NftFrameIllustration />;
   if (name === "cassette") return <CassetteIllustration />;
   return <QuantChartIllustration />;

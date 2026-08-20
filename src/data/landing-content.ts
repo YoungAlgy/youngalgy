@@ -44,7 +44,7 @@ export const timeline: readonly TimelineEntry[] = [
   { year: "2022", title: "Advisor + seed · Floor/Rally + 5 more Web3 projects + 100s of founders", tag: "WEB3 / ADVISING" },
   { year: "2025", title: "Floor / Rally acquired by OpenSea · received equity allocation", tag: "EXIT" },
   { year: "2026", title: "Ava Health · provider data platform, CRM + recruiter engine", tag: "HEALTHCARE" },
-  { year: "2026", title: "MASC Medical · project manager and recruiter, physician and mid-level placements, partnered with Ava Health", tag: "HEALTHCARE" },
+  { year: "2026", title: "MASC Medical · project manager and recruiter, physician and mid-level placements nationwide", tag: "HEALTHCARE" },
   { year: "2026", title: "Money Mitch Vault + Studio + Toggle Town hub · music + audio + game", tag: "MUSIC / GAME" },
   { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Worksites + The Downs + Toggle · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
   { year: "2026", title: "Local-food marketplace · two-sided platform, Stripe Connect payouts, farm storefronts + pickup/delivery", tag: "MARKETPLACE" },
@@ -147,7 +147,7 @@ export type Case = {
   title: string;
   body: string;
   stats: ReadonlyArray<{ value: string; label: string; sub: string }>;
-  illustration: "ava-map" | "nft-frame" | "cassette" | "quant-chart";
+  illustration: "ava-map" | "masc-badge" | "nft-frame" | "cassette" | "quant-chart";
   flip?: boolean;
   link?: { url: string; label: string };
 };
@@ -157,40 +157,49 @@ export const cases: readonly Case[] = [
     number: "01",
     category: "HEALTHCARE",
     period: "2026 - NOW",
-    title: "Ava Health. MASC Medical.",
-    body: "Built and run the whole Ava Health platform, then work the recruiting against it. A pipeline that matches and cleans the raw federal NPPES provider file, wired into a full-stack CRM that places nurses across Florida. Partnered with MASC Medical since August 2026 on the physician and mid-level side: I recruit and place those roles nationwide through Doximity and Fetch. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
+    title: "Ava Health.",
+    body: "Built and run the whole platform, then work the recruiting against it. A pipeline that matches and cleans the raw federal NPPES provider file, wired into a full-stack CRM that places nurses across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
     stats: [],
     illustration: "ava-map",
     link: { url: AVA_PROVIDERS_URL, label: "providers.avahealth.co" },
   },
   {
     number: "02",
+    category: "HEALTHCARE",
+    period: "2026 - NOW",
+    title: "MASC Medical.",
+    body: "Recruit and place physicians and mid-level practitioners nationwide. Full cycle, first outreach through a signed offer, sourced through Doximity Talent Finder and Fetch, plus DocMail and cold email campaigns written in my own voice.",
+    stats: [],
+    illustration: "masc-badge",
+    flip: true,
+  },
+  {
+    number: "03",
     category: "INTERNET ART",
     period: "2021 - 2025",
     title: "Futureverse. Universe XYZ. BAYC.",
     body: "Core contributor at Futureverse. Minted the first NFT from Pixel Of The Apes, then helped steer Fluf World, Altered State Machines, and The Root Network (an L1 chain). Project-managed Universe XYZ's $5M+ in charity drops (Lobby Lobsters alone hit $4.4M) and shipped Polymorphs, the first changeable-outfit character NFTs on Ethereum. Founding-collective member of Bored Ape Yacht Club. Advisor and seed investor in Floor (later Rally), acquired by OpenSea in 2025, received an equity allocation. Plus 5 more Web3 projects and hundreds of founders helped pro bono. An original character universe got built too: over 1,000 pages of comics and lore, 69 characters across 3 planets, each a different species with its own design. Written and designed, but never launched.",
     stats: [],
     illustration: "nft-frame",
-    flip: true,
   },
   {
-    number: "03",
+    number: "04",
     category: "MUSIC",
     period: "2018 - PRESENT",
     title: "Money Mitch. Big Gates Records.",
     body: "Connected his younger brother to Big Gates Records and stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music, with a private vault, fan tiers, and content drops. He writes too. Around 200 songs so far, many recorded. Lyrics are what he does best.",
     stats: [],
     illustration: "cassette",
+    flip: true,
     link: { url: MONEY_MITCH_URL, label: "moneymitch.music" },
   },
   {
-    number: "04",
+    number: "05",
     category: "QUANT",
     period: "PARALLEL · ALWAYS",
     title: "Quant Trading. Live capital.",
     body: "Built in Python on his own time: backtesting harness, regime detection (Kalman filter + HMM), VWAP bands, drawdown controller. Trades on Alpaca (equities) and Kalshi (prediction markets) with real capital.",
     stats: [],
     illustration: "quant-chart",
-    flip: true,
   },
 ];

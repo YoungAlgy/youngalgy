@@ -50,6 +50,30 @@ export function AvaMapIllustration() {
   );
 }
 
+export function MascBadgeIllustration() {
+  return (
+    <svg viewBox="0 0 400 260" className="w-full h-auto" aria-hidden="true">
+      <circle cx="150" cy="120" r="70" fill="none" stroke={INK_MUTED} strokeWidth={1} opacity={0.45} />
+      <circle cx="150" cy="120" r="52" fill="none" stroke={SECONDARY} strokeWidth={1} opacity={0.6} />
+      <path d="M150 95 L150 145 M125 120 L175 120" stroke={PRIMARY} strokeWidth={4} strokeLinecap="round" />
+      <line x1="205" y1="95" x2="270" y2="65" stroke={SECONDARY} strokeWidth={0.8} opacity={0.5} />
+      <line x1="212" y1="120" x2="290" y2="120" stroke={SECONDARY} strokeWidth={0.8} opacity={0.5} />
+      <line x1="205" y1="148" x2="270" y2="180" stroke={SECONDARY} strokeWidth={0.8} opacity={0.5} />
+      <circle cx="270" cy="65" r="3" fill={SECONDARY} opacity={0.8} />
+      <circle cx="290" cy="120" r="3.5" fill={SECONDARY} />
+      <circle cx="270" cy="180" r="3" fill={SECONDARY} opacity={0.8} />
+      <circle cx="330" cy="95" r="2.5" fill={SECONDARY} opacity={0.6} />
+      <circle cx="330" cy="145" r="2.5" fill={SECONDARY} opacity={0.6} />
+      <text x="20" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
+        NATIONWIDE / MD + DO
+      </text>
+      <text x="345" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} textAnchor="end" style={monoStyle}>
+        DOXIMITY + FETCH
+      </text>
+    </svg>
+  );
+}
+
 export function NftFrameIllustration() {
   return (
     <svg viewBox="0 0 400 400" className="w-full h-auto" aria-hidden="true">

@@ -1,17 +1,15 @@
-### Hi, I'm Alex (Algernon) Holmes 👋
+### Hi, I'm Alex Holmes
 
-**Full-stack product engineer who ships solo, start to finish. Over a dozen products live across healthcare data, music, quant, and web3.** Tampa-based, remote.
+Healthcare recruiting and operations. I also build the systems behind the work. Based in Tampa. Open to remote work.
 
-I build the whole stack myself, from the frontend to the backend to the data to the servers. Most of what I build runs real users and real money today.
+At MASC Medical, I recruit physicians nationwide and own searches from first outreach through a signed offer. I also project manage an outreach tool being built in-house.
 
-**🛠 Stack:** TypeScript · React · Next.js · Python · FastAPI · PostgreSQL · Supabase · Vercel · Fly.io · Stripe
+I co-founded Ava Health. I built its recruiting software and recruit nurses and allied health professionals across Florida.
 
-**🚀 A few things I've shipped:**
-- **avahealth.co**. Healthcare staffing platform. Built off the federal NPPES provider file (about 9 million records), with a CRM, automated outreach and 10DLC texting, and a scheduler that pauses itself when someone replies.
-- **[freejobpost.co + freeresumepost.co](https://github.com/YoungAlgy/freejobpost)**. Two-sided job marketplace with thousands of live listings, pulled from ATS feeds like Greenhouse, Lever, and Workday.
-- **Local-food marketplace**. Connects local farms to nearby shoppers. Farm storefronts, Stripe Connect payouts and KYC onboarding, pickup and delivery. Next.js and Supabase.
-- **[toggle.town](https://toggle.town)**. My product hub. In-browser audio mastering (Web Audio and a Python worker), and more.
+I run [Toggle Town](https://toggle.town), a consumer app hub. I also built [Alpha](https://alpha.everyday.report), a $5 monthly daily letter.
 
-**⚡ How I work:** I'm past using AI as autocomplete. I break problems into specs, run agents in parallel, then review and own what comes out. The judgment is the real work. The tools just make it faster.
+My stack includes TypeScript, React, Node, Python, PostgreSQL, Supabase, Cloudflare, and Stripe.
 
-**📫** [youngalgy.com](https://youngalgy.com) · [LinkedIn](https://www.linkedin.com/in/youngalgy)
+I use AI tools to move faster. I write the specs. I review the work and own the result.
+
+[youngalgy.com](https://youngalgy.com) · [LinkedIn](https://www.linkedin.com/in/youngalgy)

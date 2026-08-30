@@ -4,7 +4,7 @@ type MonogramProps = {
 };
 
 /**
- * Alexander Holmes monogram: "AH" set in the active theme's display serif with
+ * Alex Holmes monogram: "AH" set in the active theme's display serif with
  * the brand gold period dot. Replaces the old sailboat mark (the boat is freed
  * up to become the Toggle logo). Inherits the theme via CSS vars, so it reads
  * green-on-cream in Alpha and champagne-on-obsidian in Money Mitch.

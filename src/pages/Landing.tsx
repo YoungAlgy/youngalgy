@@ -4,17 +4,17 @@ import { Monogram } from "@/components/landing/Monogram";
 import { ThemeToggle } from "@/components/landing/ThemeToggle";
 import { SectionNav } from "@/components/landing/SectionNav";
 import { useThemeMode } from "@/components/landing/useThemeMode";
+import { useRouteHead } from "@/components/landing/useRouteHead";
 import {
-  AvaMapIllustration,
+  AvaPlatformIllustration,
   MascBadgeIllustration,
   NftFrameIllustration,
   CassetteIllustration,
-  QuantChartIllustration,
+  ToggleHubIllustration,
 } from "@/components/landing/Illustrations";
 import {
   CONTACT_EMAIL,
   TOGGLE_TOWN_URL,
-  TOGGLE_TOWN_BASIC_URL,
   ALPHA_URL,
   ALPHA_SAMPLE_URL,
   FACEBOOK_URL,
@@ -27,11 +27,11 @@ import {
 } from "@/data/landing-content";
 
 function Illustration({ name }: { name: Case["illustration"] }) {
-  if (name === "ava-map") return <AvaMapIllustration />;
+  if (name === "ava-platform") return <AvaPlatformIllustration />;
   if (name === "masc-badge") return <MascBadgeIllustration />;
   if (name === "nft-frame") return <NftFrameIllustration />;
   if (name === "cassette") return <CassetteIllustration />;
-  return <QuantChartIllustration />;
+  return <ToggleHubIllustration />;
 }
 
 function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
@@ -98,6 +98,17 @@ function CaseStudy({ data, isFirst }: { data: Case; isFirst: boolean }) {
 const Landing = () => {
   const [mode, setMode] = useThemeMode();
 
+  useRouteHead({
+    title: "Alex Holmes | Healthcare Recruiting & Operations",
+    description:
+      "Alex Holmes is a Tampa-based healthcare recruiter and operator. He also builds the systems behind the work.",
+    socialDescription:
+      "Tampa-based healthcare recruiter and operator. I also build the systems behind the work.",
+    url: "https://youngalgy.com/",
+    image: "https://youngalgy.com/og-profile-2026-08-29.png",
+    imageAlt: "Alex Holmes. Healthcare recruiting and operations.",
+  });
+
   return (
     <div className="min-h-screen relative" style={{ background: "var(--bg)", color: "var(--ink)" }}>
       <a
@@ -109,16 +120,16 @@ const Landing = () => {
       </a>
 
       <header className="relative z-10">
-        <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-5 sm:py-6 flex items-center justify-between gap-3">
+        <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-5 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4 sm:gap-3">
           <a
             href="/"
-            aria-label="Alexander Holmes — home"
+            aria-label="Alex Holmes home"
             className="block shrink-0"
             style={{ color: "var(--accent-secondary)" }}
           >
             <Monogram />
           </a>
-          <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
+          <nav className="w-full min-w-0 sm:w-auto flex flex-wrap items-center justify-start sm:justify-end gap-x-3 gap-y-2 sm:gap-x-6 lg:gap-x-8">
             <SectionNav />
             <ThemeToggle mode={mode} onChange={setMode} />
           </nav>
@@ -132,25 +143,20 @@ const Landing = () => {
               className="landing-display text-[clamp(3rem,12vw,9.5rem)] period-dot"
               style={{ color: "var(--ink)" }}
             >
-              Alexander
-              <br />
-              Holmes
+              Alex Holmes
             </h1>
             <p
               className="text-lg sm:text-xl lg:text-2xl max-w-2xl mt-6 sm:mt-7"
               style={{ lineHeight: 1.5, color: "var(--ink)", opacity: 0.9 }}
             >
-              Entrepreneur who builds whole products, and can sell them too.{" "}
+              Healthcare recruiting and operations.{" "}
               <span style={{ color: "var(--accent-secondary)", fontWeight: 600 }}>
-                Over a dozen products live
-              </span>{" "}
-              across healthcare data, music, quant, and web3.
+                I build the systems behind the work.
+              </span>
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10">
               <a
-                href={TOGGLE_TOWN_BASIC_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#work"
                 className="landing-mono inline-flex items-center justify-center gap-2 px-7 py-3.5 w-full sm:w-auto"
                 style={{ background: "var(--accent-primary)", color: "var(--accent-ink)" }}
               >
@@ -172,7 +178,7 @@ const Landing = () => {
 
         <div className="landing-divider border-t" />
 
-        {/* alpha. — the one thing on this site you can buy right now. Prime
+        {/* alpha is the one thing on this site you can buy right now. Prime
             real estate after the hero, conversion-focused (sample + subscribe),
             without displacing the Ava Health flagship in the case studies. */}
         <section aria-labelledby="alpha-heading" className="py-12 sm:py-16">
@@ -191,7 +197,7 @@ const Landing = () => {
                 className="inline-block rounded-full"
                 style={{ width: 6, height: 6, background: "var(--accent-secondary)" }}
               />
-              NOW LIVE · A DAILY LETTER
+              A DAILY LETTER · $5 A MONTH
             </div>
             <h2
               id="alpha-heading"
@@ -204,9 +210,8 @@ const Landing = () => {
               className="text-base lg:text-lg max-w-xl mb-9"
               style={{ lineHeight: 1.6, color: "var(--ink)", opacity: 0.85 }}
             >
-              A letter on the five topics you care about. Sourced and
-              edited so it's worth your time. Comes every day, curated
-              and sent by me.
+              Pick five topics. Alpha pulls current sources and turns them
+              into one focused letter every day.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <a
@@ -242,7 +247,7 @@ const Landing = () => {
 
         <section className="py-14 sm:py-20">
           <h2
-            className="landing-display text-[clamp(2.25rem,6vw,4.5rem)] period-dot mb-8 sm:mb-12"
+            className="landing-display text-[clamp(2.25rem,6vw,4.5rem)] period-dot mb-4"
             style={{ color: "var(--ink)" }}
           >
             The route
@@ -263,7 +268,7 @@ const Landing = () => {
                 <span className="text-sm sm:text-base lg:text-lg" style={{ fontFamily: "var(--font-body)" }}>
                   {entry.title}
                 </span>
-                <span className="landing-mono hidden sm:inline">— {entry.tag} —</span>
+                <span className="landing-mono hidden sm:inline">{entry.tag}</span>
               </li>
             ))}
           </ul>
@@ -278,10 +283,13 @@ const Landing = () => {
           >
             The loadout
           </h2>
+          <p className="text-base sm:text-lg max-w-2xl mb-8 sm:mb-12" style={{ lineHeight: 1.6, opacity: 0.85 }}>
+            I direct AI tools for the heavy coding. I review the work and own the result.
+          </p>
           <div className="space-y-8">
             {loadout.map((row) => (
               <div key={row.label}>
-                <div className="landing-mono mb-3">— {row.label} —</div>
+                <div className="landing-mono mb-3">{row.label}</div>
                 <div className="flex flex-wrap gap-2">
                   {row.chips.map((chip) => (
                     <span key={chip} className="landing-pill">
@@ -307,11 +315,7 @@ const Landing = () => {
             className="text-base lg:text-lg mb-8 sm:mb-10 mx-auto max-w-xl"
             style={{ color: "var(--ink)", opacity: 0.8 }}
           >
-            Open to interesting work of any kind. I also take{" "}
-            <Link to="/freelance" style={{ color: "var(--accent-secondary)", fontWeight: 600, textDecoration: "none" }}>
-              freelance healthcare-data and app builds
-            </Link>
-            . Based in Tampa, remote.
+            Open to healthcare recruiting and operations roles. Based in Tampa. Open to remote work.
           </p>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
             <a
@@ -377,7 +381,7 @@ const Landing = () => {
           style={{ borderColor: "color-mix(in srgb, var(--ink) 12%, transparent)" }}
         >
           <p className="landing-mono md:text-left" style={{ opacity: 0.6 }}>
-            © 2026 Alexander Holmes
+            © 2026 Alex Holmes
           </p>
           <p className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2">
             <Link

@@ -3,8 +3,8 @@
  * v8 dual-theme (Alpha/Money Mitch) — content is theme-agnostic; the visual
  * layer (palette, type, glow) flips via [data-mode] on <html>.
  *
- * Per S10 standards, every claim here must match the canonical resume PDF
- * and LinkedIn profile. Plain-English labels for non-insider audiences.
+ * Current operating decisions and live product state control these claims.
+ * Resume and profile text should be updated from this same fact set.
  */
 
 export const CONTACT_EMAIL = "youngalgy@gmail.com";
@@ -12,10 +12,8 @@ export const CONTACT_EMAIL = "youngalgy@gmail.com";
 // attributes portfolio traffic — closes the youngalgy → hub loop. Used as
 // the href on the two portfolio CTAs that point at the hub.
 export const TOGGLE_TOWN_URL = "https://toggle.town/?utm_source=youngalgy&utm_medium=backlink";
-// The hero "See the work" CTA points at the Basic hub view (Algy, 2026-06-24).
-export const TOGGLE_TOWN_BASIC_URL = "https://toggle.town/basic?utm_source=youngalgy&utm_medium=backlink";
 export const MONEY_MITCH_URL = "https://moneymitch.music";
-export const AVA_PROVIDERS_URL = "https://providers.avahealth.co";
+export const AVA_STAFFING_URL = "https://providers.avahealth.co";
 // alpha. lives on its own domain now — link straight there instead of
 // bouncing through the /alpha 308 redirect this site keeps for old links.
 export const ALPHA_URL = "https://alpha.everyday.report";
@@ -33,22 +31,16 @@ export type TimelineEntry = {
 export const timeline: readonly TimelineEntry[] = [
   { year: "2015", title: "Toggle Money recording studio opens", tag: "MUSIC / STUDIO" },
   { year: "2016", title: "Pinellas Safe Harbor · facilitated support groups, SPC psych internship", tag: "PSYCH / SERVICE" },
-  { year: "2018", title: "Mitch signs to Big Gates Records", tag: "MUSIC / AGENT" },
-  { year: "2019", title: "Toggle Town · esports", tag: "MEDIA" },
+  { year: "2019", title: "Toggle Town starts as esports media", tag: "MEDIA" },
   { year: "2020", title: "B.A. Psychology · USF", tag: "GRADUATED" },
-  { year: "2020", title: "Holmes Builders", tag: "CONSTRUCTION / FAMILY" },
-  { year: "2021", title: "Universe XYZ · PM, $4.4M Lobby Lobsters drop", tag: "WEB3" },
-  { year: "2021", title: "Futureverse core contributor · Fluf World, ASM, The Root Network", tag: "WEB3 / METAVERSE" },
-  { year: "2021", title: "BAYC founding collective", tag: "ART" },
-  { year: "2022", title: "$5M+ raised across charity drops", tag: "CHARITY" },
-  { year: "2022", title: "Advisor + seed · Floor/Rally + 5 more Web3 projects + 100s of founders", tag: "WEB3 / ADVISING" },
-  { year: "2025", title: "Floor / Rally acquired by OpenSea · received equity allocation", tag: "EXIT" },
-  { year: "2026", title: "Ava Health · provider data platform, CRM + recruiter engine", tag: "HEALTHCARE" },
-  { year: "2026", title: "MASC Medical · project manager and healthcare recruiter, physician and mid-level placements nationwide", tag: "HEALTHCARE" },
-  { year: "2026", title: "Money Mitch Vault + Studio + Toggle Town hub · music + audio + game", tag: "MUSIC / GAME" },
-  { year: "2026", title: "Alpha + FreeJobPost + FreeResumePost + Worksites + The Downs + Toggle · personal SaaS + dashboards", tag: "SAAS / DASHBOARDS" },
-  { year: "2026", title: "Local-food marketplace · two-sided platform, Stripe Connect payouts, farm storefronts + pickup/delivery", tag: "MARKETPLACE" },
-  { year: "2026", title: "Quant trading bots go live · Alpaca + Kalshi", tag: "QUANT" },
+  { year: "2021", title: "Core contributor at Futureverse", tag: "WEB3" },
+  { year: "2021", title: "Project manager at Universe XYZ", tag: "WEB3" },
+  { year: "2021", title: "Founding member of Bored Ape Yacht Club", tag: "ART" },
+  { year: "2022", title: "Project-managed more than $5M in charity fundraising", tag: "CHARITY" },
+  { year: "2025", title: "Floor, later Rally, acquired by OpenSea", tag: "EXIT" },
+  { year: "2026", title: "Co-founded Ava Health and built its recruiting software", tag: "HEALTHCARE" },
+  { year: "2026", title: "Joined MASC Medical in recruiting and project management", tag: "HEALTHCARE" },
+  { year: "2026", title: "Shipped Alpha and expanded Toggle Town", tag: "PRODUCTS" },
 ];
 
 export type LoadoutRow = {
@@ -66,76 +58,69 @@ export const loadout: readonly LoadoutRow[] = [
       "PostgreSQL",
       "Supabase",
       "Python",
-      "Pandas / NumPy",
-      "Scikit-learn",
-      "SQL",
+      "FastAPI",
+      "Cloudflare",
+      "Stripe",
       "Tailwind",
+    ],
+  },
+  {
+    label: "HEALTHCARE RECRUITING",
+    chips: [
+      "Physician recruiting",
+      "Nurse recruiting",
+      "Allied health",
+      "Candidate sourcing",
+      "Candidate qualification",
+      "Multi-channel outreach",
+      "Pipeline operations",
+      "Offer process",
+    ],
+  },
+  {
+    label: "PRODUCT & OPERATIONS",
+    chips: [
+      "Project management",
+      "Workflow design",
+      "Requirements",
+      "QA",
+      "Launch planning",
+      "Customer support",
+      "Data pipelines",
+      "Reporting",
+      "Mobile-first design",
     ],
   },
   {
     label: "WEB3 / ON-CHAIN",
     chips: [
       "NFT drops",
-      "Smart contracts (read)",
-      "Solidity (read)",
-      "OpenSea / EVM",
-      "Metaverse / L1",
-      "Advisory + seed",
-      "Community + comms",
-      "Drop choreography",
+      "Project management",
+      "Community",
+      "On-chain products",
+      "Advisor + seed",
     ],
   },
   {
-    label: "MARKETS & QUANT",
+    label: "MUSIC",
     chips: [
-      "Algorithmic trading",
-      "Kalman filter",
-      "HMM regime detection",
-      "Backtesting",
-      "Risk management",
-      "Drawdown control",
-      "Alpaca API",
-      "Kalshi",
-    ],
-  },
-  {
-    label: "MUSIC & A&R",
-    chips: [
+      "Artist bookings",
+      "Socials",
       "Studio engineering",
       "Mix / master",
-      "Catalog strategy",
-      "Artist development",
-      "Pro Tools",
-      "Distribution",
-      "Roster building",
-    ],
-  },
-  {
-    label: "BRAND & MARKETING",
-    chips: [
-      "SEO",
-      "Content strategy",
-      "Landing pages",
-      "Webflow",
-      "Figma",
-      "Copywriting",
       "Social rollouts",
     ],
   },
   {
-    label: "SALES & RECRUITING",
+    label: "MARKETING & SALES",
     chips: [
+      "SEO",
+      "Content strategy",
+      "Landing pages",
+      "Copywriting",
+      "Sales",
       "Closing",
-      "Cold outreach",
-      "Pipeline design",
-      "Recruiting",
-      "Talent mgmt",
-      "A&R",
-      "Negotiation",
-      "Account mgmt",
-      "GTM strategy",
-      "Storytelling",
-      "Customer success",
+      "Account management",
     ],
   },
 ];
@@ -147,7 +132,7 @@ export type Case = {
   title: string;
   body: string;
   stats: ReadonlyArray<{ value: string; label: string; sub: string }>;
-  illustration: "ava-map" | "masc-badge" | "nft-frame" | "cassette" | "quant-chart";
+  illustration: "ava-platform" | "masc-badge" | "nft-frame" | "cassette" | "toggle-hub";
   flip?: boolean;
   link?: { url: string; label: string };
 };
@@ -158,17 +143,17 @@ export const cases: readonly Case[] = [
     category: "HEALTHCARE",
     period: "2026 - NOW",
     title: "Ava Health.",
-    body: "Built and run the whole platform, then work the recruiting against it. A pipeline that matches and cleans the raw federal NPPES provider file, wired into a full-stack CRM that places nurses across Florida. I build the tool and sit with the people using it. React, Node, PostgreSQL, Supabase.",
+    body: "I co-founded Ava Health and built the software behind the operation. That includes the CRM, candidate database, NPPES enrichment, outreach tools, plus the FreeJobPost and FreeResumePost tools. I also recruit nurses and allied health professionals across Florida.",
     stats: [],
-    illustration: "ava-map",
-    link: { url: AVA_PROVIDERS_URL, label: "providers.avahealth.co" },
+    illustration: "ava-platform",
+    link: { url: AVA_STAFFING_URL, label: "providers.avahealth.co" },
   },
   {
     number: "02",
     category: "HEALTHCARE",
     period: "2026 - NOW",
     title: "MASC Medical.",
-    body: "Healthcare recruiter placing physicians and mid-level practitioners nationwide, full cycle from first outreach through a signed offer, run across several recruiting platforms in my own voice. Also project managing a new outreach tool MASC is building in-house.",
+    body: "At MASC Medical, I recruit physicians nationwide. I own the search from first outreach through a signed offer. I also project manage a new outreach tool being built in-house.",
     stats: [],
     illustration: "masc-badge",
     flip: true,
@@ -177,17 +162,17 @@ export const cases: readonly Case[] = [
     number: "03",
     category: "INTERNET ART",
     period: "2021 - 2025",
-    title: "Futureverse. Universe XYZ. BAYC.",
-    body: "Core contributor at Futureverse. Minted the first NFT from Pixel Of The Apes, then helped steer Fluf World, Altered State Machines, and The Root Network (an L1 chain). Project-managed Universe XYZ's $5M+ in charity drops (Lobby Lobsters alone hit $4.4M) and shipped Polymorphs, the first changeable-outfit character NFTs on Ethereum. Founding-collective member of Bored Ape Yacht Club. Advisor and seed investor in Floor (later Rally), acquired by OpenSea in 2025, received an equity allocation. Plus 5 more Web3 projects and hundreds of founders helped pro bono. An original character universe got built too: over 1,000 pages of comics and lore, 69 characters across 3 planets, each a different species with its own design. Written and designed, but never launched.",
+    title: "Web3 work.",
+    body: "I was a core contributor at Futureverse and a project manager at Universe XYZ. I helped project manage more than $5M in charity fundraising. I was a founding member of Bored Ape Yacht Club. I also advised and seed-invested in Floor, later Rally, before OpenSea acquired it in 2025.",
     stats: [],
     illustration: "nft-frame",
   },
   {
     number: "04",
     category: "MUSIC",
-    period: "2018 - PRESENT",
+    period: "CURRENT",
     title: "Money Mitch. Big Gates Records.",
-    body: "Connected his younger brother to Big Gates Records and stepped in as agent and road manager. \"Flexin' Like Woah\" went viral with its own TikTok dance trend. He builds the catalog, runs the rollouts, and ships moneymitch.music, with a private vault, fan tiers, and content drops. He writes too. Around 200 songs so far, many recorded. Lyrics are what he does best.",
+    body: "Money Mitch is my younger brother. He signed to Big Gates Records at 17. I work as his agent. I handle bookings and socials. I also built moneymitch.music.",
     stats: [],
     illustration: "cassette",
     flip: true,
@@ -195,11 +180,12 @@ export const cases: readonly Case[] = [
   },
   {
     number: "05",
-    category: "QUANT",
-    period: "PARALLEL · ALWAYS",
-    title: "Quant Trading. Live capital.",
-    body: "Built in Python on his own time: backtesting harness, regime detection (Kalman filter + HMM), VWAP bands, drawdown controller. Trades on Alpaca (equities) and Kalshi (prediction markets) with real capital.",
+    category: "PRODUCTS",
+    period: "2019 - PRESENT",
+    title: "Toggle Town.",
+    body: "Toggle Town brings my consumer apps under one roof. It covers sports research, horse racing, poker and blackjack tools, prediction-market research, collectibles, fishing forecasts, and a free opportunities board. I built and run the product, payments, data, and releases.",
     stats: [],
-    illustration: "quant-chart",
+    illustration: "toggle-hub",
+    link: { url: TOGGLE_TOWN_URL, label: "toggle.town" },
   },
 ];

@@ -19,32 +19,33 @@ const monoStyle = {
   letterSpacing: "0.18em",
 };
 
-export function AvaMapIllustration() {
+export function AvaPlatformIllustration() {
   return (
     <svg viewBox="0 0 400 260" className="w-full h-auto" aria-hidden="true">
-      <path
-        d="M40 110 C50 80 80 70 110 75 L140 65 L180 70 L220 75 L260 80 L290 85 L320 95 L335 115 L325 140 L300 155 L270 160 L230 165 L195 168 L170 185 L155 205 L160 220 L170 205 L185 188 L165 175 L140 165 L110 155 L80 148 L55 135 Z"
-        fill="none"
-        stroke={INK_MUTED}
-        strokeWidth={1}
-        opacity={0.45}
-      />
-      <circle cx="90" cy="110" r="2.5" fill={SECONDARY} opacity={0.7} />
-      <circle cx="120" cy="130" r="3.5" fill={SECONDARY} opacity={0.8} />
-      <circle cx="150" cy="110" r="2.5" fill={SECONDARY} opacity={0.7} />
-      <circle cx="185" cy="120" r="3" fill={SECONDARY} opacity={0.75} />
-      <circle cx="220" cy="115" r="4" fill={SECONDARY} />
-      <circle cx="255" cy="125" r="2.5" fill={SECONDARY} opacity={0.7} />
-      <circle cx="280" cy="110" r="3" fill={SECONDARY} opacity={0.8} />
-      <circle cx="170" cy="190" r="5" fill={PRIMARY} />
-      <text x="180" y="194" fill={PRIMARY} fontSize="9" style={monoStyle}>
-        TAMPA
+      <rect x="36" y="48" width="328" height="150" rx="8" fill="none" stroke={INK_MUTED} strokeWidth={1} opacity={0.5} />
+      <rect x="58" y="74" width="78" height="42" rx="4" fill="none" stroke={SECONDARY} strokeWidth={1.2} />
+      <rect x="161" y="74" width="78" height="42" rx="4" fill="none" stroke={PRIMARY} strokeWidth={1.5} />
+      <rect x="264" y="74" width="78" height="42" rx="4" fill="none" stroke={SECONDARY} strokeWidth={1.2} />
+      <line x1="136" y1="95" x2="161" y2="95" stroke={INK_MUTED} strokeWidth={1} opacity={0.7} />
+      <line x1="239" y1="95" x2="264" y2="95" stroke={INK_MUTED} strokeWidth={1} opacity={0.7} />
+      <text x="97" y="99" fill={SECONDARY} fontSize="8" textAnchor="middle" style={monoStyle}>
+        NPPES
+      </text>
+      <text x="200" y="99" fill={PRIMARY} fontSize="8" textAnchor="middle" style={monoStyle}>
+        CRM
+      </text>
+      <text x="303" y="99" fill={SECONDARY} fontSize="8" textAnchor="middle" style={monoStyle}>
+        OUTREACH
+      </text>
+      <rect x="80" y="142" width="240" height="28" rx="14" fill={PRIMARY} opacity={0.12} />
+      <text x="200" y="160" fill={PRIMARY} fontSize="8" textAnchor="middle" style={monoStyle}>
+        FLORIDA NURSES + ALLIED HEALTH
       </text>
       <text x="20" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
-        50 STATES + DC
+        CO-FOUNDER / RECRUITING
       </text>
       <text x="345" y="248" fill={SECONDARY} fontSize="8" opacity={0.6} textAnchor="end" style={monoStyle}>
-        NODE / PG / SUPABASE
+        REACT / POSTGRES
       </text>
     </svg>
   );
@@ -104,13 +105,13 @@ export function NftFrameIllustration() {
         UNIVERSE
       </text>
       <text x="60" y="328" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
-        2021 / ETH / CHARITY DROP
+        2021 / CHARITY DROP
       </text>
       <text x="20" y="380" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
         BAYC FOUNDING
       </text>
       <text x="380" y="380" fill={SECONDARY} fontSize="8" opacity={0.6} textAnchor="end" style={monoStyle}>
-        OPENSEA SEED
+        FLOOR SEED / 2025 EXIT
       </text>
     </svg>
   );
@@ -122,7 +123,7 @@ export function CassetteIllustration() {
       <rect x="40" y="50" width="320" height="150" fill="none" stroke={PRIMARY} strokeWidth={2} rx="4" />
       <rect x="50" y="60" width="300" height="44" fill="none" stroke={PRIMARY} strokeWidth={0.7} opacity={0.4} />
       <text x="60" y="80" fill={SECONDARY} fontSize="10" style={monoStyle}>
-        BIG GATES RECORDS · 2015
+        BIG GATES RECORDS · SIGNED AT 17
       </text>
       <text
         x="60"
@@ -142,47 +143,33 @@ export function CassetteIllustration() {
       <circle cx="270" cy="165" r="5" fill={PRIMARY} />
       <line x1="155" y1="165" x2="245" y2="165" stroke={INK_MUTED} strokeWidth={0.7} opacity={0.4} />
       <text x="20" y="230" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
-        AGENT / ROAD MGR / ROLLOUTS
+        AGENT / BOOKINGS
       </text>
     </svg>
   );
 }
 
-export function QuantChartIllustration() {
+export function ToggleHubIllustration() {
   return (
     <svg viewBox="0 0 400 240" className="w-full h-auto" aria-hidden="true">
-      <line x1="40" y1="195" x2="360" y2="195" stroke={INK_MUTED} strokeWidth={0.5} opacity={0.3} />
-      <line x1="40" y1="155" x2="360" y2="155" stroke={INK_MUTED} strokeWidth={0.5} opacity={0.15} />
-      <line x1="40" y1="115" x2="360" y2="115" stroke={INK_MUTED} strokeWidth={0.5} opacity={0.15} />
-      <line x1="40" y1="75" x2="360" y2="75" stroke={INK_MUTED} strokeWidth={0.5} opacity={0.15} />
-      <path
-        d="M 40 175 L 75 165 L 105 180 L 135 155 L 170 170 L 205 140 L 240 150 L 275 122 L 305 105 L 335 85"
-        fill="none"
-        stroke={PRIMARY}
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <line x1="125" y1="55" x2="125" y2="195" stroke={SECONDARY} strokeWidth={0.7} strokeDasharray="3 3" opacity={0.5} />
-      <text x="100" y="50" fill={SECONDARY} fontSize="8" style={monoStyle}>
-        HMM
+      <rect x="36" y="44" width="328" height="146" rx="8" fill="none" stroke={INK_MUTED} strokeWidth={1} opacity={0.5} />
+      <circle cx="200" cy="117" r="31" fill="none" stroke={PRIMARY} strokeWidth={2} />
+      <text x="200" y="121" fill={PRIMARY} fontSize="9" textAnchor="middle" style={monoStyle}>
+        TOGGLE
       </text>
-      <line x1="225" y1="55" x2="225" y2="195" stroke={SECONDARY} strokeWidth={0.7} strokeDasharray="3 3" opacity={0.5} />
-      <text x="205" y="50" fill={SECONDARY} fontSize="8" style={monoStyle}>
-        REGIME
-      </text>
-      <circle cx="335" cy="85" r="4" fill={PRIMARY} />
-      <text x="328" y="78" fill={PRIMARY} fontSize="9" textAnchor="end" style={monoStyle}>
-        +18.4%
-      </text>
-      <text x="40" y="215" fill={INK_MUTED} fontSize="8" opacity={0.5} style={monoStyle}>
-        09:30
-      </text>
-      <text x="355" y="215" fill={INK_MUTED} fontSize="8" opacity={0.5} textAnchor="end" style={monoStyle}>
-        16:00
-      </text>
+      <line x1="169" y1="105" x2="105" y2="78" stroke={SECONDARY} strokeWidth={1} opacity={0.7} />
+      <line x1="169" y1="132" x2="105" y2="157" stroke={SECONDARY} strokeWidth={1} opacity={0.7} />
+      <line x1="231" y1="105" x2="295" y2="78" stroke={SECONDARY} strokeWidth={1} opacity={0.7} />
+      <line x1="231" y1="132" x2="295" y2="157" stroke={SECONDARY} strokeWidth={1} opacity={0.7} />
+      <text x="90" y="74" fill={SECONDARY} fontSize="8" textAnchor="middle" style={monoStyle}>SPORTS</text>
+      <text x="90" y="163" fill={SECONDARY} fontSize="8" textAnchor="middle" style={monoStyle}>CASINO</text>
+      <text x="310" y="74" fill={SECONDARY} fontSize="8" textAnchor="middle" style={monoStyle}>DOWNS</text>
+      <text x="310" y="163" fill={SECONDARY} fontSize="8" textAnchor="middle" style={monoStyle}>FISHING</text>
       <text x="20" y="232" fill={SECONDARY} fontSize="8" opacity={0.6} style={monoStyle}>
-        ALPACA + KALSHI
+        RESEARCH / TOOLS
+      </text>
+      <text x="380" y="232" fill={SECONDARY} fontSize="8" opacity={0.6} textAnchor="end" style={monoStyle}>
+        BUILT + RUN SOLO
       </text>
     </svg>
   );

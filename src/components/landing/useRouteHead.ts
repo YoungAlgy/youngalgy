@@ -10,6 +10,9 @@ type RouteHeadConfig = {
   socialDescription?: string;
   type?: "website" | "product";
   robots?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  siteName?: string;
 };
 
 export function useRouteHead({
@@ -22,6 +25,9 @@ export function useRouteHead({
   socialDescription = description,
   type = "website",
   robots = "index, follow",
+  imageWidth = 1731,
+  imageHeight = 909,
+  siteName = "Alex Holmes",
 }: RouteHeadConfig) {
   useEffect(() => {
     document.title = title;
@@ -43,11 +49,11 @@ export function useRouteHead({
     setMeta("property", "og:description", socialDescription);
     setMeta("property", "og:url", url);
     setMeta("property", "og:image", image);
-    setMeta("property", "og:image:width", "1731");
-    setMeta("property", "og:image:height", "909");
+    setMeta("property", "og:image:width", String(imageWidth));
+    setMeta("property", "og:image:height", String(imageHeight));
     setMeta("property", "og:image:type", "image/png");
     setMeta("property", "og:image:alt", imageAlt);
-    setMeta("property", "og:site_name", "Alex Holmes");
+    setMeta("property", "og:site_name", siteName);
     setMeta("property", "og:locale", "en_US");
     setMeta("name", "twitter:card", "summary_large_image");
     setMeta("name", "twitter:site", "@youngalgy");
@@ -74,5 +80,8 @@ export function useRouteHead({
     socialDescription,
     type,
     robots,
+    imageWidth,
+    imageHeight,
+    siteName,
   ]);
 }

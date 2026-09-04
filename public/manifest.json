@@ -1,15 +1,15 @@
 {
-  "name": "Alex Holmes",
-  "short_name": "Alex Holmes",
-  "description": "Healthcare recruiting and operations. I also build the systems behind the work.",
+  "name": "Algy's House",
+  "short_name": "Algy's House",
+  "description": "A pixel-art home with music by Young Algy.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#1F3D2E",
-  "background_color": "#F4EFE0",
+  "theme_color": "#120b1d",
+  "background_color": "#120b1d",
   "lang": "en-US",
-  "categories": ["business", "productivity"],
+  "categories": ["entertainment", "music"],
   "icons": [
     {
       "src": "/icon.svg",

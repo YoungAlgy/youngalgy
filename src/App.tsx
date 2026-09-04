@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import RetiredPage from "./pages/RetiredPage";
 
@@ -10,6 +9,7 @@ import RetiredPage from "./pages/RetiredPage";
 // Lazy so the landing bundle stays lean.
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const AlgyHouseHome = lazy(() => import("./pages/AlgyHouseHome"));
 
 const PageFallback = () => (
   <div className="min-h-screen" aria-hidden />
@@ -20,7 +20,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<Suspense fallback={<div style={{ position: "fixed", inset: 0, background: "#120b1d" }} />}><AlgyHouseHome /></Suspense>} />
           <Route
             path="/privacy"
             element={

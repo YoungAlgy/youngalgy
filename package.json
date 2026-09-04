@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run test && vite build",
+    "build": "npm run test && vite build && npm run verify:production",
     "build:dev": "vite build --mode development",
     "build:fast": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "verify:production": "node scripts/verify-production-build.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",

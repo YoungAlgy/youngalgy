@@ -3,7 +3,7 @@ import { LegalLayout } from "@/components/landing/LegalLayout";
 import { CONTACT_EMAIL } from "@/data/landing-content";
 
 /**
- * Privacy policy for youngalgy.com, a static personal portfolio.
+ * Privacy policy for youngalgy.com, a personal site with an explorable House.
  *
  * Written to match what the site actually does — no boilerplate about data
  * we don't collect. Update if/when a contact form, signup, or third-party
@@ -13,7 +13,7 @@ const Privacy = () => (
   <LegalLayout
     title="Privacy"
     description="Privacy policy for youngalgy.com."
-    lastUpdated="2026-08-29"
+    lastUpdated="2026-09-04"
   >
     <p>
       <strong>Short version:</strong> youngalgy.com is a personal site run by
@@ -23,7 +23,8 @@ const Privacy = () => (
 
     <h2>Who runs this site</h2>
     <p>
-      youngalgy.com is Alex Holmes&apos;s personal portfolio. Questions go to{" "}
+      youngalgy.com is Alex Holmes&apos;s personal site, containing an explorable
+      Algy&apos;s House and music by Young Algy. Questions go to{" "}
       <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
     </p>
 
@@ -31,9 +32,11 @@ const Privacy = () => (
     <p>
       The page at <code>youngalgy.com</code> has no signup or account system.
       Contact happens by email. The site does not set advertising cookies or run
-      fingerprinting. It stores one{" "}
-      <code>localStorage</code> entry remembering your theme choice
-      (Alpha / Money Mitch). It never leaves your device.
+      fingerprinting. The House stores your mute and music-volume preference in{" "}
+      <code>localStorage</code> as <code>youngalgy:house-audio</code>. It also
+      keeps your current room and position in tab <code>sessionStorage</code> so
+      you can resume the House while the tab is open. This information stays in
+      your browser and is not sent to me.
     </p>
     <p>
       The site is hosted on <strong>Cloudflare Pages</strong> and runs no
@@ -52,12 +55,16 @@ const Privacy = () => (
     <h2>Cookies &amp; storage</h2>
     <p>
       The site does not set advertising or cross-site tracking cookies. Browser
-      storage is limited to the theme preference described above.
+      storage includes the House audio preference and current House room and
+      position described above. Legal and retired pages also use the existing{" "}
+      <code>landing-mode</code> theme preference. These settings stay in your
+      browser and are not used for advertising or cross-site tracking.
     </p>
 
     <h2>Your choices</h2>
     <p>
-      You can clear the theme preference through your browser. If you&apos;ve
+      You can clear the House audio, room, position, and theme settings through
+      your browser. If you&apos;ve
       emailed me, you can ask me to delete that correspondence at{" "}
       <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
     </p>

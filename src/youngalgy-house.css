@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* House-only rules leave the legal and retired pages' styling intact. */
+.youngalgy-house { background: #120b1d; overscroll-behavior: none; }
+.youngalgy-house *, .youngalgy-house *::before, .youngalgy-house *::after { box-sizing: border-box; }
+.youngalgy-house button, .youngalgy-house input { font: inherit; }
+.youngalgy-house button { -webkit-tap-highlight-color: transparent; }
+.youngalgy-house button:focus-visible, .youngalgy-house input:focus-visible { outline: 2px solid #f4e8c1; outline-offset: 3px; }

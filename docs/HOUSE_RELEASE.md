@@ -65,3 +65,43 @@ headers and music. Publish the exact verified artifact to production only after
 the owner authorizes the release. Check both domains, legal pages, `/alpha` and
 the other redirects after deployment. A successful upload alone is not proof
 that the public domain is serving the new version.
+
+## Mitch visit update, published September 4, 2026 (Tampa time)
+
+Owner approval: "nice i love this we can push this".
+The approved visitor update is live as Pages production deployment
+`394f6ad9-e393-4e68-9b0f-84c9df4a8d12`, source `b917aa9`, on branch `main`.
+Runtime commit `06bd1e8a5511225d848866d2fd2cbe6fd32fccee` was tested at
+https://2139ab4c.youngalgy.pages.dev before the identical runtime files were
+published. The later commit corrects CREDITS.md only. Both commits were pushed
+to `origin/main`. Git integration remains absent and no automatic deploy was added.
+
+Mitch stays the player when arriving from Toggle Town. Algy stands downstairs
+and says "Money Mitch!! Great to see you bro!!" when Mitch faces and interacts
+with him. Visitors retain character identity through stairs, reload and exit.
+An explicit visitor exits to `https://toggle.town/pixel?character=mitch&return=algy-porch`
+(or `character=algy`). A direct homepage visit still uses Algy and exits to the
+town root. The strict character allowlist does not accept URL redirect targets.
+
+Release checks passed: 77 tests, typecheck, lint, production build and the asset,
+metadata and redirect guard. The existing Mitch sprite is hash-pinned and its
+LimeZu source is credited. The public desktop/phone browser checks passed the
+greeting, host collision, dialogue lock/focus, both floors, silent muted reload,
+safe return, repeated entry and Browser Back. The original Algy door regression
+also passed. Reports and screenshots are in the town release worktree under
+`release-evidence/`. The matching public town Worker is
+`4b88225a-c2e7-4019-b935-369b932fa538` at 100 percent.
+
+This update's prior production rollback point is
+`801a790d-e245-4139-9ba3-f0c080336f12`, source `6b88f7f`, available at
+https://801a790d.youngalgy.pages.dev. Recheck the current production deployment
+before any rollback. Do not use the older initial-cutover rollback by default.
+No unrelated room work, routes, DNS, database, billing or secrets were changed.
+Future work stays local until the owner asks to ship it.
+
+Post-release checks confirmed both `youngalgy.com` and `www.youngalgy.com`
+serve the same staged house HTML and main bundle. All 12 checked personal
+routes retained their status, redirect target, content type and CSP. A fresh
+direct browser visit used Algy with no duplicate host and no page errors.
+The town's 11 checked routes also retained their prior responses and retired
+endpoint body hashes. Production checks passed without rollback.

@@ -17,11 +17,16 @@ const interior = vi.hoisted(() => ({ props: null as null | {
   onLeave: () => void;
   onChangeFloor: (floor: AlgyHouseFloor) => void;
   doorTransitionPhase: string;
+  persistTownScene: boolean;
+  characterId: "algy" | "mitch";
 } }));
 
 vi.mock("@/components/hub/AlgysHouseInterior", () => ({
   default: (props: NonNullable<typeof interior.props>) => {
     interior.props = props;
+    let playerAtMount = "";
+    try { playerAtMount = window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? ""; }
+    catch { /* The app supports unavailable storage. */ }
     return (
       <section
         data-testid="mock-house-interior"
@@ -29,6 +34,8 @@ vi.mock("@/components/hub/AlgysHouseInterior", () => ({
         data-muted={String(props.muted)}
         data-volume={String(props.volume)}
         data-phase={props.doorTransitionPhase}
+        data-character={props.characterId}
+        data-player-at-mount={playerAtMount}
       >
         <button type="button" onClick={props.onToggleMute}>Toggle mute</button>
         <button type="button" onClick={() => props.onVolumeChange(-1)}>Volume low</button>
@@ -78,6 +85,8 @@ describe("AlgyHouseHome", () => {
     expect(currentInterior()).toHaveAttribute("data-muted", "false");
     expect(currentInterior()).toHaveAttribute("data-volume", "0.55");
     expect(AudioMock).not.toHaveBeenCalled();
+    expect(interior.props?.persistTownScene).toBe(false);
+    expect(currentInterior()).toHaveAttribute("data-character", "algy");
   });
 
   it("restores an upstairs visit from session storage", () => {
@@ -88,18 +97,19 @@ describe("AlgyHouseHome", () => {
     expect(currentInterior()).toHaveAttribute("data-floor", "upstairs");
   });
 
-  it("restores house metadata after returning from another route", () => {
-    document.title = "Privacy | Alex Holmes";
-    document.head.innerHTML = '<link rel="canonical" href="https://youngalgy.com/privacy"><meta name="robots" content="noindex, nofollow">';
+  it("starts a clean Mitch visit from town, then keeps that visitor on reload", () => {
+    window.sessionStorage.setItem(ALGY_HOUSE_FLOOR_KEY, "upstairs");
+    window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, "old-player");
+    window.history.replaceState(null, "", "/?character=mitch&return=algy-porch");
 
     render(<AlgyHouseHome />);
 
-    expect(document.title).toBe("Algy's House | Young Algy");
-    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://youngalgy.com/");
-    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute("content", "index, follow");
-    expect(document.querySelector('meta[property="og:image:width"]')).toHaveAttribute("content", "1280");
-    expect(document.querySelector('meta[property="og:image:height"]')).toHaveAttribute("content", "800");
-    expect(document.querySelector('meta[property="og:site_name"]')).toHaveAttribute("content", "Young Algy");
+    expect(currentInterior()).toHaveAttribute("data-floor", "ground");
+    expect(currentInterior()).toHaveAttribute("data-character", "mitch");
+    expect(currentInterior()).toHaveAttribute("data-player-at-mount", "");
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBeNull();
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
+    expect(window.location.search).toBe("?character=mitch");
   });
 
   it("uses safe defaults for malformed saved values", () => {
@@ -175,7 +185,7 @@ describe("AlgyHouseHome", () => {
     expect(currentInterior()).toHaveAttribute("data-phase", "idle");
   });
 
-  it("clears the house resume state and returns to Toggle Town after the door transition", () => {
+  it("clears the house resume state and assigns the local town after the door transition", () => {
     window.sessionStorage.setItem(ALGY_HOUSE_SCENE_KEY, "algy-house");
     window.sessionStorage.setItem(ALGY_HOUSE_FLOOR_KEY, "upstairs");
     window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, "player-state");
@@ -198,6 +208,49 @@ describe("AlgyHouseHome", () => {
     expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_SCENE_KEY)).toBeNull();
     expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBeNull();
     expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
-    expect(assign).toHaveBeenCalledWith("https://toggle.town/");
+    expect(assign).toHaveBeenCalledWith("/pixel");
+  });
+
+  it("returns a town arrival to the fixed porch as Mitch", () => {
+    window.history.replaceState(null, "", "/?character=mitch&return=algy-porch");
+    const actualWindow = window;
+    const assign = vi.fn();
+    const localWindow = Object.create(actualWindow) as Window;
+    Object.defineProperties(localWindow, {
+      sessionStorage: { value: actualWindow.sessionStorage },
+      localStorage: { value: actualWindow.localStorage },
+      history: { value: actualWindow.history },
+      setTimeout: { value: actualWindow.setTimeout.bind(actualWindow) },
+      clearTimeout: { value: actualWindow.clearTimeout.bind(actualWindow) },
+      location: { value: { assign, pathname: "/", search: "?character=mitch&return=algy-porch", hash: "" } },
+    });
+    vi.stubGlobal("window", localWindow);
+
+    render(<AlgyHouseHome />);
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+
+    expect(assign).toHaveBeenCalledWith("/pixel?character=mitch&return=algy-porch");
+  });
+
+  it("keeps Mitch's return route after the one-time arrival marker has been consumed", () => {
+    window.history.replaceState(null, "", "/?character=mitch");
+    const actualWindow = window;
+    const assign = vi.fn();
+    const localWindow = Object.create(actualWindow) as Window;
+    Object.defineProperties(localWindow, {
+      sessionStorage: { value: actualWindow.sessionStorage },
+      localStorage: { value: actualWindow.localStorage },
+      setTimeout: { value: actualWindow.setTimeout.bind(actualWindow) },
+      clearTimeout: { value: actualWindow.clearTimeout.bind(actualWindow) },
+      location: { value: { assign, pathname: "/", search: "?character=mitch", hash: "" } },
+    });
+    vi.stubGlobal("window", localWindow);
+
+    render(<AlgyHouseHome />);
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+
+    expect(assign).toHaveBeenCalledWith("/pixel?character=mitch&return=algy-porch");
   });
 });

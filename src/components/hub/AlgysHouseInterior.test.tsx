@@ -91,6 +91,7 @@ function roomProps(overrides?: {
   onChangeFloor?: (floor: AlgyHouseFloor) => void;
   onPrepareDoorSound?: () => void;
   doorTransitionPhase?: TransitionPhase;
+  persistTownScene?: boolean;
 }) {
   return {
     floor: overrides?.floor ?? ALGY_HOUSE_DEFAULT_FLOOR,
@@ -100,6 +101,7 @@ function roomProps(overrides?: {
     onChangeFloor: overrides?.onChangeFloor ?? vi.fn(),
     onPrepareDoorSound: overrides?.onPrepareDoorSound ?? vi.fn(),
     doorTransitionPhase: overrides?.doorTransitionPhase ?? ("idle" as TransitionPhase),
+    persistTownScene: overrides?.persistTownScene,
   };
 }
 
@@ -286,6 +288,19 @@ describe("Algy's House compact two-floor interface", () => {
     expect(screen.getByText("ALGY'S HOUSE / UPSTAIRS")).toBeInTheDocument();
     expect(screen.getByLabelText("Algy's House upstairs room and return staircase")).toBeInTheDocument();
     expect(window.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBe("upstairs");
+  });
+
+  it("keeps standalone visits out of the town scene while still saving the floor", () => {
+    window.sessionStorage.setItem(ALGY_HOUSE_SCENE_KEY, ALGY_HOUSE_SCENE);
+    const { props, view } = renderRoom({ floor: "ground", persistTownScene: false });
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_SCENE_KEY)).toBeNull();
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBe("ground");
+    view.rerender(<AlgysHouseInterior {...props} floor="upstairs" />);
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_SCENE_KEY)).toBeNull();
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBe("upstairs");
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toEqual({
+      floor: "upstairs", ...ALGY_HOUSE_UPSTAIRS_SPAWN,
+    });
   });
 
   it("writes floor-tagged safe arrivals whenever the active floor changes", () => {

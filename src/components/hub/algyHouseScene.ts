@@ -1,3 +1,5 @@
+import type { HouseCharacterId } from "./algyHouseVisitor";
+
 export type HouseDirection = "n" | "s" | "e" | "w";
 
 export interface HousePoint {
@@ -33,6 +35,20 @@ export const ALGY_HOUSE_TRACK = "/audio/repo-young-algy.mp3";
 export const ALGY_HOUSE_ATLAS = "/sprites/interiors/algy_house_16.png";
 export const ALGY_HOUSE_SKULL = "/sprites/interiors/algy-skull-detail.svg";
 export const ALGY_HOUSE_AVATAR = "/sprites/characters/algy_run.png";
+export const ALGY_HOUSE_MITCH_AVATAR = "/sprites/characters/mitch_run.png";
+export const ALGY_HOUSE_HOST = { x: 7, y: 5, dir: "s", frame: 0 } as const;
+export const ALGY_HOUSE_MITCH_GREETING = "Money Mitch!! Great to see you bro!!";
+
+/** Algy is home when Mitch visits. Playing as Algy should not create a double. */
+export function algyHouseHasHost(floor: AlgyHouseFloor, characterId: HouseCharacterId): boolean {
+  return floor === "ground" && characterId === "mitch";
+}
+
+export function algyHouseHostFacing(floor: AlgyHouseFloor, player: HousePlayer, characterId: HouseCharacterId): boolean {
+  if (!algyHouseHasHost(floor, characterId)) return false;
+  const vector = DIRECTION_VECTOR[player.dir];
+  return player.x + vector.x === ALGY_HOUSE_HOST.x && player.y + vector.y === ALGY_HOUSE_HOST.y;
+}
 
 export const ALGY_HOUSE_COLS = 14;
 export const ALGY_HOUSE_ROWS = 10;
@@ -112,8 +128,9 @@ export function algyHouseUpstairsDescentAlpha(
   return Math.max(0, Math.min(1, ALGY_HOUSE_STAIRS_DOWN.x - tileX));
 }
 
-export function isAlgyHouseWalkable(floor: AlgyHouseFloor, x: number, y: number): boolean {
+export function isAlgyHouseWalkable(floor: AlgyHouseFloor, x: number, y: number, characterId: HouseCharacterId = "algy"): boolean {
   if (x < 0 || y < 0 || x >= ALGY_HOUSE_COLS || y >= ALGY_HOUSE_ROWS) return false;
+  if (algyHouseHasHost(floor, characterId) && x === ALGY_HOUSE_HOST.x && y === ALGY_HOUSE_HOST.y) return false;
   if (algyHouseFeatureAt(x, y, floor)) return false;
   const cell = algyHouseGridForFloor(floor)[y]?.[x];
   return cell === "." || cell === "D" || cell === "^" || cell === "U" || cell === "S";
@@ -133,10 +150,11 @@ export function algyHouseStep(
   floor: AlgyHouseFloor,
   player: Pick<HousePlayer, "x" | "y">,
   dir: HouseDirection,
+  characterId: HouseCharacterId = "algy",
 ): { point: HousePoint; transition: AlgyHouseTransition | null } | null {
   const vector = DIRECTION_VECTOR[dir];
   const point = { x: player.x + vector.x, y: player.y + vector.y };
-  if (!isAlgyHouseWalkable(floor, point.x, point.y)) return null;
+  if (!isAlgyHouseWalkable(floor, point.x, point.y, characterId)) return null;
   const cell = algyHouseGridForFloor(floor)[point.y]?.[point.x];
   return {
     point,

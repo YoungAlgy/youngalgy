@@ -84,3 +84,12 @@ License summary from the pack's `LICENSE.txt`:
   between house floors, and stops on leaving the house. Reload never autoplays.
   The stereo uses the existing `(2,0)` atlas cut listed above. No new cells or
   atlas indexes were imported for this pass.
+
+### Toggle Town character sprites
+
+- Algy runtime sprite: `public/sprites/characters/algy_run.png`
+- Mitch runtime sprite: `public/sprites/characters/mitch_run.png`
+- These existing original Toggle Town character sprites are reused for the
+  approved house visitor continuity; no third-party character art was added.
+- Mitch sprite SHA-256:
+  `F2DA9071CEF39EEFA5EC70166698DC865A8B1B4B1F79050BD4ED6DB9729843D2`

@@ -11,6 +11,7 @@ const HOUSE_ASSETS = new Map([
   ["sprites/interiors/algy-house-stair-ground.png", "39B53B534F19BBA992FD63DC4F64D7041BF7A75B5B1F0EFF81F813E9998E9B11"],
   ["sprites/interiors/algy-house-stair-upstairs.png", "A395CDEEA245FEB4CE90911D4D583520159E8B9189D094CA352BB74C316D96C2"],
   ["sprites/characters/algy_run.png", "F6750B01DDFAA13D72741E842CCA5FDB515AB3954B20C026F1B5C684165F1EBB"],
+  ["sprites/characters/mitch_run.png", "F2DA9071CEF39EEFA5EC70166698DC865A8B1B4B1F79050BD4ED6DB9729843D2"],
 ]);
 
 const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".map", ".svg", ".txt", ".xml"]);

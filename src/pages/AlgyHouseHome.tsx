@@ -8,6 +8,14 @@ import {
   type AlgyHouseFloor,
 } from "@/components/hub/algyHouseScene";
 import { HOUSE_DOOR_FADE_MS } from "@/components/hub/algyHouseDoor";
+import {
+  algyHouseTownReturnHref,
+  hasExplicitHouseVisitor,
+  houseCharacterFromSearch,
+  houseVisitorReloadHref,
+  isAlgyHouseTownArrival,
+  type HouseCharacterId,
+} from "@/components/hub/algyHouseVisitor";
 import { useHouseTransition } from "@/components/hub/useHouseTransition";
 import { useRouteHead } from "@/components/landing/useRouteHead";
 import "../youngalgy-house.css";
@@ -44,7 +52,11 @@ export default function AlgyHouseHome() {
     imageHeight: 800,
     siteName: "Young Algy",
   });
-  const [floor, setFloor] = useState<AlgyHouseFloor>(savedFloor);
+  const [townArrival] = useState(() => isAlgyHouseTownArrival(window.location.search));
+  const [characterId] = useState<HouseCharacterId>(() => houseCharacterFromSearch(window.location.search));
+  const [explicitVisitor] = useState(() => hasExplicitHouseVisitor(window.location.search));
+  const [prepared, setPrepared] = useState(() => !townArrival);
+  const [floor, setFloor] = useState<AlgyHouseFloor>(() => townArrival ? ALGY_HOUSE_DEFAULT_FLOOR : savedFloor());
   const [settings, setSettings] = useState(savedSettings);
   const { phase, start, prepareSound } = useHouseTransition(settings.muted);
 
@@ -52,6 +64,17 @@ export default function AlgyHouseHome() {
     try { window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
     catch { /* Storage is optional. */ }
   }, [settings]);
+
+  useEffect(() => {
+    if (!townArrival) return;
+    try {
+      window.sessionStorage.removeItem(ALGY_HOUSE_SCENE_KEY);
+      window.sessionStorage.removeItem(ALGY_HOUSE_FLOOR_KEY);
+      window.sessionStorage.removeItem(ALGY_HOUSE_PLAYER_KEY);
+      window.history.replaceState(null, "", houseVisitorReloadHref(`${window.location.pathname}${window.location.search}${window.location.hash}`));
+    } catch { /* Storage and History are optional. */ }
+    setPrepared(true);
+  }, [townArrival]);
 
   const changeFloor = useCallback((target: AlgyHouseFloor) => {
     if (target === floor) return;
@@ -65,26 +88,31 @@ export default function AlgyHouseHome() {
         window.sessionStorage.removeItem(ALGY_HOUSE_FLOOR_KEY);
         window.sessionStorage.removeItem(ALGY_HOUSE_PLAYER_KEY);
       } catch { /* Storage is optional. */ }
-      // The released personal home returns to the separate Toggle Town site.
-      window.location.assign("https://toggle.town/");
+      window.location.assign((townArrival || explicitVisitor)
+        ? algyHouseTownReturnHref(import.meta.env.DEV, characterId)
+        : (import.meta.env.DEV ? "/pixel" : "https://toggle.town/"));
     }, "door");
-  }, [start]);
+  }, [characterId, explicitVisitor, start, townArrival]);
 
   return (
     <div className="youngalgy-house" data-testid="youngalgy-house-home" style={{ position: "fixed", inset: 0 }}>
-      <AlgysHouseInterior
-        floor={floor}
-        muted={settings.muted}
-        volume={settings.volume}
-        onToggleMute={() => setSettings((value) => ({ ...value, muted: !value.muted }))}
-        onVolumeChange={(volume) => {
-          if (Number.isFinite(volume)) setSettings((value) => ({ ...value, volume: Math.max(0, Math.min(1, volume)) }));
-        }}
-        onLeave={leave}
-        onChangeFloor={changeFloor}
-        onPrepareDoorSound={prepareSound}
-        doorTransitionPhase={phase}
-      />
+      {prepared && (
+        <AlgysHouseInterior
+          characterId={characterId}
+          persistTownScene={false}
+          floor={floor}
+          muted={settings.muted}
+          volume={settings.volume}
+          onToggleMute={() => setSettings((value) => ({ ...value, muted: !value.muted }))}
+          onVolumeChange={(volume) => {
+            if (Number.isFinite(volume)) setSettings((value) => ({ ...value, volume: Math.max(0, Math.min(1, volume)) }));
+          }}
+          onLeave={leave}
+          onChangeFloor={changeFloor}
+          onPrepareDoorSound={prepareSound}
+          doorTransitionPhase={phase}
+        />
+      )}
       <div
         aria-hidden="true"
         data-testid="house-door-transition"

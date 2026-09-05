@@ -46,7 +46,8 @@ describe("Algy's House exterior doorway", () => {
     const homeSource = readFileSync(resolve(process.cwd(), "src/pages/AlgyHouseHome.tsx"), "utf8");
     const appSource = readFileSync(resolve(process.cwd(), "src/App.tsx"), "utf8");
 
-    expect(homeSource).toContain('window.location.assign("https://toggle.town/")');
+    expect(homeSource).toContain('algyHouseTownReturnHref(import.meta.env.DEV, characterId)');
+    expect(homeSource).toContain('import.meta.env.DEV ? "/pixel" : "https://toggle.town/"');
     expect(homeSource).not.toContain('window.location.assign("/pixel")');
     expect(appSource).not.toContain('path="/pixel"');
   });

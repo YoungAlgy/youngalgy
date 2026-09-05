@@ -89,7 +89,9 @@ License summary from the pack's `LICENSE.txt`:
 
 - Algy runtime sprite: `public/sprites/characters/algy_run.png`
 - Mitch runtime sprite: `public/sprites/characters/mitch_run.png`
-- These existing original Toggle Town character sprites are reused for the
-  approved house visitor continuity; no third-party character art was added.
+- These existing Toggle Town character sprites derive from LimeZu characters:
+  Algy is a recolor of Pier, and Mitch uses Edward (dark hair and suit), as
+  recorded in Toggle Town's `HubLanding.tsx` sprite registry. This release
+  reuses those existing licensed assets. No new character pack was acquired.
 - Mitch sprite SHA-256:
   `F2DA9071CEF39EEFA5EC70166698DC865A8B1B4B1F79050BD4ED6DB9729843D2`

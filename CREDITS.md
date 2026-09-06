@@ -9,8 +9,8 @@
 The full paid pack stays outside this repository at
 `C:\Users\Algy\Desktop\Files\pixel art\moderninteriors-win`. The room ships
 one derived 256x320 atlas at
-`public/sprites/interiors/algy_house_16.png`. It contains only the twenty-six
-native-resolution cuts listed below. Source rectangles use
+`public/sprites/interiors/algy_house_16.png`. It contains only the
+native-resolution cuts recorded below, including the appended September 5 cuts. Source rectangles use
 `(x, y, width, height)` pixels.
 
 - `1_Interiors/16x16/Room_Builder_subfiles/Room_Builder_Floors_16x16.png`

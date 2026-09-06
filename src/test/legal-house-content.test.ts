@@ -9,11 +9,13 @@ describe("House legal disclosures", () => {
     const privacy = source("src/pages/Privacy.tsx");
 
     expect(privacy).toContain("youngalgy:house-audio");
+    expect(privacy).toContain("Muting applies");
+    expect(privacy).toContain("saved zero volume is reset");
     expect(privacy).toContain("current room and position");
     expect(privacy).toContain("sessionStorage");
     expect(privacy).toContain("not sent to me");
     expect(privacy).toContain("landing-mode");
-    expect(privacy).toContain('lastUpdated="2026-09-04"');
+    expect(privacy).toContain('lastUpdated="2026-09-05"');
   });
 
   it("keeps current Terms copy and static metadata aligned", () => {

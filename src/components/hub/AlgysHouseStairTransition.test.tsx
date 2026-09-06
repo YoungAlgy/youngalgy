@@ -96,9 +96,23 @@ describe("Algy's House upstairs stair descent transition", () => {
 
     OriginalImage = window.Image;
     class LoadedImage {
-      complete = true;
+      complete = false;
       naturalWidth = 16;
-      src = "";
+      onload: ((event: Event) => void) | null = null;
+      onerror: ((event: Event) => void) | null = null;
+      private source = "";
+
+      get src() {
+        return this.source;
+      }
+
+      set src(value: string) {
+        this.source = value;
+        queueMicrotask(() => {
+          this.complete = true;
+          this.onload?.(new Event("load"));
+        });
+      }
     }
     Object.defineProperty(window, "Image", { configurable: true, value: LoadedImage });
     Object.defineProperty(globalThis, "Image", { configurable: true, value: LoadedImage });
@@ -110,10 +124,14 @@ describe("Algy's House upstairs stair descent transition", () => {
     Object.defineProperty(globalThis, "Image", { configurable: true, value: OriginalImage });
   });
 
-  it("fades the avatar down the stairs, holds it hidden through the floor swap, and resets at safe arrival", () => {
+  it("fades the avatar down the stairs, holds it hidden through the floor swap, and resets at safe arrival", async () => {
     const onChangeFloor = vi.fn();
     const initialProps = props({ onChangeFloor });
     const view = render(<AlgysHouseInterior {...initialProps} />);
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
     const frame = (now: number) => act(() => scheduledFrame?.(now));
 
     frame(0);
@@ -160,7 +178,7 @@ describe("Algy's House upstairs stair descent transition", () => {
     expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({
       floor: "ground",
       x: 5,
-      y: 2,
+      y: 1,
       dir: "e",
     });
 

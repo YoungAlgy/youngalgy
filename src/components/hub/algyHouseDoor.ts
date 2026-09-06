@@ -1,5 +1,10 @@
 export const ALGY_HOUSE_EXTERIOR_DOOR = { x: 31, y: 28 } as const;
 
+/** Keep the opt-in house workbench on its local town/house pair. */
+export function algyHouseEntranceHref(localHousePreview = false): string {
+  return localHousePreview ? "/" : "https://youngalgy.com/";
+}
+
 export type HouseDoorTransitionPhase = "idle" | "out" | "hold" | "in";
 
 export const HOUSE_DOOR_FADE_MS = 240;
@@ -15,7 +20,7 @@ export function houseDoorCharacterAlpha(
   return 1;
 }
 
-/** North from Algy's porch is a local room transition, not a blocked tile. */
+/** A north step from Algy's porch activates the house doorway. */
 export function shouldEnterAlgyHouse(
   position: { x: number; y: number },
   movement: { dx: number; dy: number },

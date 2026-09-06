@@ -1,17 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ALGY_HOUSE_TRACK } from "./algyHouseScene";
 
-type StereoStatus = "stopped" | "loading" | "playing" | "error";
+type StereoStatus = "stopped" | "loading" | "playing" | "blocked" | "error";
 
-export function useHouseStereo({ muted, volume }: { muted: boolean; volume: number }) {
+function isAutoplayBlocked(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "name" in error && error.name === "NotAllowedError";
+}
+
+function isRetryGesture(event: PointerEvent | KeyboardEvent): boolean {
+  // Let the explicit music control own its event. Retrying during capture would
+  // turn the button into "Mute" before its click handler runs and silence it.
+  if (event.target instanceof Element && event.target.closest('[aria-label="Play music"]')) return false;
+  if (event.type === "pointerdown") return event.isTrusted && (event as PointerEvent).button === 0;
+  const keyEvent = event as KeyboardEvent;
+  return keyEvent.isTrusted && !keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey &&
+    !["Alt", "Control", "Meta", "Shift", "CapsLock", "Tab", "Escape"].includes(keyEvent.key);
+}
+
+export function useHouseStereo({ muted, volume, autoPlay = false }: { muted: boolean; volume: number; autoPlay?: boolean }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const requestedRef = useRef(false);
   const generationRef = useRef(0);
+  const mountedRef = useRef(true);
+  const autoPlayRef = useRef(autoPlay);
+  const previousAutoPlayRef = useRef(false);
   const settingsRef = useRef({ muted, volume });
   const [status, setStatus] = useState<StereoStatus>("stopped");
 
+  settingsRef.current = { muted, volume };
+  autoPlayRef.current = autoPlay;
+
   useEffect(() => {
-    settingsRef.current = { muted, volume };
     const audio = audioRef.current;
     if (audio) {
       audio.muted = muted;
@@ -27,32 +46,15 @@ export function useHouseStereo({ muted, volume }: { muted: boolean; volume: numb
       audio.pause();
       audio.currentTime = 0;
     }
-    setStatus("stopped");
+    if (mountedRef.current) setStatus("stopped");
   }, []);
 
-  useEffect(() => () => {
-    generationRef.current += 1;
-    requestedRef.current = false;
-    const audio = audioRef.current;
-    if (audio) {
-      audio.onended = null;
-      audio.onerror = null;
-      audio.pause();
-      audio.currentTime = 0;
-    }
-    audioRef.current = null;
-  }, []);
-
-  const toggle = useCallback(() => {
-    if (requestedRef.current) {
-      stop();
-      return;
-    }
-    // Construct and load the song only in the explicit interaction handler.
+  const start = useCallback(() => {
+    if (requestedRef.current) return;
     const audio = audioRef.current ?? new Audio();
     audioRef.current = audio;
-    audio.preload = "none";
-    audio.loop = false;
+    audio.preload = autoPlayRef.current ? "auto" : "none";
+    audio.loop = autoPlayRef.current;
     if (!audio.getAttribute("src")) audio.src = ALGY_HOUSE_TRACK;
     audio.muted = settingsRef.current.muted;
     const volume = settingsRef.current.volume;
@@ -63,6 +65,9 @@ export function useHouseStereo({ muted, volume }: { muted: boolean; volume: numb
     audio.onended = () => {
       if (generation !== generationRef.current) return;
       requestedRef.current = false;
+      // `play()` may still have a pending promise when the media ends. Invalidate
+      // that continuation so it cannot change the finished stereo back to playing.
+      generationRef.current += 1;
       setStatus("stopped");
     };
     audio.onerror = () => {
@@ -72,22 +77,68 @@ export function useHouseStereo({ muted, volume }: { muted: boolean; volume: numb
       audio.pause();
       setStatus("error");
     };
-    void (async () => {
-      try {
-        await audio.play();
-        if (generation !== generationRef.current) {
-          // Do not interrupt a newer explicit play request on the same element.
-          if (!requestedRef.current) audio.pause();
-          return;
-        }
-        setStatus("playing");
-      } catch {
-        if (generation !== generationRef.current) return;
-        requestedRef.current = false;
-        setStatus("error");
+    void audio.play().then(() => {
+      if (generation !== generationRef.current) {
+        // Do not interrupt a newer explicit play request on the same element.
+        if (!requestedRef.current) audio.pause();
+        return;
       }
-    })();
-  }, [stop]);
+      setStatus("playing");
+    }).catch((error: unknown) => {
+      if (generation !== generationRef.current) return;
+      requestedRef.current = false;
+      setStatus(isAutoplayBlocked(error) ? "blocked" : "error");
+    });
+  }, []);
 
-  return { status, toggle, stop };
+  const toggle = useCallback(() => {
+    if (requestedRef.current) stop();
+    else start();
+  }, [start, stop]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      generationRef.current += 1;
+      requestedRef.current = false;
+      const audio = audioRef.current;
+      if (audio) {
+        audio.onended = null;
+        audio.onerror = null;
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      audioRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const wasAutoPlay = previousAutoPlayRef.current;
+    previousAutoPlayRef.current = autoPlay;
+    if (autoPlay) start();
+    else if (wasAutoPlay) {
+      const audio = audioRef.current;
+      if (audio) audio.loop = false;
+      stop();
+    }
+  }, [autoPlay, start, stop]);
+
+  useEffect(() => {
+    if (!autoPlay || status !== "blocked") return;
+    const retry = (event: PointerEvent | KeyboardEvent) => {
+      if (!autoPlayRef.current || requestedRef.current || !isRetryGesture(event)) return;
+      start();
+    };
+    window.addEventListener("pointerdown", retry, true);
+    window.addEventListener("keydown", retry, true);
+    return () => {
+      window.removeEventListener("pointerdown", retry, true);
+      window.removeEventListener("keydown", retry, true);
+    };
+  }, [autoPlay, start, status]);
+
+  return { status, start, toggle, stop };
 }
+
+export default useHouseStereo;

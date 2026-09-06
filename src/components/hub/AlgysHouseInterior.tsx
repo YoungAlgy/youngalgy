@@ -1,30 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ALGY_HOUSE_ATLAS,
-  ALGY_HOUSE_AVATAR,
-  ALGY_HOUSE_MITCH_AVATAR,
   ALGY_HOUSE_HOST,
   ALGY_HOUSE_MITCH_GREETING,
-  ALGY_HOUSE_COLS,
   ALGY_HOUSE_DEFAULT_FLOOR,
   ALGY_HOUSE_DOOR,
   ALGY_HOUSE_FEATURES,
   ALGY_HOUSE_FLOOR_KEY,
   ALGY_HOUSE_PLAYER_KEY,
-  ALGY_HOUSE_ROWS,
   ALGY_HOUSE_SCENE,
   ALGY_HOUSE_SCENE_KEY,
   ALGY_HOUSE_SPAWN,
   ALGY_HOUSE_STAIRS_DOWN,
+  ALGY_HOUSE_STAIRS_UP,
   ALGY_HOUSE_STAIRS_UP_ORIGIN,
   ALGY_HOUSE_STAIRWELL_ORIGIN,
   ALGY_HOUSE_TILE,
+  ALGY_HOUSE_UPSTAIRS_DOOR,
   algyHouseArrivalForFloor,
   algyHouseFeatureFacing,
   algyHouseGridForFloor,
   algyHouseHasHost,
   algyHouseHostFacing,
   algyHouseStep,
+  algyHouseStairFootOffset,
   algyHouseUpstairsDescentAlpha,
   isAlgyHouseWalkable,
   type AlgyHouseFloor,
@@ -38,7 +36,11 @@ import {
   type HouseDoorTransitionPhase,
 } from "./algyHouseDoor";
 import { useHouseStereo } from "./useHouseStereo";
+import { HUB_DPAD_BUTTON_STYLE, HUB_DPAD_GO_STYLE, HUB_DPAD_LAYOUT_STYLE } from "./hubDpadStyles";
+import { useHouseArt } from "./useHouseArt";
 import type { HouseCharacterId } from "./algyHouseVisitor";
+import { algyHouseFurnitureForFloor, algyHouseGroundView, houseDecorDepth, HOUSE_COUCH_TV_ART, HOUSE_COUCH_TV_POSITION } from "./algyHouseLayout";
+import { drawAlgyHouseRoomShell, drawAlgyHouseUpstairsDoor, drawHouseDecorArt, drawHouseBedsideLamp, drawHouseNorthFacingSofa } from "./algyHouseRoomArt";
 
 const KEY_DIRECTION: Record<string, HouseDirection | undefined> = {
   ArrowUp: "n",
@@ -56,8 +58,6 @@ const KEY_DIRECTION: Record<string, HouseDirection | undefined> = {
 };
 
 const FONT = "'Press Start 2P', monospace";
-const WORLD_W = ALGY_HOUSE_COLS * ALGY_HOUSE_TILE;
-const WORLD_H = ALGY_HOUSE_ROWS * ALGY_HOUSE_TILE;
 const MOVE_MS = 150;
 
 interface HouseMove {
@@ -77,6 +77,9 @@ interface AlgysHouseInteriorProps {
   onToggleMute: () => void;
   onLeave: () => void;
   onChangeFloor: (floor: AlgyHouseFloor) => void;
+  onChangeCharacter?: (characterId: HouseCharacterId) => void;
+  characterChangePending?: boolean;
+  characterChangeStatus?: string | null;
   onPrepareDoorSound: () => void;
   doorTransitionPhase: HouseDoorTransitionPhase;
   /** Only the older embedded room should restore itself as a town scene. */
@@ -129,11 +132,6 @@ function readSavedPlayer(floor: AlgyHouseFloor, characterId: HouseCharacterId): 
     // Ignore stale or malformed session data.
   }
   return defaultPlayerForFloor(floor);
-}
-
-function clamp(value: number, min: number, max: number): number {
-  if (max < min) return (min + max) / 2;
-  return Math.max(min, Math.min(max, value));
 }
 
 function drawAtlasPiece(
@@ -589,8 +587,6 @@ function drawUpstairsStairwellFallbackFront(context: CanvasRenderingContext2D, o
   );
 }
 
-const GROUND_STAIR_ART_URL = "/sprites/interiors/algy-house-stair-ground.png";
-const UPSTAIRS_STAIR_ART_URL = "/sprites/interiors/algy-house-stair-upstairs.png";
 const GROUND_STAIR_ART_SIZE = { width: 48, height: 40 } as const;
 const UPSTAIRS_STAIR_ART_SIZE = { width: 48, height: 28 } as const;
 const GROUND_STAIR_HIGH_CAP_SIZE = { width: 7, height: 2 } as const;
@@ -760,13 +756,6 @@ function drawExactUpstairsStairFront(
   context.restore();
 }
 
-function stairFootOffset(floor: AlgyHouseFloor, tileX: number, tileY: number): number {
-  if (Math.abs(tileY - 2) > 0.05) return 0;
-  if (floor === "ground" && tileX >= 1 && tileX <= 4) return (tileX - 4) * 18;
-  if (floor === "upstairs" && tileX >= 1 && tileX <= 4) return (tileX - 1) * 16;
-  return 0;
-}
-
 function drawHouseActor(
   context: CanvasRenderingContext2D,
   image: HTMLImageElement | null,
@@ -818,18 +807,12 @@ function drawRoom(
   context.fillStyle = "#120b1d";
   context.fillRect(0, 0, viewportW, viewportH);
 
-  const fit = Math.min((viewportW - 24) / WORLD_W, (viewportH - 124) / WORLD_H);
-  const tallDesktop = viewportW >= 768 && viewportW < 960 && viewportH > viewportW;
-  const desktopZoomFloor = tallDesktop ? 4 / 3 : 0.86;
-  const zoom = viewportW < 768 ? Math.max(0.78, fit) : Math.min(1.4, Math.max(desktopZoomFloor, fit));
-  const halfWorldW = viewportW / (2 * zoom);
-  const halfWorldH = viewportH / (2 * zoom);
-  const cameraX = clamp(drawTileX * ALGY_HOUSE_TILE + ALGY_HOUSE_TILE / 2, halfWorldW, WORLD_W - halfWorldW);
-  const cameraY = clamp(drawTileY * ALGY_HOUSE_TILE + ALGY_HOUSE_TILE / 2, halfWorldH, WORLD_H - halfWorldH);
+  const groundView = algyHouseGroundView(viewportW, viewportH);
+  const zoom = groundView.zoom;
+  const cameraX = groundView.cameraX;
+  const cameraY = groundView.cameraY;
   const screenCenterX = Math.round(viewportW / 2);
-  const screenCenterY = Math.round(
-    viewportW < 768 ? viewportH * 0.42 : Math.min(viewportH / 2, viewportW * 0.5),
-  );
+  const screenCenterY = groundView.centerY;
 
   context.save();
   context.translate(screenCenterX, screenCenterY);
@@ -837,62 +820,32 @@ function drawRoom(
   context.translate(-cameraX, -cameraY);
   context.imageSmoothingEnabled = false;
 
-  context.fillStyle = "#24113d";
-  context.fillRect(-12, -12, WORLD_W + 24, WORLD_H + 24);
-  context.fillStyle = "#110918";
-  context.fillRect(-6, -6, WORLD_W + 12, WORLD_H + 12);
-
-  const grid = algyHouseGridForFloor(floor);
-  for (let y = 0; y < ALGY_HOUSE_ROWS; y += 1) {
-    for (let x = 0; x < ALGY_HOUSE_COLS; x += 1) {
-      const cell = grid[y][x];
-      const isWall = cell === "#";
-      const sx = isWall ? 16 : 0;
-      const fallback = isWall ? "#846989" : "#ad7a49";
-      context.fillStyle = fallback;
-      context.fillRect(x * ALGY_HOUSE_TILE, y * ALGY_HOUSE_TILE, ALGY_HOUSE_TILE, ALGY_HOUSE_TILE);
-      drawAtlasPiece(
-        context,
-        atlas,
-        { x: sx, y: 0, w: 16, h: 16 },
-        { x: x * ALGY_HOUSE_TILE, y: y * ALGY_HOUSE_TILE, w: ALGY_HOUSE_TILE, h: ALGY_HOUSE_TILE },
-      );
-    }
-  }
+  drawAlgyHouseRoomShell(context, atlas, floor);
 
   if (floor === "ground") {
-    // South threshold. Crossing it returns to the house porch in Toggle Town.
-    context.fillStyle = "#160f24";
-    context.fillRect(ALGY_HOUSE_DOOR.x * ALGY_HOUSE_TILE, ALGY_HOUSE_DOOR.y * ALGY_HOUSE_TILE, ALGY_HOUSE_TILE, ALGY_HOUSE_TILE);
-    context.fillStyle = "#c89838";
-    context.fillRect(ALGY_HOUSE_DOOR.x * ALGY_HOUSE_TILE + 5, ALGY_HOUSE_DOOR.y * ALGY_HOUSE_TILE + 5, ALGY_HOUSE_TILE - 10, 5);
-    context.fillStyle = "#f4e8c1";
-    context.fillRect(ALGY_HOUSE_DOOR.x * ALGY_HOUSE_TILE + 21, ALGY_HOUSE_DOOR.y * ALGY_HOUSE_TILE + 22, 6, 12);
-
     drawExactGroundStairBack(context, ALGY_HOUSE_STAIRS_UP_ORIGIN, groundStairArt);
   } else {
     drawExactUpstairsStairBack(context, ALGY_HOUSE_STAIRWELL_ORIGIN, upstairsStairArt);
+    drawAlgyHouseUpstairsDoor(context);
   }
 
   const avatarX = drawTileX * ALGY_HOUSE_TILE;
-  const avatarY = drawTileY * ALGY_HOUSE_TILE + stairFootOffset(floor, drawTileX, drawTileY);
+  const avatarY = drawTileY * ALGY_HOUSE_TILE + algyHouseStairFootOffset(floor, drawTileX, drawTileY);
   const moving = move !== null;
   const animationFrame = moving ? Math.floor(now / 95) % 6 : player.frame % 6;
   const drawX = avatarX + (ALGY_HOUSE_TILE - 32) / 2;
   const drawY = avatarY + ALGY_HOUSE_TILE - 64;
   const drawStereo = () => {
     for (const feature of ALGY_HOUSE_FEATURES.filter((item) => item.floor === floor)) {
+      const art = feature.art ?? feature;
       drawAtlasPiece(context, atlas, { x: 32, y: 0, w: 16, h: 32 }, {
-        x: feature.x * ALGY_HOUSE_TILE,
-        y: feature.y * ALGY_HOUSE_TILE,
-        w: feature.width * ALGY_HOUSE_TILE,
-        h: feature.height * ALGY_HOUSE_TILE,
+        x: art.x * ALGY_HOUSE_TILE,
+        y: art.y * ALGY_HOUSE_TILE,
+        w: art.width * ALGY_HOUSE_TILE,
+        h: art.height * ALGY_HOUSE_TILE,
       });
     }
   };
-  // The player's feet determine depth, so the cabinet covers a player behind it.
-  const behindStereo = floor === "upstairs" && drawTileY < 2;
-  if (!behindStereo) drawStereo();
   const drawHost = () => {
     if (!algyHouseHasHost(floor, characterId)) return;
     drawHouseActor(context, hostAvatar, "algy", hostDirection, 0,
@@ -900,35 +853,48 @@ function drawRoom(
       ALGY_HOUSE_HOST.y * ALGY_HOUSE_TILE + ALGY_HOUSE_TILE - 64);
   };
   // Both actors use the same art scale and foot-based depth order.
-  const hostBehindPlayer = ALGY_HOUSE_HOST.y <= drawTileY;
-  if (hostBehindPlayer) drawHost();
-  context.save();
-  if (floor === "upstairs" && drawTileX > 1.4 && drawTileX < 5.2 && Math.abs(drawTileY - 2) < 0.05) {
-    const opening = upstairsStairArtPosition(ALGY_HOUSE_STAIRWELL_ORIGIN);
-    context.beginPath();
-    context.moveTo(opening.x + 2 * STAIR_PIXEL, opening.y + 3 * STAIR_PIXEL);
-    context.lineTo(opening.x + 37 * STAIR_PIXEL, opening.y + 3 * STAIR_PIXEL);
-    context.lineTo(opening.x + 47 * STAIR_PIXEL, opening.y + 11 * STAIR_PIXEL);
-    context.lineTo(opening.x + 45 * STAIR_PIXEL, opening.y + 23 * STAIR_PIXEL);
-    context.lineTo(opening.x + 2 * STAIR_PIXEL, opening.y + 23 * STAIR_PIXEL);
-    context.lineTo(opening.x, opening.y + 9 * STAIR_PIXEL);
-    context.closePath();
-    context.clip();
-  }
-  context.globalAlpha = playerAlpha * algyHouseUpstairsDescentAlpha(descendingUpstairs, drawTileX, drawTileY);
-  drawHouseActor(context, avatar, characterId, player.dir, animationFrame, drawX, drawY);
-  context.restore();
-  if (!hostBehindPlayer) drawHost();
+  const drawPlayer = () => {
+    context.save();
+    if (floor === "upstairs" && drawTileX > 1.4 && drawTileX < 5.2 && Math.abs(drawTileY - 2) < 0.05) {
+      const opening = upstairsStairArtPosition(ALGY_HOUSE_STAIRWELL_ORIGIN);
+      context.beginPath();
+      context.moveTo(opening.x + 2 * STAIR_PIXEL, opening.y + 3 * STAIR_PIXEL);
+      context.lineTo(opening.x + 37 * STAIR_PIXEL, opening.y + 3 * STAIR_PIXEL);
+      context.lineTo(opening.x + 47 * STAIR_PIXEL, opening.y + 11 * STAIR_PIXEL);
+      context.lineTo(opening.x + 45 * STAIR_PIXEL, opening.y + 23 * STAIR_PIXEL);
+      context.lineTo(opening.x + 2 * STAIR_PIXEL, opening.y + 23 * STAIR_PIXEL);
+      context.lineTo(opening.x, opening.y + 9 * STAIR_PIXEL);
+      context.closePath();
+      context.clip();
+    }
+    context.globalAlpha = playerAlpha * algyHouseUpstairsDescentAlpha(descendingUpstairs, drawTileX, drawTileY);
+    drawHouseActor(context, avatar, characterId, player.dir, animationFrame, drawX, drawY);
+    context.restore();
+  };
 
-  if (behindStereo) drawStereo();
+  // Use the same feet-based depth order for furniture and actors on either floor.
+  const layers = algyHouseFurnitureForFloor(floor).map((item) => ({
+    depth: houseDecorDepth(item),
+    draw: () => {
+      if (item.id === "sofa") drawHouseNorthFacingSofa(context, item.art);
+      else drawHouseDecorArt(context, atlas, item.source, item.art);
+      if (item.id === "bedside-table") drawHouseBedsideLamp(context, item.art);
+      if (item.id === "coffee-table") drawHouseDecorArt(context, atlas, HOUSE_COUCH_TV_ART, HOUSE_COUCH_TV_POSITION);
+    },
+  }));
+  const stereoFeature = ALGY_HOUSE_FEATURES.find((item) => item.id === "stereo" && item.floor === floor);
+  if (stereoFeature) layers.push({ depth: stereoFeature.y + stereoFeature.height, draw: drawStereo });
+  layers.push({ depth: ALGY_HOUSE_HOST.y + 1, draw: drawHost });
+  layers.push({ depth: drawTileY + 1, draw: drawPlayer });
+  layers.sort((a, b) => a.depth - b.depth).forEach((layer) => layer.draw());
+
   if (floor === "ground") {
-    drawExactGroundStairFront(context, ALGY_HOUSE_STAIRS_UP_ORIGIN, groundStairArt);
+    // On the newly opened floor below the stairs the whole actor is in front.
+    if (drawTileY <= ALGY_HOUSE_STAIRS_UP.y + 0.05) drawExactGroundStairFront(context, ALGY_HOUSE_STAIRS_UP_ORIGIN, groundStairArt);
   } else {
     drawExactUpstairsStairFront(context, ALGY_HOUSE_STAIRWELL_ORIGIN, upstairsStairArt);
   }
 
-  context.fillStyle = "rgba(70, 20, 84, 0.12)";
-  context.fillRect(0, 0, WORLD_W, WORLD_H);
   context.restore();
 }
 
@@ -950,18 +916,36 @@ export default function AlgysHouseInterior({
   onToggleMute,
   onLeave,
   onChangeFloor,
+  onChangeCharacter,
+  characterChangePending = false,
+  characterChangeStatus,
   onPrepareDoorSound,
   doorTransitionPhase,
   persistTownScene = true,
 }: AlgysHouseInteriorProps) {
+  const { images, status: artStatus, retry: retryArt } = useHouseArt(characterId);
+  const [paintedImages, setPaintedImages] = useState<typeof images | null>(null);
+  const artReady = artStatus === "ready" && paintedImages === images;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const playerRef = useRef<HousePlayer>(readSavedPlayer(floor, characterId));
   const hostDirectionRef = useRef<HouseDirection>("s");
   const dialogueRef = useRef(false);
+  const doorApproachLatchedRef = useRef(false);
   const restoreDialogueFocusRef = useRef(false);
   const dialogueCloseRef = useRef<HTMLButtonElement>(null);
   const interactButtonRef = useRef<HTMLButtonElement>(null);
+  const volumeInputRef = useRef<HTMLInputElement>(null);
+  const infoButtonRef = useRef<HTMLButtonElement>(null);
+  const infoCloseRef = useRef<HTMLButtonElement>(null);
+  const characterButtonRef = useRef<HTMLButtonElement>(null);
+  const characterChoiceRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const restoreMenuFocusRef = useRef<"info" | "character" | null>(null);
   const [dialogueOpen, setDialogueOpen] = useState(false);
+  const [dialogueKind, setDialogueKind] = useState<"host" | "door">("host");
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const uiBlockingRef = useRef(false);
+  uiBlockingRef.current = infoOpen || pickerOpen || !artReady;
   const [nearHost, setNearHost] = useState(() => algyHouseHostFacing(floor, playerRef.current, characterId));
   const floorRef = useRef(floor);
   const moveRef = useRef<HouseMove | null>(null);
@@ -975,8 +959,27 @@ export default function AlgysHouseInterior({
   });
   const [leaving, setLeaving] = useState(false);
   const [nearStereo, setNearStereo] = useState(() => algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo");
-  const stereo = useHouseStereo({ muted, volume });
-  const { stop: stopStereo, toggle: toggleStereo } = stereo;
+  const [musicReady, setMusicReady] = useState(false);
+  // Keep music alive across floor/character art loads after the first reveal.
+  useEffect(() => { if (artReady) setMusicReady(true); }, [artReady]);
+  const stereo = useHouseStereo({ muted, volume, autoPlay: musicReady && !leaving });
+  const { stop: stopStereo, start: startStereo } = stereo;
+  const musicButtonLabel = stereo.status === "playing" || stereo.status === "loading"
+    ? (muted || volume === 0 ? "Unmute" : "Mute") : "Play music";
+  const handleMusicButton = () => {
+    if (stereo.status === "playing" || stereo.status === "loading") {
+      if (volume === 0) {
+        onVolumeChange?.(0.55);
+        if (muted) onToggleMute();
+      } else onToggleMute();
+      return;
+    }
+    // A direct retry can restore audibility. Automatic entry respects saved
+    // mute/volume, including a deliberately silent setting.
+    if (muted) onToggleMute();
+    if (volume === 0) onVolumeChange?.(0.55);
+    startStereo();
+  };
 
   useEffect(() => {
     doorTransitionRef.current = {
@@ -1008,6 +1011,18 @@ export default function AlgysHouseInterior({
       heldDirectionsRef.current.clear();
       safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...playerRef.current }));
     }
+    if (!isAlgyHouseWalkable(floor, playerRef.current.x, playerRef.current.y, characterId)) {
+      const safePlayer = [
+        { x: playerRef.current.x, y: playerRef.current.y + 1 },
+        { x: playerRef.current.x, y: playerRef.current.y - 1 },
+        { x: playerRef.current.x - 1, y: playerRef.current.y },
+        { x: playerRef.current.x + 1, y: playerRef.current.y },
+      ].find((point) => isAlgyHouseWalkable(floor, point.x, point.y, characterId));
+      playerRef.current = safePlayer
+        ? { ...playerRef.current, ...safePlayer, frame: 0 }
+        : algyHouseArrivalForFloor(floor);
+      safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...playerRef.current }));
+    }
     setNearStereo(algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo");
     setNearHost(algyHouseHostFacing(floor, playerRef.current, characterId));
     dialogueRef.current = false;
@@ -1021,6 +1036,16 @@ export default function AlgysHouseInterior({
       interactButtonRef.current?.focus({ preventScroll: true });
     }
   }, [dialogueOpen]);
+
+  useEffect(() => {
+    if (infoOpen) infoCloseRef.current?.focus({ preventScroll: true });
+    else if (pickerOpen) characterChoiceRefs.current[characterId === "algy" ? 0 : 1]?.focus({ preventScroll: true });
+    else if (restoreMenuFocusRef.current) {
+      const target = restoreMenuFocusRef.current;
+      restoreMenuFocusRef.current = null;
+      (target === "info" ? infoButtonRef.current : characterButtonRef.current)?.focus({ preventScroll: true });
+    }
+  }, [characterId, infoOpen, pickerOpen]);
 
   const closeDialogue = useCallback(() => {
     dialogueRef.current = false;
@@ -1040,23 +1065,39 @@ export default function AlgysHouseInterior({
 
   const interact = useCallback(() => {
     if (dialogueRef.current) { closeDialogue(); return; }
-    if (leaving || moveRef.current || doorTransitionRef.current.phase !== "idle") return;
+    if (leaving || uiBlockingRef.current || moveRef.current || doorTransitionRef.current.phase !== "idle") return;
+    if (
+      floor === "upstairs" &&
+      playerRef.current.x === ALGY_HOUSE_UPSTAIRS_DOOR.x &&
+      playerRef.current.y === ALGY_HOUSE_UPSTAIRS_DOOR.y - 1 &&
+      playerRef.current.dir === "s"
+    ) {
+      heldDirectionsRef.current.clear();
+      setDialogueKind("door");
+      dialogueRef.current = true;
+      setDialogueOpen(true);
+      return;
+    }
     if (algyHouseHostFacing(floor, playerRef.current, characterId)) {
       for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
       heldDirectionsRef.current.clear();
       const opposite: Record<HouseDirection, HouseDirection> = { n: "s", s: "n", e: "w", w: "e" };
       hostDirectionRef.current = opposite[playerRef.current.dir];
+      setDialogueKind("host");
       dialogueRef.current = true;
       setDialogueOpen(true);
       return;
     }
-    if (algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo") toggleStereo();
-  }, [characterId, closeDialogue, floor, leaving, toggleStereo]);
+    if (algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo") {
+      volumeInputRef.current?.focus({ preventScroll: true });
+    }
+  }, [characterId, closeDialogue, floor, leaving]);
 
   const beginMove = useCallback((direction: HouseDirection) => {
     if (
       leaving ||
       dialogueRef.current ||
+      uiBlockingRef.current ||
       doorTransitionRef.current.phase !== "idle" ||
       blockedDirectionsRef.current.has(direction) ||
       moveRef.current
@@ -1086,7 +1127,17 @@ export default function AlgysHouseInterior({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.altKey || event.metaKey) return;
       if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select")) return;
+      if (uiBlockingRef.current) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          restoreMenuFocusRef.current = infoOpen ? "info" : "character";
+          setInfoOpen(false);
+          setPickerOpen(false);
+        }
+        return;
+      }
       if (dialogueRef.current && ["Escape", "Enter", " ", "Spacebar", "e", "E"].includes(event.key)) {
         event.preventDefault();
         if (!event.repeat) closeDialogue();
@@ -1101,6 +1152,9 @@ export default function AlgysHouseInterior({
       const direction = KEY_DIRECTION[event.key];
       if (!direction) return;
       event.preventDefault();
+      // Menus and tab changes clear movement. A key still held from before
+      // that pause must be released before it can start another step.
+      if (event.repeat && !heldDirectionsRef.current.has(direction)) return;
       if (dialogueRef.current) {
         blockedDirectionsRef.current.add(direction);
         return;
@@ -1124,34 +1178,32 @@ export default function AlgysHouseInterior({
       heldDirectionsRef.current.clear();
       blockedDirectionsRef.current.clear();
     };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") clearHeld();
+    };
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("blur", clearHeld);
+    document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("blur", clearHeld);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [closeDialogue, interact]);
+  }, [closeDialogue, infoOpen, interact]);
 
   useEffect(() => {
+    if (artStatus !== "ready") return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    const atlas = new Image();
-    atlas.src = ALGY_HOUSE_ATLAS;
-    const avatar = new Image();
-    avatar.src = characterId === "mitch" ? ALGY_HOUSE_MITCH_AVATAR : ALGY_HOUSE_AVATAR;
-    const hostAvatar = new Image();
-    hostAvatar.src = ALGY_HOUSE_AVATAR;
-    const groundStairArt = new Image();
-    groundStairArt.src = GROUND_STAIR_ART_URL;
-    const upstairsStairArt = new Image();
-    upstairsStairArt.src = UPSTAIRS_STAIR_ART_URL;
+    const { atlas, avatar, hostAvatar, groundStairArt, upstairsStairArt } = images;
 
     let frameId = 0;
+    let firstFramePainted = false;
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       const width = Math.max(1, Math.round(rect.width));
@@ -1178,6 +1230,16 @@ export default function AlgysHouseInterior({
         moveRef.current = null;
         setNearStereo(algyHouseFeatureFacing(floor, player)?.id === "stereo");
         setNearHost(algyHouseHostFacing(floor, player, characterId));
+        const atLockedDoorApproach = floor === "upstairs" &&
+          player.x === ALGY_HOUSE_UPSTAIRS_DOOR.x && player.y === ALGY_HOUSE_UPSTAIRS_DOOR.y - 1;
+        if (!atLockedDoorApproach) doorApproachLatchedRef.current = false;
+        if (atLockedDoorApproach && !doorApproachLatchedRef.current) {
+          doorApproachLatchedRef.current = true;
+          setDialogueKind("door");
+          dialogueRef.current = true;
+          heldDirectionsRef.current.clear();
+          setDialogueOpen(true);
+        }
         if (move.transition === "outside") {
           leaveHouse();
         } else if (move.transition === "ground" || move.transition === "upstairs") {
@@ -1210,6 +1272,10 @@ export default function AlgysHouseInterior({
         hostAvatar,
         hostDirectionRef.current,
       );
+      if (!firstFramePainted) {
+        firstFramePainted = true;
+        setPaintedImages(images);
+      }
       frameId = window.requestAnimationFrame(render);
     };
 
@@ -1219,10 +1285,10 @@ export default function AlgysHouseInterior({
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
     };
-  }, [characterId, floor, leaveHouse, onChangeFloor]);
+  }, [artStatus, images, characterId, floor, leaveHouse, onChangeFloor]);
 
   const pressDirection = (direction: HouseDirection) => {
-    if (dialogueRef.current) return;
+    if (dialogueRef.current || uiBlockingRef.current) return;
     if (blockedDirectionsRef.current.has(direction)) return;
     if (doorTransitionRef.current.phase !== "idle") {
       blockedDirectionsRef.current.add(direction);
@@ -1266,93 +1332,171 @@ export default function AlgysHouseInterior({
       data-stair-direction="west"
       data-feature-count={ALGY_HOUSE_FEATURES.filter((feature) => feature.floor === floor).length}
       data-stereo-status={stereo.status}
+      data-art-status={artReady ? "ready" : artStatus === "error" ? "error" : "loading"}
+      aria-busy={!artReady && artStatus !== "error"}
       data-transition-phase={doorTransitionPhase}
       style={{ position: "fixed", inset: 0, overflow: "hidden", background: "#120b1d", color: "#f4e8c1", fontFamily: FONT }}
     >
       <canvas
         ref={canvasRef}
-        aria-label={floor === "upstairs" ? "Algy's House upstairs room and return staircase" : "Algy's House ground-floor room and staircase"}
-        style={{ width: "100%", height: "100%", display: "block", imageRendering: "pixelated" }}
+        aria-label={floor === "upstairs" ? "Algy's House upstairs room, return staircase and closed lower-right door" : "Algy's House ground-floor room and staircase"}
+        style={{ width: "100%", height: "100%", display: "block", imageRendering: "pixelated", visibility: artReady ? "visible" : "hidden" }}
       />
 
-      <div
-        style={{
-          position: "fixed",
-          top: 12,
-          left: 12,
-          padding: "8px 10px",
-          border: "2px solid #c89838",
-          background: "rgba(35, 18, 34, 0.9)",
-          boxShadow: "3px 3px 0 rgba(0,0,0,0.48)",
-          fontSize: 9,
-          letterSpacing: "0.08em",
-          lineHeight: 1.5,
-          pointerEvents: "none",
-        }}
-      >
-        {floor === "upstairs" ? "ALGY'S HOUSE / UPSTAIRS" : "ALGY'S HOUSE"}
-      </div>
-
+      {!artReady && (
+        <section data-testid="house-art-cover" aria-label="House loading" style={{ position: "fixed", inset: 0, zIndex: 90, display: "grid", placeContent: "center", justifyItems: "center", gap: 20, padding: 24, background: "#120b1d", textAlign: "center", fontSize: 12, lineHeight: 2 }}>
+          <div>ALGY'S HOUSE</div>
+          {artStatus === "error" ? <>
+            <p role="alert" style={{ margin: 0, fontSize: 10 }}>House art could not load.</p>
+            <button type="button" onClick={retryArt} style={{ ...buttonStyle, width: "auto", padding: "8px 16px", font: "inherit", fontSize: 10 }}>Try again</button>
+          </> : <div role="status" aria-label="Loading house" style={{ color: "#c89838" }}>...</div>}
+        </section>
+      )}
+      <div aria-hidden={!artReady || undefined} style={{ visibility: artReady ? "visible" : "hidden" }}>
       <button
         type="button"
-        onClick={onToggleMute}
-        disabled={dialogueOpen}
-        aria-label={muted ? "Unmute" : "Mute"}
-        title={muted ? "Unmute" : "Mute"}
+        onClick={handleMusicButton}
+        disabled={!artReady || dialogueOpen || infoOpen || pickerOpen || leaving || doorTransitionPhase !== "idle"}
+        aria-label={musicButtonLabel}
+        title={musicButtonLabel}
         style={{
           ...buttonStyle,
           position: "fixed",
           top: 12,
-          right: 12,
+          left: 12,
           width: 44,
           height: 40,
+          borderRadius: 0,
+          background: "rgba(28, 18, 12, 0.78)",
+          boxShadow: "2px 2px 0 rgba(0,0,0,0.5)",
           fontFamily: FONT,
           fontSize: 14,
         }}
       >
-        {muted ? "♪̶" : "♪"}
+        {stereo.status === "stopped" || stereo.status === "blocked" || stereo.status === "error" ? "▶" : muted || volume === 0 ? "♪̶" : "♪"}
       </button>
 
-      {!dialogueOpen && (nearStereo || stereo.status !== "stopped") && (
+      {!dialogueOpen && <aside
+        aria-label="House menu"
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 12,
+          zIndex: 7,
+          display: "grid",
+          justifyItems: "end",
+          gap: 6,
+          width: "fit-content",
+          maxWidth: "calc(100vw - 80px)",
+          marginLeft: "auto",
+          fontSize: 9,
+          lineHeight: 1.5,
+        }}
+      >
+        <div data-testid="house-top-row" style={{ display: "flex", alignItems: "flex-start", justifyContent: "flex-end", gap: 6, width: "fit-content", maxWidth: "calc(100vw - 80px)" }}>
+          <button ref={infoButtonRef} type="button" disabled={infoOpen || pickerOpen} aria-label="Open info" aria-expanded={infoOpen} onClick={() => {
+            heldDirectionsRef.current.clear();
+            moveRef.current = null;
+            setPickerOpen(false);
+            restoreMenuFocusRef.current = infoOpen ? "info" : null;
+            setInfoOpen((open) => !open);
+          }} style={{ flex: "0 0 auto", width: 32, height: 32, padding: 0, border: "2px solid #c89838", borderRadius: 0, background: "rgba(28, 18, 12, 0.78)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", font: "inherit", cursor: "pointer" }}>
+            ⓘ
+          </button>
+          <div data-testid="location-label" style={{ minWidth: 0, width: "fit-content", maxWidth: "calc(100vw - 118px)", marginLeft: "auto", boxSizing: "border-box", padding: "8px 10px", border: "2px solid #c89838", background: "rgba(28, 18, 12, 0.78)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", lineHeight: 1.5, letterSpacing: "0.08em", overflowWrap: "anywhere" }}>
+            {floor === "upstairs" ? "ALGY'S HOUSE / UPSTAIRS" : "ALGY'S HOUSE"}
+          </div>
+        </div>
+        <nav aria-label="Legal" style={{ width: "fit-content", padding: "6px 8px", border: "2px solid #c89838", background: "rgba(28, 18, 12, 0.78)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", whiteSpace: "nowrap" }}>
+          <a href="https://youngalgy.com/privacy" tabIndex={infoOpen || pickerOpen ? -1 : 0} style={{ color: "#f4e8c1", pointerEvents: infoOpen || pickerOpen ? "none" : "auto" }}>PRIVACY</a>
+          <span aria-hidden="true"> · </span>
+          <a href="https://youngalgy.com/terms" tabIndex={infoOpen || pickerOpen ? -1 : 0} style={{ color: "#f4e8c1", pointerEvents: infoOpen || pickerOpen ? "none" : "auto" }}>TERMS</a>
+        </nav>
+        {onChangeCharacter && (
+          <button ref={characterButtonRef} type="button" disabled={infoOpen || pickerOpen || characterChangePending} aria-label="Change character" aria-expanded={pickerOpen} onClick={() => {
+            heldDirectionsRef.current.clear();
+            moveRef.current = null;
+            if (dialogueRef.current) closeDialogue();
+            setInfoOpen(false);
+            restoreMenuFocusRef.current = pickerOpen ? "character" : null;
+            setPickerOpen((open) => !open);
+          }} style={{ width: "fit-content", padding: "7px 9px", border: "2px solid #c89838", borderRadius: 0, background: "rgba(28, 18, 12, 0.78)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", font: "inherit", cursor: "pointer" }}>
+            ☺ {characterId === "algy" ? "Algy" : "Mitch"}
+          </button>
+        )}
+        {characterChangeStatus && <div role="status" style={{ width: 180, maxWidth: "calc(100vw - 80px)", padding: "7px 9px", border: "2px solid #c89838", background: "rgba(28, 18, 12, 0.92)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1" }}>{characterChangeStatus}</div>}
+        {pickerOpen && (
+          <div role="dialog" aria-modal="true" aria-label="Choose character" onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            event.preventDefault();
+            const current = characterChoiceRefs.current.indexOf(document.activeElement as HTMLButtonElement);
+            characterChoiceRefs.current[(current + (event.shiftKey ? -1 : 1) + 2) % 2]?.focus();
+          }} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+            {(["algy", "mitch"] as const).map((id, index) => (
+              <button ref={(element) => { characterChoiceRefs.current[index] = element; }} key={id} type="button" aria-pressed={characterId === id} onClick={() => {
+                restoreMenuFocusRef.current = "character";
+                setPickerOpen(false);
+                if (id !== characterId) onChangeCharacter?.(id);
+              }} style={{ padding: "8px 4px", border: "2px solid #c89838", borderRadius: 0, background: characterId === id ? "#57313a" : "rgba(28, 18, 12, 0.92)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", font: "inherit", textTransform: "capitalize", cursor: "pointer" }}>
+                {id === "algy" ? "Algy" : "Mitch"}
+              </button>
+            ))}
+          </div>
+        )}
+      </aside>}
+
+      {infoOpen && (
+        <section role="dialog" aria-modal="true" aria-label="House info key" onKeyDown={(event) => {
+          if (event.key === "Tab") { event.preventDefault(); infoCloseRef.current?.focus(); }
+        }} style={{ position: "fixed", zIndex: 8, top: 64, right: 12, width: 260, maxWidth: "calc(100vw - 24px)", boxSizing: "border-box", padding: 12, border: "2px solid #c89838", background: "rgba(28, 18, 12, 0.96)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", fontSize: 9, lineHeight: 1.8 }}>
+          <strong>KEY</strong>
+          <p>Arrow keys or WASD: move<br />Enter, Space, or E: interact<br />Touch: use the onscreen GO button</p>
+          <p>Music starts when you enter. Some browsers need a tap or key press first.</p>
+          <p>The top-left button mutes music. Face the upstairs speaker to adjust its volume.</p>
+          <p style={{ marginBottom: 0 }}>Environment art licensed from LimeZu.</p>
+          <button ref={infoCloseRef} type="button" onClick={() => { restoreMenuFocusRef.current = "info"; setInfoOpen(false); }} style={{ marginTop: 10, minHeight: 40, padding: "7px 10px", border: "2px solid #c89838", borderRadius: 0, background: "#241419", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", font: "inherit", cursor: "pointer" }}>Close info</button>
+        </section>
+      )}
+
+      {!dialogueOpen && !infoOpen && !pickerOpen && nearStereo && onVolumeChange && (
         <aside
           aria-label="Stereo"
-          style={{ position: "fixed", left: 14, bottom: 194, maxWidth: "calc(100vw - 28px)", padding: "10px 12px", border: "2px solid #c89838", background: "rgba(28, 18, 34, 0.94)", fontSize: 9, lineHeight: 1.8 }}
+          style={{ position: "fixed", left: 14, bottom: 194, maxWidth: "calc(100vw - 28px)", padding: "6px 12px", border: "2px solid #c89838", background: "rgba(28, 18, 34, 0.94)", fontSize: 9, lineHeight: 1.8 }}
         >
-          <div role="status" aria-live="polite">
-            {stereo.status === "error" ? "Couldn't play. Press A to retry." :
-              stereo.status === "loading" ? "Loading Repo..." :
-                stereo.status === "playing" ? `Repo / Young Algy${muted || volume === 0 ? " (muted)" : ""}` : "Repo / Young Algy"}
-          </div>
-          {nearStereo && <div style={{ color: "#e2b45c" }}>A / Enter: {stereo.status === "playing" || stereo.status === "loading" ? "stop" : "play"}</div>}
-          {nearStereo && onVolumeChange && (
-            <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
-              Vol
               <input
+                ref={volumeInputRef}
                 aria-label="Music volume"
                 type="range" min="0" max="100" step="5"
-                value={Math.round(volume * 100)}
-                onChange={(event) => onVolumeChange(Number(event.target.value) / 100)}
-                style={{ width: 120, height: 32, accentColor: "#c89838" }}
+                value={muted ? 0 : Math.round(volume * 100)}
+                onChange={(event) => {
+                  const nextVolume = Number(event.target.value) / 100;
+                  onVolumeChange(nextVolume);
+                  if (muted && nextVolume > 0) onToggleMute();
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== "Escape") return;
+                  event.preventDefault();
+                  event.stopPropagation();
+                  interactButtonRef.current?.focus({ preventScroll: true });
+                }}
+                style={{ display: "block", margin: 0, width: 140, height: 32, accentColor: "#c89838" }}
               />
-            </label>
-          )}
+        </aside>
+      )}
+
+      {!dialogueOpen && !infoOpen && !pickerOpen && nearHost && (
+        <aside aria-label="Interaction" role="status" style={{ position: "fixed", left: 14, bottom: nearStereo ? 254 : 194, maxWidth: "calc(100vw - 28px)", padding: "10px 12px", border: "2px solid #c89838", background: "rgba(28, 18, 34, 0.94)", color: "#e2b45c", fontSize: 9, lineHeight: 1.8 }}>
+          GO / Enter: talk to Algy
         </aside>
       )}
 
       <div
         aria-label="Room controls"
         style={{
-          visibility: dialogueOpen ? "hidden" : "visible",
-          position: "fixed",
-          right: 14,
-          bottom: 14,
-          display: "grid",
+          ...HUB_DPAD_LAYOUT_STYLE,
+          visibility: !artReady || dialogueOpen || infoOpen || pickerOpen ? "hidden" : "visible",
           gridTemplateAreas: '". up ." "left action right" ". down ."',
-          gridTemplateColumns: "52px 52px 52px",
-          gridTemplateRows: "52px 52px 52px",
-          gap: 4,
           zIndex: 5,
-          touchAction: "none",
         }}
       >
         {(["n", "w", "e", "s"] as HouseDirection[]).map((direction) => {
@@ -1364,6 +1508,11 @@ export default function AlgysHouseInterior({
               type="button"
               disabled={dialogueOpen}
               aria-label={`Move ${label}`}
+              onClick={(event) => {
+                // Pointer movement already starts on press. Native keyboard
+                // and assistive clicks have no pointer press, so take one step.
+                if (event.detail === 0) beginMoveRef.current(direction);
+              }}
               onPointerDown={(event) => {
                 event.preventDefault();
                 event.currentTarget.setPointerCapture?.(event.pointerId);
@@ -1377,7 +1526,7 @@ export default function AlgysHouseInterior({
               onPointerLeave={(event) => {
                 if (event.buttons === 0) releaseDirection(direction);
               }}
-              style={{ ...buttonStyle, gridArea }}
+              style={{ ...HUB_DPAD_BUTTON_STYLE, gridArea }}
             >
               <PixelArrow direction={direction} />
             </button>
@@ -1386,20 +1535,14 @@ export default function AlgysHouseInterior({
         <button
           ref={interactButtonRef}
           type="button"
-          aria-label="Interact"
+          aria-label="Go"
+          title="Interact (Enter / E)"
           onClick={interact}
-          style={{ ...buttonStyle, gridArea: "action", color: "#f4e8c1", fontFamily: FONT, fontSize: 12 }}
+          style={{ ...HUB_DPAD_GO_STYLE, gridArea: "action" }}
         >
-          A
+          GO
         </button>
       </div>
-
-      {nearHost && !dialogueOpen && (
-        <div role="status" style={{ position: "fixed", left: 14, bottom: 194, padding: "10px 12px",
-          border: "2px solid #c89838", background: "rgba(28, 18, 34, 0.94)", fontSize: 9, lineHeight: 1.8 }}>
-          A / Enter: talk to Algy
-        </div>
-      )}
 
       {dialogueOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 10 }}>
@@ -1419,8 +1562,8 @@ export default function AlgysHouseInterior({
               border: "3px solid #c89838", background: "#1c1222", boxShadow: "4px 4px 0 #08040d",
               fontSize: 10, lineHeight: 2 }}
           >
-            <div id="algy-house-dialogue-speaker" style={{ color: "#ffd870", marginBottom: 8 }}>ALGY</div>
-            <p id="algy-house-dialogue-line" style={{ margin: "0 0 12px" }}>{ALGY_HOUSE_MITCH_GREETING}</p>
+            <div id="algy-house-dialogue-speaker" style={{ color: "#ffd870", marginBottom: 8 }}>{dialogueKind === "door" ? "DOOR" : "ALGY"}</div>
+            <p id="algy-house-dialogue-line" style={{ margin: "0 0 12px" }}>{dialogueKind === "door" ? "This door is locked..." : ALGY_HOUSE_MITCH_GREETING}</p>
             <button ref={dialogueCloseRef} type="button" onClick={closeDialogue} aria-label="Close conversation"
               style={{ ...buttonStyle, width: "auto", minWidth: 64, minHeight: 44, padding: "8px 12px", marginLeft: "auto", fontFamily: FONT, fontSize: 10 }}>
               OK
@@ -1428,7 +1571,7 @@ export default function AlgysHouseInterior({
           </section>
         </div>
       )}
-
+      </div>
     </main>
   );
 }

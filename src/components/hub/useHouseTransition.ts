@@ -45,7 +45,13 @@ export function useHouseTransition(muted: boolean): HouseTransition {
 
     const swapTimer = window.setTimeout(() => {
       if (cue === "door" && !mutedRef.current) playHouseTransitionSound(cue, true);
-      commit();
+      try {
+        commit();
+      } catch (error) {
+        // A failed storage, history, or navigation commit must not strand the
+        // visitor behind the fully opaque transition veil.
+        console.error("[youngalgy-house] scene transition commit failed", error);
+      }
       phaseRef.current = "hold";
       setPhase("hold");
 

@@ -32,4 +32,3 @@ describe("Algy's House visitor handoff", () => {
     expect(townVisitorReloadHref("/pixel?return=algy-porch", "mitch")).toBe("/pixel?character=mitch");
   });
 });
-

@@ -1,4 +1,5 @@
 import type { HouseCharacterId } from "./algyHouseVisitor";
+import { algyHouseFurnitureAt, type HouseLayoutRect } from "./algyHouseLayout";
 
 export type HouseDirection = "n" | "s" | "e" | "w";
 
@@ -24,6 +25,8 @@ export interface HouseFeature extends HousePoint {
   height: number;
   verb: string;
   label: string;
+  /** Separate the tall art from its floor-level collision footprint. */
+  art?: HouseLayoutRect;
 }
 
 export const ALGY_HOUSE_SCENE_KEY = "toggle-town:scene";
@@ -31,17 +34,18 @@ export const ALGY_HOUSE_PLAYER_KEY = "toggle-town:algy-house-player";
 export const ALGY_HOUSE_FLOOR_KEY = "toggle-town:algy-house-floor";
 export const ALGY_HOUSE_SCENE = "algy-house";
 export const ALGY_HOUSE_DEFAULT_FLOOR: AlgyHouseFloor = "ground";
-export const ALGY_HOUSE_TRACK = "/audio/repo-young-algy.mp3";
+export const ALGY_HOUSE_TRACK = "/audio/toggletown-original.mp3";
+export const ALGY_HOUSE_TRACK_LABEL = "Toggle Town / Original Mix";
 export const ALGY_HOUSE_ATLAS = "/sprites/interiors/algy_house_16.png";
 export const ALGY_HOUSE_SKULL = "/sprites/interiors/algy-skull-detail.svg";
 export const ALGY_HOUSE_AVATAR = "/sprites/characters/algy_run.png";
 export const ALGY_HOUSE_MITCH_AVATAR = "/sprites/characters/mitch_run.png";
-export const ALGY_HOUSE_HOST = { x: 7, y: 5, dir: "s", frame: 0 } as const;
+export const ALGY_HOUSE_HOST = { x: 9, y: 3, dir: "s", frame: 0 } as const;
 export const ALGY_HOUSE_MITCH_GREETING = "Money Mitch!! Great to see you bro!!";
 
-/** Algy is home when Mitch visits. Playing as Algy should not create a double. */
+/** Algy waits by the upstairs computer when Mitch visits. Never create a double. */
 export function algyHouseHasHost(floor: AlgyHouseFloor, characterId: HouseCharacterId): boolean {
-  return floor === "ground" && characterId === "mitch";
+  return floor === "upstairs" && characterId === "mitch";
 }
 
 export function algyHouseHostFacing(floor: AlgyHouseFloor, player: HousePlayer, characterId: HouseCharacterId): boolean {
@@ -55,22 +59,27 @@ export const ALGY_HOUSE_ROWS = 10;
 export const ALGY_HOUSE_TILE = 48;
 export const ALGY_HOUSE_SPAWN: HousePlayer = { x: 3, y: 8, dir: "n", frame: 0 };
 export const ALGY_HOUSE_DOOR: HousePoint = { x: 3, y: 9 };
-export const ALGY_HOUSE_STAIRS_UP_ORIGIN: HousePoint = { x: 1, y: 1 };
-export const ALGY_HOUSE_STAIRS_UP: HousePoint = { x: 1, y: 2 };
+// Closed door on the right end of the upstairs south wall. No destination yet.
+// Keep its grid cell solid. Only the ground-floor D cell exits to town.
+export const ALGY_HOUSE_UPSTAIRS_DOOR: HousePoint = { x: 11, y: 9 };
+// Another native pixel left, keeping the stair height and walking route intact.
+export const ALGY_HOUSE_STAIRS_UP_ORIGIN: HousePoint = { x: 0.8125, y: -0.375 };
+export const ALGY_HOUSE_STAIRS_UP_OPENING: HousePoint = { x: 1, y: 0 };
+export const ALGY_HOUSE_STAIRS_UP: HousePoint = { x: 1, y: 1 };
 export const ALGY_HOUSE_STAIRWELL_ORIGIN: HousePoint = { x: 2, y: 1 };
 export const ALGY_HOUSE_STAIRS_DOWN: HousePoint = { x: 4, y: 2 };
 export const ALGY_HOUSE_UPSTAIRS_SPAWN: HousePlayer = { x: 1, y: 2, dir: "w", frame: 0 };
-export const ALGY_HOUSE_GROUND_STAIR_RETURN: HousePlayer = { x: 5, y: 2, dir: "e", frame: 0 };
+export const ALGY_HOUSE_GROUND_STAIR_RETURN: HousePlayer = { x: 5, y: 1, dir: "e", frame: 0 };
 
 // Ground floor: # wall, . floor, D outside door, B stair body, ^ stair tread,
 // U upstairs transition. The compact flight rises west into the upper-left.
-// Its center path stays walkable from the east while the stair body blocks
-// side entry.
+// Its center path is entered from the east. Floor below it is walkable, but
+// vertical steps cannot jump into or off the raised treads.
 export const ALGY_HOUSE_GROUND_GRID = [
-  "##############",
-  "#BBBB........#",
+  "#BBBB#########",
   "#U^^^........#",
-  "#BBBB........#",
+  "#............#",
+  "#............#",
   "#............#",
   "#............#",
   "#............#",
@@ -81,10 +90,10 @@ export const ALGY_HOUSE_GROUND_GRID = [
 
 // Upstairs uses a separate stairwell opening one tile east of its safe landing.
 // Walking east over the descending treads to S returns downstairs before the
-// avatar reaches the low east post. B keeps the opening solid from the sides.
+// avatar reaches the low east post. The row above the opening is ordinary floor.
 export const ALGY_HOUSE_UPSTAIRS_GRID = [
   "##############",
-  "#.BBB........#",
+  "#............#",
   "#.^^S........#",
   "#.BBB........#",
   "#............#",
@@ -99,7 +108,8 @@ export const ALGY_HOUSE_UPSTAIRS_GRID = [
 export const ALGY_HOUSE_GRID = ALGY_HOUSE_GROUND_GRID;
 
 export const ALGY_HOUSE_FEATURES: readonly HouseFeature[] = [
-  { id: "stereo", floor: "upstairs", x: 8, y: 1, width: 1, height: 2, verb: "Play", label: "Repo / Young Algy" },
+  { id: "stereo", floor: "upstairs", x: 9, y: 2, width: 1, height: 1,
+    art: { x: 9, y: 1.5, width: 1, height: 2 }, verb: "Play", label: ALGY_HOUSE_TRACK_LABEL },
 ];
 
 const DIRECTION_VECTOR: Record<HouseDirection, HousePoint> = {
@@ -119,6 +129,19 @@ export function algyHouseArrivalForFloor(floor: AlgyHouseFloor): HousePlayer {
     : { ...ALGY_HOUSE_GROUND_STAIR_RETURN };
 }
 
+/** Follow the stair art continuously, including the short rise onto its first tread. */
+export function algyHouseStairFootOffset(floor: AlgyHouseFloor, tileX: number, tileY: number): number {
+  const stairRow = floor === "ground" ? ALGY_HOUSE_STAIRS_UP.y : ALGY_HOUSE_STAIRS_DOWN.y;
+  if (Math.abs(tileY - stairRow) > 0.05) return 0;
+  if (floor === "ground" && tileX >= 1 && tileX <= 5) {
+    const artLift = (ALGY_HOUSE_STAIRS_UP_ORIGIN.y - ALGY_HOUSE_STAIRS_UP_OPENING.y) * ALGY_HOUSE_TILE;
+    const entryProgress = Math.max(0, Math.min(1, 5 - tileX));
+    return (Math.min(tileX, 4) - 4) * 18 + artLift * entryProgress;
+  }
+  if (floor === "upstairs" && tileX >= 1 && tileX <= 4) return (tileX - 1) * 16;
+  return 0;
+}
+
 export function algyHouseUpstairsDescentAlpha(
   descendingUpstairs: boolean,
   tileX: number,
@@ -131,6 +154,7 @@ export function algyHouseUpstairsDescentAlpha(
 export function isAlgyHouseWalkable(floor: AlgyHouseFloor, x: number, y: number, characterId: HouseCharacterId = "algy"): boolean {
   if (x < 0 || y < 0 || x >= ALGY_HOUSE_COLS || y >= ALGY_HOUSE_ROWS) return false;
   if (algyHouseHasHost(floor, characterId) && x === ALGY_HOUSE_HOST.x && y === ALGY_HOUSE_HOST.y) return false;
+  if (algyHouseFurnitureAt(x, y, floor)) return false;
   if (algyHouseFeatureAt(x, y, floor)) return false;
   const cell = algyHouseGridForFloor(floor)[y]?.[x];
   return cell === "." || cell === "D" || cell === "^" || cell === "U" || cell === "S";
@@ -156,6 +180,12 @@ export function algyHouseStep(
   const point = { x: player.x + vector.x, y: player.y + vector.y };
   if (!isAlgyHouseWalkable(floor, point.x, point.y, characterId)) return null;
   const cell = algyHouseGridForFloor(floor)[point.y]?.[point.x];
+  const fromCell = algyHouseGridForFloor(floor)[player.y]?.[player.x];
+  const isTread = (value: string | undefined) => value === "^" || value === "U" || value === "S";
+  // Opening the neighboring floor should never allow a sideways jump onto
+  // elevated steps, or an accidental warp from above/below the stair opening.
+  if ((dir === "n" || dir === "s") && (isTread(cell) || isTread(fromCell))) return null;
+  if ((cell === "U" && dir !== "w") || (cell === "S" && dir !== "e")) return null;
   return {
     point,
     transition: cell === "D" ? "outside" : cell === "U" ? "upstairs" : cell === "S" ? "ground" : null,

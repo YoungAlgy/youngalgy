@@ -55,7 +55,6 @@ export function houseVisitorReloadHref(href: string): string {
   url.searchParams.delete(ALGY_HOUSE_RETURN_PARAM);
   return href.startsWith("/") ? `${url.pathname}${url.search}${url.hash}` : url.toString();
 }
-
 /** Keep town's history entry in sync after an allowed character-picker swap. */
 export function townVisitorReloadHref(href: string, characterId: HouseCharacterId): string {
   const url = new URL(href, "https://toggle.town");

@@ -97,4 +97,22 @@ describe("useHouseTransition", () => {
     expect(sound.playHouseTransitionSound).toHaveBeenCalledTimes(1);
     expect(sound.playHouseTransitionSound).not.toHaveBeenCalledWith("door", true);
   });
+
+  it("reveals the house again when the delayed scene commit throws", () => {
+    const error = new Error("scene commit failed");
+    const report = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    function Test() {
+      const transition = useHouseTransition(true);
+      return <button onClick={() => transition.start(() => { throw error; }, "door")}>{transition.phase}</button>;
+    }
+    render(<Test />);
+
+    act(() => screen.getByRole("button").click());
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+    expect(screen.getByRole("button")).toHaveTextContent("hold");
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_HOLD_MS + HOUSE_DOOR_FADE_MS));
+
+    expect(screen.getByRole("button")).toHaveTextContent("idle");
+    expect(report).toHaveBeenCalledWith("[youngalgy-house] scene transition commit failed", error);
+  });
 });

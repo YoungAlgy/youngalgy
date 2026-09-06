@@ -13,7 +13,7 @@ const Privacy = () => (
   <LegalLayout
     title="Privacy"
     description="Privacy policy for youngalgy.com."
-    lastUpdated="2026-09-04"
+    lastUpdated="2026-09-05"
   >
     <p>
       <strong>Short version:</strong> youngalgy.com is a personal site run by
@@ -32,8 +32,10 @@ const Privacy = () => (
     <p>
       The page at <code>youngalgy.com</code> has no signup or account system.
       Contact happens by email. The site does not set advertising cookies or run
-      fingerprinting. The House stores your mute and music-volume preference in{" "}
-      <code>localStorage</code> as <code>youngalgy:house-audio</code>. It also
+      fingerprinting. The House stores your music-volume preference in{" "}
+      <code>localStorage</code> as <code>youngalgy:house-audio</code>. Muting applies
+      only to the current visit. A saved zero volume is reset to the default when
+      a new visit starts. The House also
       keeps your current room and position in tab <code>sessionStorage</code> so
       you can resume the House while the tab is open. This information stays in
       your browser and is not sent to me.

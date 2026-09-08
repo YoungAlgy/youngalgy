@@ -17,6 +17,7 @@ import {
   ALGY_HOUSE_TILE,
   ALGY_HOUSE_UPSTAIRS_DOOR,
   algyHouseArrivalForFloor,
+  algyHouseComputerFacing,
   algyHouseFeatureFacing,
   algyHouseGridForFloor,
   algyHouseHasHost,
@@ -59,6 +60,11 @@ const KEY_DIRECTION: Record<string, HouseDirection | undefined> = {
 
 const FONT = "'Press Start 2P', monospace";
 const MOVE_MS = 150;
+const HOUSE_DIALOGUE = {
+  host: { speaker: "ALGY", line: ALGY_HOUSE_MITCH_GREETING },
+  door: { speaker: "DOOR", line: "This door is locked..." },
+  computer: { speaker: "COMPUTER", line: "Codex is thinking..." },
+} as const;
 
 interface HouseMove {
   from: HousePoint;
@@ -709,6 +715,7 @@ function drawExactUpstairsStairBack(
 ): void {
   if (!stairArtReady(image)) {
     drawUpstairsStairwellFallbackBack(context, origin);
+    drawUpstairsStairwellFallbackFront(context, origin);
     return;
   }
   const position = upstairsStairArtPosition(origin);
@@ -855,7 +862,8 @@ function drawRoom(
   // Both actors use the same art scale and foot-based depth order.
   const drawPlayer = () => {
     context.save();
-    if (floor === "upstairs" && drawTileX > 1.4 && drawTileX < 5.2 && Math.abs(drawTileY - 2) < 0.05) {
+    // Clip only inside the stairwell. The east-side floor at x5 must stay visible.
+    if (floor === "upstairs" && drawTileX > 1.4 && drawTileX <= ALGY_HOUSE_STAIRS_DOWN.x && Math.abs(drawTileY - ALGY_HOUSE_STAIRS_DOWN.y) < 0.05) {
       const opening = upstairsStairArtPosition(ALGY_HOUSE_STAIRWELL_ORIGIN);
       context.beginPath();
       context.moveTo(opening.x + 2 * STAIR_PIXEL, opening.y + 3 * STAIR_PIXEL);
@@ -892,7 +900,8 @@ function drawRoom(
     // On the newly opened floor below the stairs the whole actor is in front.
     if (drawTileY <= ALGY_HOUSE_STAIRS_UP.y + 0.05) drawExactGroundStairFront(context, ALGY_HOUSE_STAIRS_UP_ORIGIN, groundStairArt);
   } else {
-    drawExactUpstairsStairFront(context, ALGY_HOUSE_STAIRWELL_ORIGIN, upstairsStairArt);
+    // Keep the railing over a descending actor, but behind anyone on the floor below.
+    if (drawTileY <= ALGY_HOUSE_STAIRS_DOWN.y + 0.05) drawExactUpstairsStairFront(context, ALGY_HOUSE_STAIRWELL_ORIGIN, upstairsStairArt);
   }
 
   context.restore();
@@ -941,7 +950,7 @@ export default function AlgysHouseInterior({
   const characterChoiceRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const restoreMenuFocusRef = useRef<"info" | "character" | null>(null);
   const [dialogueOpen, setDialogueOpen] = useState(false);
-  const [dialogueKind, setDialogueKind] = useState<"host" | "door">("host");
+  const [dialogueKind, setDialogueKind] = useState<keyof typeof HOUSE_DIALOGUE>("host");
   const [infoOpen, setInfoOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const uiBlockingRef = useRef(false);
@@ -958,6 +967,7 @@ export default function AlgysHouseInterior({
     startedAt: typeof performance === "undefined" ? 0 : performance.now(),
   });
   const [leaving, setLeaving] = useState(false);
+  const leavingRef = useRef(false);
   const [nearStereo, setNearStereo] = useState(() => algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo");
   const [musicReady, setMusicReady] = useState(false);
   // Keep music alive across floor/character art loads after the first reveal.
@@ -1055,13 +1065,14 @@ export default function AlgysHouseInterior({
   }, []);
 
   const leaveHouse = useCallback(() => {
-    if (leaving) return;
+    if (leavingRef.current) return;
+    leavingRef.current = true;
     heldDirectionsRef.current.clear();
     moveRef.current = null;
     stopStereo();
     setLeaving(true);
     onLeave();
-  }, [leaving, onLeave, stopStereo]);
+  }, [onLeave, stopStereo]);
 
   const interact = useCallback(() => {
     if (dialogueRef.current) { closeDialogue(); return; }
@@ -1088,6 +1099,14 @@ export default function AlgysHouseInterior({
       setDialogueOpen(true);
       return;
     }
+    if (algyHouseComputerFacing(floor, playerRef.current)) {
+      for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
+      heldDirectionsRef.current.clear();
+      setDialogueKind("computer");
+      dialogueRef.current = true;
+      setDialogueOpen(true);
+      return;
+    }
     if (algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo") {
       volumeInputRef.current?.focus({ preventScroll: true });
     }
@@ -1095,7 +1114,7 @@ export default function AlgysHouseInterior({
 
   const beginMove = useCallback((direction: HouseDirection) => {
     if (
-      leaving ||
+      leavingRef.current ||
       dialogueRef.current ||
       uiBlockingRef.current ||
       doorTransitionRef.current.phase !== "idle" ||
@@ -1108,6 +1127,12 @@ export default function AlgysHouseInterior({
     setNearStereo(algyHouseFeatureFacing(floor, player)?.id === "stereo");
     setNearHost(algyHouseHostFacing(floor, player, characterId));
     if (!step) return;
+    if (step.transition === "outside") {
+      // Fade from the inside doorway. Never animate a step beyond the room.
+      onPrepareDoorSound();
+      leaveHouse();
+      return;
+    }
     if (floor === "upstairs" && step.transition === "ground") {
       descendingUpstairsRef.current = true;
     }
@@ -1119,7 +1144,7 @@ export default function AlgysHouseInterior({
       startedAt: performance.now(),
       transition: step.transition,
     };
-  }, [characterId, floor, leaving, onPrepareDoorSound]);
+  }, [characterId, floor, leaveHouse, onPrepareDoorSound]);
 
   useEffect(() => {
     beginMoveRef.current = beginMove;
@@ -1562,8 +1587,8 @@ export default function AlgysHouseInterior({
               border: "3px solid #c89838", background: "#1c1222", boxShadow: "4px 4px 0 #08040d",
               fontSize: 10, lineHeight: 2 }}
           >
-            <div id="algy-house-dialogue-speaker" style={{ color: "#ffd870", marginBottom: 8 }}>{dialogueKind === "door" ? "DOOR" : "ALGY"}</div>
-            <p id="algy-house-dialogue-line" style={{ margin: "0 0 12px" }}>{dialogueKind === "door" ? "This door is locked..." : ALGY_HOUSE_MITCH_GREETING}</p>
+            <div id="algy-house-dialogue-speaker" style={{ color: "#ffd870", marginBottom: 8 }}>{HOUSE_DIALOGUE[dialogueKind].speaker}</div>
+            <p id="algy-house-dialogue-line" style={{ margin: "0 0 12px" }}>{HOUSE_DIALOGUE[dialogueKind].line}</p>
             <button ref={dialogueCloseRef} type="button" onClick={closeDialogue} aria-label="Close conversation"
               style={{ ...buttonStyle, width: "auto", minWidth: 64, minHeight: 44, padding: "8px 12px", marginLeft: "auto", fontFamily: FONT, fontSize: 10 }}>
               OK

@@ -10,11 +10,13 @@ type TransitionPhase = "idle" | "out" | "hold" | "in";
 
 function props(overrides: Partial<{
   floor: "ground" | "upstairs";
+  characterId: "algy" | "mitch";
   doorTransitionPhase: TransitionPhase;
   onChangeFloor: (floor: "ground" | "upstairs") => void;
 }> = {}) {
   return {
     floor: overrides.floor ?? "upstairs",
+    characterId: overrides.characterId ?? "algy",
     muted: true,
     onToggleMute: vi.fn(),
     onLeave: vi.fn(),
@@ -28,6 +30,9 @@ describe("Algy's House upstairs stair descent transition", () => {
   let scheduledFrame: FrameRequestCallback | null;
   let avatarAlphas: number[];
   let shadowAlphas: number[];
+  let drawOrder: string[];
+  let avatarClipped: boolean[];
+  let trackedAvatarSuffix: string;
   let context: {
     globalAlpha: number;
     fillStyle: string;
@@ -45,6 +50,10 @@ describe("Algy's House upstairs stair descent transition", () => {
     scheduledFrame = null;
     avatarAlphas = [];
     shadowAlphas = [];
+    drawOrder = [];
+    avatarClipped = [];
+    trackedAvatarSuffix = "algy_run.png";
+    let clippingActive = false;
     vi.spyOn(performance, "now").mockReturnValue(0);
     Object.defineProperty(window, "requestAnimationFrame", {
       configurable: true,
@@ -60,7 +69,12 @@ describe("Algy's House upstairs stair descent transition", () => {
       fillStyle: "",
       drawImage: (...args: unknown[]) => {
         const image = args[0] as { src?: string } | undefined;
-        if (args.length === 9 && image?.src?.endsWith("algy_run.png")) avatarAlphas.push(context.globalAlpha);
+        if (image?.src?.endsWith("algy-house-stair-upstairs.png")) drawOrder.push("stairs");
+        if (args.length === 9 && image?.src?.endsWith(trackedAvatarSuffix)) {
+          avatarAlphas.push(context.globalAlpha);
+          avatarClipped.push(clippingActive);
+          drawOrder.push("player");
+        }
       },
       fillRect: (...args: unknown[]) => {
         if (args[2] === 18 && args[3] === 4 && context.fillStyle === "rgba(26, 10, 30, 0.42)") {
@@ -71,6 +85,7 @@ describe("Algy's House upstairs stair descent transition", () => {
     const noop = () => {};
     const alphaStack: number[] = [];
     const fillStyleStack: string[] = [];
+    const clipStack: boolean[] = [];
     const canvasContext = new Proxy(context, {
       get(target, property) {
         if (property in target) return target[property as keyof typeof target];
@@ -78,14 +93,17 @@ describe("Algy's House upstairs stair descent transition", () => {
           return () => {
             alphaStack.push(context.globalAlpha);
             fillStyleStack.push(context.fillStyle);
+            clipStack.push(clippingActive);
           };
         }
         if (property === "restore") {
           return () => {
             context.globalAlpha = alphaStack.pop() ?? 1;
             context.fillStyle = fillStyleStack.pop() ?? "";
+            clippingActive = clipStack.pop() ?? false;
           };
         }
+        if (property === "clip") return () => { clippingActive = true; };
         return noop;
       },
     });
@@ -137,6 +155,8 @@ describe("Algy's House upstairs stair descent transition", () => {
     frame(0);
     expect(avatarAlphas.at(-1)).toBe(1);
     expect(shadowAlphas.at(-1)).toBe(1);
+    expect(drawOrder.lastIndexOf("stairs")).toBeGreaterThan(drawOrder.lastIndexOf("player"));
+    expect(avatarClipped.at(-1)).toBe(true);
 
     fireEvent.keyDown(window, { key: "ArrowRight" });
     frame(75);
@@ -191,5 +211,53 @@ describe("Algy's House upstairs stair descent transition", () => {
     expect(avatarAlphas.at(-1)).toBe(1);
     expect(shadowAlphas.at(-1)).toBe(1);
     expect(onChangeFloor).toHaveBeenCalledTimes(1);
+  });
+  it.each(["algy", "mitch"] as const)("keeps %s visible on the east stair-side floor and stops held left at that tile", async (characterId) => {
+    trackedAvatarSuffix = `${characterId}_run.png`;
+    window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({
+      floor: "upstairs", x: 6, y: 2, dir: "w", frame: 0,
+    }));
+    const onChangeFloor = vi.fn();
+    const initialProps = props({ onChangeFloor, characterId });
+    const view = render(<AlgysHouseInterior {...initialProps} />);
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    const frame = (now: number) => act(() => scheduledFrame?.(now));
+    frame(0);
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+    for (const now of [75, 125, 150, 300, 450]) {
+      frame(now);
+      expect(avatarAlphas.at(-1)).toBe(1);
+      expect(avatarClipped.at(-1)).toBe(false);
+    }
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ floor: "upstairs", x: 5, y: 2 });
+    expect(onChangeFloor).not.toHaveBeenCalled();
+    fireEvent.keyUp(window, { key: "ArrowLeft" });
+    // Restoring a visit on this same tile must also leave the actor visible.
+    view.unmount();
+    render(<AlgysHouseInterior {...initialProps} />);
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    frame(500);
+    expect(avatarClipped.at(-1)).toBe(false);
+    expect(avatarAlphas.at(-1)).toBe(1);
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ floor: "upstairs", x: 5, y: 2 });
+  });
+
+  it.each([2, 3, 4])("restores floor tile (%i,3) and draws its player in front of the stair railing", async (x) => {
+    window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({
+      floor: "upstairs", x, y: 3, dir: "w", frame: 0,
+    }));
+    const onChangeFloor = vi.fn();
+    render(<AlgysHouseInterior {...props({ onChangeFloor })} />);
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    act(() => scheduledFrame?.(0));
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ floor: "upstairs", x, y: 3 });
+    expect(drawOrder).toContain("stairs");
+    expect(drawOrder).toContain("player");
+    expect(drawOrder.lastIndexOf("stairs")).toBeLessThan(drawOrder.lastIndexOf("player"));
+    expect(avatarAlphas.at(-1)).toBe(1);
+    expect(onChangeFloor).not.toHaveBeenCalled();
   });
 });

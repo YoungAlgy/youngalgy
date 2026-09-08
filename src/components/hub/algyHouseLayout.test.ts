@@ -100,6 +100,7 @@ describe("Algy's House ground-floor layout", () => {
 
   it("blocks every furniture foot tile", () => {
     for (const item of ALGY_HOUSE_GROUND_FURNITURE) {
+      if (!item.solid) continue;
       for (let y = item.solid.y; y < item.solid.y + item.solid.height; y += 1) {
         for (let x = item.solid.x; x < item.solid.x + item.solid.width; x += 1) {
           expect(algyHouseFurnitureAt(x, y)?.id).toBe(item.id);
@@ -115,28 +116,29 @@ describe("Algy's House ground-floor layout", () => {
       id: "computer-desk",
       source: { x: 64, y: 0, width: 48, height: 32 },
       art: { x: 10, y: 1 + 2 / 3, width: 2, height: 4 / 3 },
-      solid: { x: 10, y: 2, width: 2, height: 1 },
+      solid: { x: 11, y: 2, width: 1, height: 1 },
+      blockedEdges: [[{ x: 10, y: 2 }, { x: 10, y: 1 }]],
     });
     expect(algyHouseFurnitureForFloor("ground")).toBe(ALGY_HOUSE_GROUND_FURNITURE);
     expect(algyHouseFurnitureForFloor("upstairs")).toBe(ALGY_HOUSE_UPSTAIRS_FURNITURE);
-    expect(algyHouseFurnitureAt(1, 4)?.id).toBe("dining-chair-west-upper");
+    expect(algyHouseFurnitureAt(1, 4)?.id).toBe("dining-chair-west");
     expect(isAlgyHouseWalkable("ground", 1, 4)).toBe(false);
     expect(algyHouseFurnitureAt(10, 2, "ground")).toBeNull();
-    expect(algyHouseFurnitureAt(10, 2, "upstairs")?.id).toBe("computer-desk");
+    expect(algyHouseFurnitureAt(10, 2, "upstairs")).toBeNull();
     expect(algyHouseFurnitureAt(11, 2, "upstairs")?.id).toBe("computer-desk");
-    expect(isAlgyHouseWalkable("upstairs", 10, 2)).toBe(false);
+    expect(isAlgyHouseWalkable("upstairs", 10, 2)).toBe(true);
     expect(isAlgyHouseWalkable("upstairs", 11, 2)).toBe(false);
   });
 
-  it("blocks the upstairs bed and bedside-table footprints", () => {
+  it("blocks the upstairs bed while leaving the floor beside the nightstand open", () => {
     for (const x of [3, 4, 5]) {
-      for (const y of [5, 6]) {
-        expect(algyHouseFurnitureAt(x, y, "upstairs")?.id).toBe("bed");
-        expect(isAlgyHouseWalkable("upstairs", x, y)).toBe(false);
-      }
+      expect(algyHouseFurnitureAt(x, 5, "upstairs")?.id).toBe("bed");
+      expect(isAlgyHouseWalkable("upstairs", x, 5)).toBe(false);
+      expect(algyHouseFurnitureAt(x, 6, "upstairs")).toBeNull();
+      expect(isAlgyHouseWalkable("upstairs", x, 6)).toBe(true);
     }
-    expect(algyHouseFurnitureAt(6, 5, "upstairs")?.id).toBe("bedside-table");
-    expect(isAlgyHouseWalkable("upstairs", 6, 5)).toBe(false);
+    expect(algyHouseFurnitureAt(6, 5, "upstairs")).toBeNull();
+    expect(isAlgyHouseWalkable("upstairs", 6, 5)).toBe(true);
     expect(isAlgyHouseWalkable("upstairs", 6, 6)).toBe(true);
   });
 
@@ -144,44 +146,43 @@ describe("Algy's House ground-floor layout", () => {
     const ground = Object.fromEntries(ALGY_HOUSE_GROUND_FURNITURE.map((item) => [item.id, item.solid]));
     const upstairs = Object.fromEntries(ALGY_HOUSE_UPSTAIRS_FURNITURE.map((item) => [item.id, item.solid]));
     expect(ground).toMatchObject({
-      "floor-lamp": { x: 12, y: 5, width: 1, height: 1 },
-      "entry-plant": { x: 1, y: 7, width: 1, height: 1 },
-      "dining-table": { x: 2, y: 4, width: 2, height: 2 },
-      "dining-chair-west": { x: 1, y: 5, width: 1, height: 1 },
-      "dining-chair-east": { x: 4, y: 5, width: 1, height: 1 },
-      "dining-chair-west-upper": { x: 1, y: 4, width: 1, height: 1 },
-      "dining-chair-east-upper": { x: 4, y: 4, width: 1, height: 1 },
+      "floor-lamp": null,
+      "entry-plant": null,
+      "dining-table": { x: 2, y: 4, width: 2, height: 1 },
+      "dining-chair-west": { x: 1, y: 4, width: 1, height: 1 },
+      "dining-chair-east": { x: 4, y: 4, width: 1, height: 1 },
+      "dining-chair-west-upper": null,
+      "dining-chair-east-upper": null,
       sofa: { x: 9, y: 5, width: 2, height: 1 },
-      palm: { x: 11, y: 1, width: 2, height: 2 },
+      palm: { x: 11, y: 2, width: 2, height: 1 },
       "coffee-table": { x: 9, y: 3, width: 2, height: 1 },
     });
     expect(upstairs).toMatchObject({
       bookcase: { x: 7, y: 1, width: 2, height: 1 },
-      wardrobe: { x: 11, y: 6, width: 2, height: 1 },
-      "office-plant": { x: 10, y: 5, width: 1, height: 1 },
-      "computer-desk": { x: 10, y: 2, width: 2, height: 1 },
-      bed: { x: 3, y: 5, width: 3, height: 2 },
-      "bedside-table": { x: 6, y: 5, width: 1, height: 1 },
+      wardrobe: null,
+      "office-plant": null,
+      "computer-desk": { x: 11, y: 2, width: 1, height: 1 },
+      bed: { x: 3, y: 5, width: 3, height: 1 },
+      "bedside-table": null,
     });
     const diningTable = ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "dining-table")!;
     expect(diningTable.source).toEqual({ x: 0, y: 240, width: 32, height: 32 });
     expect(diningTable.art).toEqual({ x: 2, y: 3.5, width: 2, height: 2 });
-    for (const [x, y] of [[2, 4], [3, 4], [2, 5], [3, 5]]) {
+    for (const [x, y] of [[2, 4], [3, 4]]) {
       expect(algyHouseFurnitureAt(x, y)?.id).toBe("dining-table");
       expect(isAlgyHouseWalkable("ground", x, y)).toBe(false);
     }
     const diningChairs: ReadonlyArray<readonly [number, number, string]> = [
-      [1, 5, "dining-chair-west"], [4, 5, "dining-chair-east"],
-      [1, 4, "dining-chair-west-upper"], [4, 4, "dining-chair-east-upper"],
+      [1, 4, "dining-chair-west"], [4, 4, "dining-chair-east"],
     ];
     for (const [x, y, id] of diningChairs) {
       expect(algyHouseFurnitureAt(x, y)?.id).toBe(id);
       expect(isAlgyHouseWalkable("ground", x, y)).toBe(false);
     }
-    expect(ground["dining-chair-west"]).toEqual({ x: 1, y: 5, width: 1, height: 1 });
-    expect(ground["dining-chair-east"]).toEqual({ x: 4, y: 5, width: 1, height: 1 });
-    expect(ground["dining-chair-west-upper"]).toEqual({ x: 1, y: 4, width: 1, height: 1 });
-    expect(ground["dining-chair-east-upper"]).toEqual({ x: 4, y: 4, width: 1, height: 1 });
+    expect(ground["dining-chair-west"]).toEqual({ x: 1, y: 4, width: 1, height: 1 });
+    expect(ground["dining-chair-east"]).toEqual({ x: 4, y: 4, width: 1, height: 1 });
+    expect(ground["dining-chair-west-upper"]).toBeNull();
+    expect(ground["dining-chair-east-upper"]).toBeNull();
     expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "dining-chair-west")?.art).toEqual({ x: 1 + 1 / 3, y: 4 + 7 / 12, width: 2 / 3, height: 4 / 3 });
     expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "dining-chair-east")?.art).toEqual({ x: 4, y: 4 + 7 / 12, width: 2 / 3, height: 4 / 3 });
     expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "dining-chair-west-upper")).toMatchObject({ source: { x: 144, y: 288, width: 16, height: 32 }, art: { x: 1 + 1 / 3, y: 3 + 7 / 12, width: 2 / 3, height: 4 / 3 } });
@@ -189,13 +190,14 @@ describe("Algy's House ground-floor layout", () => {
     // The entry tile and the full column-six route stay clear despite four seats.
     expect(isAlgyHouseWalkable("ground", 3, 8)).toBe(true);
     for (let y = 1; y < ALGY_HOUSE_ROWS - 1; y += 1) expect(isAlgyHouseWalkable("ground", 6, y)).toBe(true);
-    expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "floor-lamp")?.solid).toEqual({ x: 12, y: 5, width: 1, height: 1 });
+    expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "floor-lamp")?.solid).toBeNull();
     expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "sofa")?.art).toEqual({ x: 9 + 1 / 3, y: 4 + 2 / 3, width: 4 / 3, height: 4 / 3 });
     expect(ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "coffee-table")?.art).toEqual({ x: 9 + 1 / 3, y: 2 + 2 / 3, width: 4 / 3, height: 4 / 3 });
     expect(algyHouseFurnitureAt(9, 1, "upstairs")).toBeNull();
     expect(isAlgyHouseWalkable("upstairs", 9, 1)).toBe(true);
     for (const [floor, furniture] of [["ground", ALGY_HOUSE_GROUND_FURNITURE], ["upstairs", ALGY_HOUSE_UPSTAIRS_FURNITURE]] as const) {
       for (const item of furniture) {
+        if (!item.solid) continue;
         for (let y = item.solid.y; y < item.solid.y + item.solid.height; y += 1) {
           for (let x = item.solid.x; x < item.solid.x + item.solid.width; x += 1) {
             expect(algyHouseFurnitureAt(x, y, floor)?.id).toBe(item.id);
@@ -204,6 +206,284 @@ describe("Algy's House ground-floor layout", () => {
         }
       }
     }
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s stand on either side of the entry plant without crossing it", (characterId) => {
+    const plant = ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "entry-plant")!;
+    expect(plant.art).toEqual({ x: 1, y: 6, width: 1, height: 2 });
+    expect(plant.solid).toBeNull();
+    // The plant covers the feet of someone behind it, never someone below it.
+    expect(houseDecorDepth(plant)).toBeGreaterThan(7);
+    expect(houseDecorDepth(plant)).toBeLessThan(8);
+    for (const { startY, y, toward, away } of [
+      { startY: 5, y: 6, toward: "s", away: "n" },
+      { startY: 8, y: 7, toward: "n", away: "s" },
+    ] as const) {
+      const point = { x: 1, y };
+      expect(isAlgyHouseWalkable("ground", 1, y, characterId)).toBe(true);
+      expect(algyHouseFurnitureAt(1, y)).toBeNull();
+      expect(algyHouseStep("ground", { x: 1, y: startY }, toward, characterId)).toEqual({ point, transition: null });
+      for (let repeat = 0; repeat < 10; repeat += 1) {
+        expect(algyHouseStep("ground", point, toward, characterId)).toBeNull();
+      }
+      expect(algyHouseStep("ground", point, away, characterId)).toEqual({ point: { x: 1, y: startY }, transition: null });
+      expect(algyHouseStep("ground", point, "e", characterId)).toEqual({ point: { x: 2, y }, transition: null });
+      expect(algyHouseStep("ground", { x: 2, y }, "w", characterId)).toEqual({ point, transition: null });
+    }
+    // The right-hand detour stays open in both directions.
+    expect(algyHouseStep("ground", { x: 2, y: 6 }, "s", characterId)).toEqual({ point: { x: 2, y: 7 }, transition: null });
+    expect(algyHouseStep("ground", { x: 2, y: 7 }, "n", characterId)).toEqual({ point: { x: 2, y: 6 }, transition: null });
+    // This boundary belongs only to the downstairs plant.
+    expect(algyHouseStep("upstairs", { x: 1, y: 6 }, "s", characterId)).toEqual({ point: { x: 1, y: 7 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 1, y: 7 }, "n", characterId)).toEqual({ point: { x: 1, y: 6 }, transition: null });
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s cross all four tiles below the dining set without walking up into it", (characterId) => {
+    let point = { x: 5, y: 5 };
+    for (const x of [4, 3, 2, 1]) {
+      expect(isAlgyHouseWalkable("ground", x, 5, characterId)).toBe(true);
+      expect(algyHouseStep("ground", point, "w", characterId)).toEqual({
+        point: { x, y: 5 }, transition: null,
+      });
+      point = { x, y: 5 };
+      expect(algyHouseStep("ground", point, "n", characterId)).toBeNull();
+    }
+    for (const x of [2, 3, 4, 5]) {
+      expect(algyHouseStep("ground", point, "e", characterId)).toEqual({
+        point: { x, y: 5 }, transition: null,
+      });
+      point = { x, y: 5 };
+    }
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s cross all four tiles above the dining set without walking down into it", (characterId) => {
+    let point = { x: 5, y: 3 };
+    for (const x of [4, 3, 2, 1]) {
+      expect(isAlgyHouseWalkable("ground", x, 3, characterId)).toBe(true);
+      expect(algyHouseStep("ground", point, "w", characterId)).toEqual({
+        point: { x, y: 3 }, transition: null,
+      });
+      point = { x, y: 3 };
+      expect(algyHouseStep("ground", point, "s", characterId)).toBeNull();
+      expect(algyHouseStep("ground", point, "n", characterId)).toEqual({
+        point: { x, y: 2 }, transition: null,
+      });
+    }
+    for (const x of [2, 3, 4, 5]) {
+      expect(algyHouseStep("ground", point, "e", characterId)).toEqual({
+        point: { x, y: 3 }, transition: null,
+      });
+      point = { x, y: 3 };
+    }
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s walk across both tiles behind the palm while its pot stays blocked", (characterId) => {
+    const palm = ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "palm")!;
+    expect(palm.source).toEqual({ x: 96, y: 160, width: 32, height: 32 });
+    expect(palm.art).toEqual({ x: 11, y: 1, width: 2, height: 2 });
+    expect(houseDecorDepth(palm)).toBe(3);
+    let point = { x: 10, y: 1 };
+    for (const x of [11, 12]) {
+      expect(isAlgyHouseWalkable("ground", x, 1, characterId)).toBe(true);
+      expect(algyHouseStep("ground", point, "e", characterId)).toEqual({
+        point: { x, y: 1 }, transition: null,
+      });
+      point = { x, y: 1 };
+      expect(algyHouseStep("ground", point, "n", characterId)).toBeNull();
+      expect(algyHouseStep("ground", point, "s", characterId)).toBeNull();
+      expect(algyHouseFurnitureAt(x, 2)?.id).toBe("palm");
+      expect(algyHouseStep("ground", { x, y: 3 }, "n", characterId)).toBeNull();
+    }
+    expect(algyHouseStep("ground", point, "e", characterId)).toBeNull();
+    for (const x of [11, 10]) {
+      expect(algyHouseStep("ground", point, "w", characterId)).toEqual({
+        point: { x, y: 1 }, transition: null,
+      });
+      point = { x, y: 1 };
+    }
+    expect(algyHouseStep("ground", { x: 10, y: 2 }, "e", characterId)).toBeNull();
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s use the outer lamp aisle without crossing the lamp base", (characterId) => {
+    const lamp = ALGY_HOUSE_GROUND_FURNITURE.find(item => item.id === "floor-lamp")!;
+    expect(lamp.source).toEqual({ x: 32, y: 240, width: 16, height: 48 });
+    expect(lamp.art).toEqual({ x: 11.5, y: 3.375, width: 1, height: 3 });
+    expect(houseDecorDepth(lamp)).toBe(6);
+    expect(isAlgyHouseWalkable("ground", 11, 4, characterId)).toBe(true);
+    expect(isAlgyHouseWalkable("ground", 12, 4, characterId)).toBe(true);
+    expect(algyHouseFurnitureAt(11, 4)).toBeNull();
+    expect(isAlgyHouseWalkable("ground", 11, 5, characterId)).toBe(true);
+    expect(isAlgyHouseWalkable("ground", 12, 5, characterId)).toBe(true);
+    for (let repeat = 0; repeat < 10; repeat += 1) {
+      expect(algyHouseStep("ground", { x: 11, y: 5 }, "n", characterId)).toBeNull();
+      expect(algyHouseStep("ground", { x: 11, y: 4 }, "s", characterId)).toBeNull();
+      expect(algyHouseStep("ground", { x: 11, y: 5 }, "e", characterId)).toBeNull();
+      expect(algyHouseStep("ground", { x: 12, y: 5 }, "w", characterId)).toBeNull();
+      expect(algyHouseStep("ground", { x: 12, y: 5 }, "n", characterId)).toBeNull();
+      expect(algyHouseStep("ground", { x: 12, y: 4 }, "s", characterId)).toBeNull();
+    }
+    // Both sides remain reachable via the clear floor around the couch.
+    let point = { x: 11, y: 5 };
+    for (const [direction, x, y] of [
+      ["s", 11, 6], ["e", 12, 6], ["n", 12, 5], ["s", 12, 6],
+      ["w", 11, 6], ["w", 10, 6], ["w", 9, 6], ["w", 8, 6],
+      ["n", 8, 5], ["n", 8, 4], ["e", 9, 4], ["e", 10, 4],
+      ["e", 11, 4], ["e", 12, 4], ["w", 11, 4], ["w", 10, 4],
+      ["w", 9, 4], ["w", 8, 4], ["s", 8, 5], ["s", 8, 6],
+      ["e", 9, 6], ["e", 10, 6], ["e", 11, 6], ["n", 11, 5],
+    ] as const) {
+      expect(algyHouseStep("ground", point, direction, characterId)).toEqual({
+        point: { x, y }, transition: null,
+      });
+      point = { x, y };
+    }
+    expect(algyHouseStep("ground", { x: 11, y: 3 }, "s", characterId)).toEqual({
+      point: { x: 11, y: 4 }, transition: null,
+    });
+    expect(algyHouseStep("ground", { x: 10, y: 4 }, "e", characterId)).toEqual({
+      point: { x: 11, y: 4 }, transition: null,
+    });
+    expect(algyHouseStep("ground", { x: 11, y: 4 }, "n", characterId)).toEqual({
+      point: { x: 11, y: 3 }, transition: null,
+    });
+    expect(algyHouseStep("ground", { x: 11, y: 4 }, "w", characterId)).toEqual({
+      point: { x: 10, y: 4 }, transition: null,
+    });
+    expect(algyHouseStep("ground", { x: 12, y: 5 }, "e", characterId)).toBeNull();
+    expect(algyHouseStep("upstairs", { x: 11, y: 5 }, "e", characterId)).toEqual({
+      point: { x: 12, y: 5 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 11, y: 5 }, "n", characterId)).toEqual({
+      point: { x: 11, y: 4 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 12, y: 5 }, "n", characterId)).toEqual({
+      point: { x: 12, y: 4 }, transition: null,
+    });
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s step north to the computer while the tower and stereo stay blocked", (characterId) => {
+    const point = { x: 10, y: 2 };
+    expect(algyHouseStep("upstairs", { x: 10, y: 3 }, "n", characterId)).toEqual({ point, transition: null });
+    expect(algyHouseStep("upstairs", point, "s", characterId)).toEqual({ point: { x: 10, y: 3 }, transition: null });
+    expect(isAlgyHouseWalkable("upstairs", 10, 1, characterId)).toBe(true);
+    expect(isAlgyHouseWalkable("upstairs", 10, 2, characterId)).toBe(true);
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      expect(algyHouseStep("upstairs", point, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x: 10, y: 1 }, "s", characterId)).toBeNull();
+    }
+    expect(algyHouseStep("upstairs", { x: 9, y: 1 }, "e", characterId)).toEqual({
+      point: { x: 10, y: 1 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 10, y: 1 }, "w", characterId)).toEqual({
+      point: { x: 9, y: 1 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", point, "e", characterId)).toBeNull();
+    expect(algyHouseStep("upstairs", point, "w", characterId)).toBeNull();
+    expect(algyHouseStep("upstairs", { x: 11, y: 3 }, "n", characterId)).toBeNull();
+    expect(houseDecorDepth(ALGY_HOUSE_UPSTAIRS_FURNITURE.find(item => item.id === "computer-desk")!)).toBe(3);
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s cross the three floor tiles below the bed", (characterId) => {
+    for (const x of [3, 4, 5]) {
+      const point = { x, y: 6 };
+      expect(algyHouseStep("upstairs", { x: x - 1, y: 6 }, "e", characterId)).toEqual({ point, transition: null });
+      expect(algyHouseStep("upstairs", { x: x + 1, y: 6 }, "w", characterId)).toEqual({ point, transition: null });
+      expect(algyHouseStep("upstairs", point, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", point, "s", characterId)).toEqual({ point: { x, y: 7 }, transition: null });
+      expect(algyHouseStep("upstairs", { x, y: 7 }, "n", characterId)).toEqual({ point, transition: null });
+    }
+    const bed = ALGY_HOUSE_UPSTAIRS_FURNITURE.find(item => item.id === "bed")!;
+    expect(bed.art).toEqual({ x: 3 - 11 / 16, y: 5 - 13 / 16, width: 3, height: 3 });
+    expect(houseDecorDepth(bed)).toBe(7);
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s stand at the bedside without crossing through it vertically", (characterId) => {
+    const point = { x: 6, y: 5 };
+    expect(algyHouseStep("upstairs", { x: 6, y: 6 }, "n", characterId)).toEqual({ point, transition: null });
+    expect(algyHouseStep("upstairs", point, "s", characterId)).toEqual({ point: { x: 6, y: 6 }, transition: null });
+    // The bedside tile is open, but its tall art cannot be crossed vertically.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      expect(algyHouseStep("upstairs", point, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x: 6, y: 4 }, "s", characterId)).toBeNull();
+    }
+    expect(algyHouseStep("upstairs", point, "e", characterId)).toEqual({ point: { x: 7, y: 5 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 7, y: 5 }, "n", characterId)).toEqual({ point: { x: 7, y: 4 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 7, y: 4 }, "w", characterId)).toEqual({ point: { x: 6, y: 4 }, transition: null });
+    expect(algyHouseStep("upstairs", point, "w", characterId)).toBeNull();
+    const nightstand = ALGY_HOUSE_UPSTAIRS_FURNITURE.find(item => item.id === "bedside-table")!;
+    expect(nightstand.art).toEqual({ x: 5.5, y: 4, width: 1, height: 2 });
+    expect(nightstand.solid).toBeNull();
+    expect(nightstand.blockedEdges).toEqual([[{ x: 6, y: 5 }, { x: 6, y: 4 }]]);
+    expect(houseDecorDepth(nightstand)).toBe(6);
+    for (const tile of [{ x: 6, y: 4 }, point, { x: 6, y: 6 }]) {
+      expect(isAlgyHouseWalkable("upstairs", tile.x, tile.y, characterId)).toBe(true);
+    }
+    expect(isAlgyHouseWalkable("upstairs", 5, 5, characterId)).toBe(false);
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s use the open office and wardrobe foot tiles without crossing either prop vertically", (characterId) => {
+    const plant = ALGY_HOUSE_UPSTAIRS_FURNITURE.find(item => item.id === "office-plant")!;
+    const wardrobe = ALGY_HOUSE_UPSTAIRS_FURNITURE.find(item => item.id === "wardrobe")!;
+    expect(plant.art).toEqual({ x: 10, y: 4, width: 1, height: 2 });
+    expect(plant.solid).toBeNull();
+    expect(plant.blockedEdges).toEqual([[{ x: 10, y: 5 }, { x: 10, y: 4 }]]);
+    expect(houseDecorDepth(plant)).toBe(6);
+    expect(wardrobe.art).toEqual({ x: 11, y: 4, width: 2, height: 3 });
+    expect(wardrobe.solid).toBeNull();
+    expect(wardrobe.blockedEdges).toEqual([
+      [{ x: 11, y: 6 }, { x: 11, y: 5 }],
+      [{ x: 12, y: 6 }, { x: 12, y: 5 }],
+    ]);
+    expect(houseDecorDepth(wardrobe)).toBe(7);
+
+    for (const point of [{ x: 10, y: 4 }, { x: 10, y: 5 }, { x: 10, y: 6 }, { x: 11, y: 5 }, { x: 11, y: 6 }, { x: 12, y: 5 }, { x: 12, y: 6 }]) {
+      expect(algyHouseFurnitureAt(point.x, point.y, "upstairs")).toBeNull();
+      expect(isAlgyHouseWalkable("upstairs", point.x, point.y, characterId)).toBe(true);
+    }
+    expect(algyHouseStep("upstairs", { x: 10, y: 6 }, "n", characterId)).toEqual({
+      point: { x: 10, y: 5 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 10, y: 5 }, "s", characterId)).toEqual({
+      point: { x: 10, y: 6 }, transition: null,
+    });
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      expect(algyHouseStep("upstairs", { x: 10, y: 5 }, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x: 10, y: 4 }, "s", characterId)).toBeNull();
+    }
+    expect(algyHouseStep("upstairs", { x: 10, y: 5 }, "w", characterId)).toEqual({
+      point: { x: 9, y: 5 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 9, y: 5 }, "n", characterId)).toEqual({
+      point: { x: 9, y: 4 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 9, y: 4 }, "e", characterId)).toEqual({
+      point: { x: 10, y: 4 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 10, y: 6 }, "e", characterId)).toEqual({
+      point: { x: 11, y: 6 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 11, y: 6 }, "e", characterId)).toEqual({
+      point: { x: 12, y: 6 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 12, y: 6 }, "w", characterId)).toEqual({
+      point: { x: 11, y: 6 }, transition: null,
+    });
+    expect(algyHouseStep("upstairs", { x: 11, y: 6 }, "w", characterId)).toEqual({
+      point: { x: 10, y: 6 }, transition: null,
+    });
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      expect(algyHouseStep("upstairs", { x: 11, y: 6 }, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x: 11, y: 5 }, "s", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x: 12, y: 6 }, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x: 12, y: 5 }, "s", characterId)).toBeNull();
+    }
+    // The open foot tiles remain connected by the west detour around the props.
+    expect(algyHouseStep("upstairs", { x: 12, y: 6 }, "w", characterId)).toEqual({ point: { x: 11, y: 6 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 11, y: 6 }, "w", characterId)).toEqual({ point: { x: 10, y: 6 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 10, y: 6 }, "n", characterId)).toEqual({ point: { x: 10, y: 5 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 10, y: 5 }, "e", characterId)).toEqual({ point: { x: 11, y: 5 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 11, y: 5 }, "e", characterId)).toEqual({ point: { x: 12, y: 5 }, transition: null });
+    expect(algyHouseStep("upstairs", { x: 12, y: 6 }, "e", characterId)).toBeNull();
   });
 
   it("keeps every remaining walkable ground tile connected for Algy and Mitch", () => {
@@ -287,18 +567,18 @@ describe("Algy's House ground-floor layout", () => {
     }
   });
 
-  it("uses the blocking foot row as each furniture object's depth", () => {
+  it("uses each furniture object's foot row or between-tile base for depth", () => {
     expect(Object.fromEntries(ALGY_HOUSE_GROUND_FURNITURE.map((item) => [item.id, houseDecorDepth(item)]))).toEqual({
       sofa: 6,
       palm: 3,
       "coffee-table": 4,
-      "dining-table": 6,
-      "dining-chair-west": 6,
-      "dining-chair-east": 6,
+      "dining-table": 5,
+      "dining-chair-west": 5,
+      "dining-chair-east": 5,
       "dining-chair-west-upper": 5,
       "dining-chair-east-upper": 5,
       "floor-lamp": 6,
-      "entry-plant": 8,
+      "entry-plant": 7.5,
     });
     expect(Object.fromEntries(ALGY_HOUSE_UPSTAIRS_FURNITURE.map((item) => [item.id, houseDecorDepth(item)]))).toEqual({
       "computer-desk": 3,

@@ -19,15 +19,21 @@ describe("fine ground stair art alignment", () => {
   });
   it("blends the first step's height without a jump at the tread", () => {
     expect(algyHouseStairFootOffset("ground", 5, 1)).toBe(0);
-    expect(algyHouseStairFootOffset("ground", 4.5, 1)).toBe(-9);
-    expect(algyHouseStairFootOffset("ground", 4, 1)).toBe(-18);
+    expect(algyHouseStairFootOffset("ground", 4.5, 1)).toBe(0);
+    expect(algyHouseStairFootOffset("ground", 4, 1)).toBe(0);
+    expect(algyHouseStairFootOffset("ground", 3.5, 1)).toBe(-18);
     expect(algyHouseStairFootOffset("ground", 3, 1)).toBe(-36);
     expect(algyHouseStairFootOffset("ground", 1, 1)).toBe(-72);
-    expect(algyHouseStairFootOffset("ground", 4.001, 1)).toBeCloseTo(-18, 1);
-    expect(algyHouseStairFootOffset("ground", 3.999, 1)).toBeCloseTo(-18, 1);
+    expect(algyHouseStairFootOffset("ground", 4.001, 1)).toBe(0);
+    expect(algyHouseStairFootOffset("ground", 3.999, 1)).toBeCloseTo(0, 1);
+    expect(algyHouseStairFootOffset("ground", 3.001, 1)).toBeCloseTo(-36, 1);
+    expect(algyHouseStairFootOffset("ground", 2.999, 1)).toBeCloseTo(-36, 1);
   });
   it("does not lift the room floor or change upstairs descent", () => {
     expect(algyHouseStairFootOffset("ground", 4, 2)).toBe(0);
+    for (const y of [1, 1.01, 1.5, 1.99, 2]) {
+      expect(algyHouseStairFootOffset("ground", 4, y)).toBe(0);
+    }
     expect(algyHouseStairFootOffset("ground", 5.01, 1)).toBe(0);
     expect(algyHouseStairFootOffset("upstairs", 1, 2)).toBe(0);
     expect(algyHouseStairFootOffset("upstairs", 2.5, 2)).toBe(24);

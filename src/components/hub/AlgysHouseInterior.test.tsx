@@ -171,7 +171,7 @@ describe("Algy's House compact two-floor map", () => {
     expect(ALGY_HOUSE_STAIRS_UP_ORIGIN).toEqual({ x: 0.8125, y: -0.375 });
     expect(ALGY_HOUSE_STAIRS_UP).toEqual({ x: 1, y: 1 });
     expect(ALGY_HOUSE_GROUND_GRID[0]).toBe("#BBBB#########");
-    expect(ALGY_HOUSE_GROUND_GRID[1]).toBe("#U^^^........#");
+    expect(ALGY_HOUSE_GROUND_GRID[1]).toBe("#U^^.........#");
     expect(ALGY_HOUSE_GROUND_GRID[2]).toBe("#............#");
     expect(ALGY_HOUSE_GROUND_GRID[3]).toBe("#............#");
     for (const x of [1, 2, 3, 4]) {
@@ -180,19 +180,21 @@ describe("Algy's House compact two-floor map", () => {
       expect(isAlgyHouseWalkable("ground", x, 2)).toBe(true);
     }
     expect(isAlgyHouseWalkable("ground", 5, 1)).toBe(true);
+    // The old stair body and the strip above the dining set are open floor.
+    expect(ALGY_HOUSE_GROUND_GRID[3][1]).toBe(".");
     expect(isAlgyHouseWalkable("ground", 1, 3)).toBe(true);
   });
 
-  it("keeps the upstairs landing and row above the stair opening walkable", () => {
+  it("keeps the upstairs landing and rows around the stair opening walkable", () => {
     expect(ALGY_HOUSE_STAIRS_DOWN).toEqual({ x: 4, y: 2 });
     expect(ALGY_HOUSE_UPSTAIRS_GRID[1].slice(2, 6)).toBe("....");
     expect(ALGY_HOUSE_UPSTAIRS_GRID[2].slice(2, 6)).toBe("^^S.");
-    expect(ALGY_HOUSE_UPSTAIRS_GRID[3].slice(2, 6)).toBe("BBB.");
+    expect(ALGY_HOUSE_UPSTAIRS_GRID[3].slice(2, 6)).toBe("....");
     expect(isAlgyHouseWalkable("upstairs", 1, 2)).toBe(true);
     for (const x of [2, 3, 4]) {
       expect(isAlgyHouseWalkable("upstairs", x, 2)).toBe(true);
       expect(isAlgyHouseWalkable("upstairs", x, 1)).toBe(true);
-      expect(isAlgyHouseWalkable("upstairs", x, 3)).toBe(false);
+      expect(isAlgyHouseWalkable("upstairs", x, 3)).toBe(true);
     }
     expect(isAlgyHouseWalkable("upstairs", 5, 1)).toBe(true);
     expect(isAlgyHouseWalkable("upstairs", 5, 2)).toBe(true);
@@ -215,6 +217,64 @@ describe("Algy's House compact two-floor map", () => {
     expect(algyHouseStep("ground", { x: 2, y: 1 }, "s")).toBeNull();
     expect(algyHouseStep("upstairs", { x: 4, y: 1 }, "s")).toBeNull();
     expect(algyHouseStep("upstairs", { x: 3, y: 2 }, "n")).toBeNull();
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s step north onto the floor beside the bottom stair", (characterId) => {
+    const besideStair = { x: 4, y: 1 };
+    expect(ALGY_HOUSE_GROUND_GRID[1][4]).toBe(".");
+    expect(algyHouseStep("ground", { x: 4, y: 2 }, "n", characterId)).toEqual({
+      point: besideStair, transition: null,
+    });
+    expect(algyHouseStep("ground", besideStair, "s", characterId)).toEqual({
+      point: { x: 4, y: 2 }, transition: null,
+    });
+    expect(algyHouseStep("ground", besideStair, "e", characterId)).toEqual({
+      point: { x: 5, y: 1 }, transition: null,
+    });
+    expect(algyHouseStep("ground", besideStair, "w", characterId)).toEqual({
+      point: { x: 3, y: 1 }, transition: null,
+    });
+    expect(algyHouseStep("ground", { x: 3, y: 1 }, "e", characterId)).toEqual({
+      point: besideStair, transition: null,
+    });
+    // The wall and the remaining raised treads keep their boundaries.
+    expect(algyHouseStep("ground", besideStair, "n", characterId)).toBeNull();
+    for (const x of [1, 2, 3]) {
+      expect(algyHouseStep("ground", { x, y: 2 }, "n", characterId)).toBeNull();
+      expect(algyHouseStep("ground", { x, y: 1 }, "s", characterId)).toBeNull();
+    }
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s cross the three floor tiles below the upstairs opening without entering it", (characterId) => {
+    let point = { x: 5, y: 3 };
+    for (const x of [4, 3, 2]) {
+      expect(algyHouseStep("upstairs", point, "w", characterId)).toEqual({
+        point: { x, y: 3 }, transition: null,
+      });
+      point = { x, y: 3 };
+      expect(algyHouseStep("upstairs", point, "n", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", { x, y: 2 }, "s", characterId)).toBeNull();
+      expect(algyHouseStep("upstairs", point, "s", characterId)).toEqual({
+        point: { x, y: 4 }, transition: null,
+      });
+    }
+    for (const x of [3, 4, 5]) {
+      expect(algyHouseStep("upstairs", point, "e", characterId)).toEqual({
+        point: { x, y: 3 }, transition: null,
+      });
+      point = { x, y: 3 };
+    }
+  });
+
+  it.each(["algy", "mitch"] as const)("lets %s step left onto the east stair-side floor but no farther", (characterId) => {
+    const point = { x: 5, y: 2 };
+    expect(algyHouseStep("upstairs", { x: 6, y: 2 }, "w", characterId)).toEqual({ point, transition: null });
+    for (let repeat = 0; repeat < 10; repeat += 1) {
+      expect(algyHouseStep("upstairs", point, "w", characterId)).toBeNull();
+    }
+    for (const [direction, x, y] of [["e", 6, 2], ["n", 5, 1], ["s", 5, 3]] as const) {
+      expect(algyHouseStep("upstairs", point, direction, characterId)).toEqual({ point: { x, y }, transition: null });
+    }
   });
 
   it("returns downstairs one tile earlier in exactly three eastward inputs", () => {

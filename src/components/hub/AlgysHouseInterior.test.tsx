@@ -360,6 +360,17 @@ describe("Algy's House compact two-floor interface", () => {
     vi.restoreAllMocks();
   });
 
+  it.each(["ground", "upstairs"] as const)("protects the whole %s room from long-press selection", (floor) => {
+    renderRoom({ floor });
+
+    expect(screen.getByTestId("algys-house-interior").style).toMatchObject({
+      userSelect: "none",
+      WebkitUserSelect: "none",
+      WebkitTouchCallout: "none",
+      WebkitTapHighlightColor: "transparent",
+    });
+  });
+
   it("exposes both floor states, the x1 stair origin, mute, and shared controls", () => {
     const onToggleMute = vi.fn();
     const { props, view } = renderRoom({ floor: "ground", onToggleMute });

@@ -186,7 +186,13 @@ export default function AlgyHouseHome() {
   }, [characterId, explicitVisitor, start, townArrival]);
 
   return (
-    <div className="youngalgy-house" data-testid="youngalgy-house-home" style={{ position: "fixed", inset: 0 }}>
+    <div
+      className="youngalgy-house"
+      data-testid="youngalgy-house-home"
+      // Keep the loading/door-fade surface protected too, outside the room itself.
+      style={{ position: "fixed", inset: 0, userSelect: "none", WebkitUserSelect: "none",
+        WebkitTouchCallout: "none", WebkitTapHighlightColor: "transparent" }}
+    >
       {prepared && (
         <AlgysHouseInterior
           characterId={characterId}

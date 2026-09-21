@@ -1411,7 +1411,9 @@ export default function AlgysHouseInterior({
       data-art-status={artReady ? "ready" : artStatus === "error" ? "error" : "loading"}
       aria-busy={!artReady && artStatus !== "error"}
       data-transition-phase={doorTransitionPhase}
-      style={{ position: "fixed", inset: 0, overflow: "hidden", background: "#120b1d", color: "#f4e8c1", fontFamily: FONT }}
+      // Match Town's full-surface protection, including the canvas and HUD text.
+      style={{ position: "fixed", inset: 0, overflow: "hidden", background: "#120b1d", color: "#f4e8c1", fontFamily: FONT,
+        userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", WebkitTapHighlightColor: "transparent" }}
     >
       <canvas
         ref={canvasRef}

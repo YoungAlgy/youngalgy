@@ -89,6 +89,22 @@ describe("AlgyHouseHome", () => {
     vi.unstubAllGlobals();
   });
 
+  it("keeps the outer house and door fade inside the selection protection", () => {
+    render(<AlgyHouseHome />);
+
+    const house = screen.getByTestId("youngalgy-house-home");
+    expect(house.style).toMatchObject({
+      userSelect: "none",
+      WebkitUserSelect: "none",
+      WebkitTouchCallout: "none",
+      WebkitTapHighlightColor: "transparent",
+    });
+    expect(house).toContainElement(screen.getByTestId("house-door-transition"));
+    fireEvent.click(screen.getByRole("button", { name: "Upstairs" }));
+    expect(screen.getByTestId("house-door-transition")).toHaveAttribute("data-phase", "out");
+    expect(house.style.userSelect).toBe("none");
+  });
+
   it("starts a fresh visit on the ground floor without creating ambient audio", () => {
     const AudioMock = vi.fn();
     vi.stubGlobal("Audio", AudioMock);

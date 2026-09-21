@@ -144,7 +144,7 @@ describe("Algy's House visitor host", () => {
     const onPrepareDoorSound = vi.fn();
     renderRoom({ characterId: "mitch", floor: "upstairs", onPrepareDoorSound });
 
-    expect(screen.getByLabelText("Interaction")).toHaveTextContent("GO / Enter: talk to Algy");
+    expect(screen.getByLabelText("Interaction")).toHaveTextContent("USE / Enter: talk to Algy");
 
     fireEvent.keyDown(window, { key: "Enter" });
     expect(screen.getByRole("dialog")).toHaveTextContent(ALGY_HOUSE_MITCH_GREETING);
@@ -154,11 +154,19 @@ describe("Algy's House visitor host", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  it("dismisses with Escape, Enter, or OK and returns focus to Go, then can reopen", () => {
+  it("keeps GO as sprint at the host and preserves Use dialogue focus restoration", () => {
     savePlayer("upstairs", { x: 9, y: 4, dir: "n", frame: 0 });
     renderRoom({ characterId: "mitch", floor: "upstairs" });
-    const interact = screen.getByRole("button", { name: "Go" });
+    const go = screen.getByRole("button", { name: "Go" });
+    const interact = screen.getByRole("button", { name: "Use" });
 
+    expect(go).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(go, { detail: 0 });
+    expect(go).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // A browser's synthesized pointer click must not toggle a second time.
+    fireEvent.click(go, { detail: 1 });
+    expect(go).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(interact);
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

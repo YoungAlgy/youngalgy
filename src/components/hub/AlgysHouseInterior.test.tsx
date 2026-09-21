@@ -371,6 +371,7 @@ describe("Algy's House compact two-floor interface", () => {
     expect(room).toHaveAttribute("data-transition-phase", "idle");
     expect(screen.getByLabelText("Algy's House ground-floor room and staircase")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Go" })).toHaveTextContent("GO");
+    expect(screen.getByRole("button", { name: "Use" })).toHaveTextContent("USE");
     expect(screen.getByRole("button", { name: "Mute" })).toBeInTheDocument();
     expect(onToggleMute).not.toHaveBeenCalled();
     expect(window.sessionStorage.getItem(ALGY_HOUSE_SCENE_KEY)).toBe(ALGY_HOUSE_SCENE);
@@ -498,12 +499,27 @@ describe("Algy's House compact two-floor interface", () => {
     expect(onPrepareDoorSound).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the empty-room interaction inert", () => {
+  it("keeps the empty-room interaction inert while GO toggles only sprint", () => {
     const play = vi.spyOn(window.HTMLMediaElement.prototype, "play").mockResolvedValue();
     renderRoom({ floor: "upstairs" });
     const automaticPlayCalls = play.mock.calls.length;
     fireEvent.keyDown(window, { key: "Enter" });
-    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    const go = screen.getByRole("button", { name: "Go" });
+    expect(go).toHaveAttribute("aria-pressed", "false");
+    const press = new MouseEvent("pointerdown", { bubbles: true, cancelable: true, button: 0 });
+    fireEvent(go, press);
+    expect(press.defaultPrevented).toBe(true);
+    expect(go).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(go, { detail: 1 });
+    expect(go).toHaveAttribute("aria-pressed", "true");
+    fireEvent(go, new MouseEvent("pointerdown", { bubbles: true, cancelable: true, button: 2 }));
+    expect(go).toHaveAttribute("aria-pressed", "true");
+    const contextMenu = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+    fireEvent(go, contextMenu);
+    expect(contextMenu.defaultPrevented).toBe(true);
+    fireEvent.click(go, { detail: 0 });
+    expect(go).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Use" }));
     expect(play).toHaveBeenCalledTimes(automaticPlayCalls);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
@@ -577,6 +593,34 @@ describe("Algy's House compact two-floor interface", () => {
     fireEvent.keyUp(window, { key: "ArrowRight" });
     fireEvent.keyDown(window, { key: "ArrowRight" });
     expect(onPrepareDoorSound).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(["walk", "go", "shift"] as const)("keeps one-tile timing exact for %s", (mode) => {
+    renderRoom();
+    if (mode === "go") fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    if (mode === "shift") fireEvent.keyDown(window, { key: "Shift" });
+    const duration = mode === "walk" ? 150 : 75;
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    fireEvent.keyUp(window, { key: "ArrowRight" });
+    act(() => scheduledFrame?.(duration - 1));
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
+    act(() => scheduledFrame?.(duration));
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 4, y: 8 });
+    act(() => scheduledFrame?.(1000));
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 4, y: 8 });
+  });
+
+  it.each(["keyup", "blur", "pagehide"])("clears momentary Shift sprint on %s", (event) => {
+    renderRoom();
+    fireEvent.keyDown(window, { key: "Shift" });
+    if (event === "keyup") fireEvent.keyUp(window, { key: "Shift" });
+    else fireEvent(window, new Event(event));
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    fireEvent.keyUp(window, { key: "ArrowRight" });
+    act(() => scheduledFrame?.(75));
+    expect(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
+    act(() => scheduledFrame?.(150));
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 4, y: 8 });
   });
 
   it("supports keyboard and assistive activation of direction buttons without duplicating pointer steps", () => {

@@ -71,6 +71,7 @@ interface HouseMove {
   to: HousePoint;
   dir: HouseDirection;
   startedAt: number;
+  durationMs: number;
   transition: AlgyHouseTransition | null;
 }
 
@@ -806,7 +807,7 @@ function drawRoom(
   hostAvatar: HTMLImageElement | null,
   hostDirection: HouseDirection,
 ): void {
-  const progress = move ? Math.min(1, (now - move.startedAt) / MOVE_MS) : 1;
+  const progress = move ? Math.min(1, (now - move.startedAt) / move.durationMs) : 1;
   const ease = progress * progress * (3 - 2 * progress);
   const drawTileX = move ? move.from.x + (move.to.x - move.from.x) * ease : player.x;
   const drawTileY = move ? move.from.y + (move.to.y - move.from.y) * ease : player.y;
@@ -910,8 +911,8 @@ function drawRoom(
 function PixelArrow({ direction }: { direction: HouseDirection }) {
   const rotation = direction === "n" ? 0 : direction === "e" ? 90 : direction === "s" ? 180 : 270;
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style={{ transform: `rotate(${rotation}deg)` }}>
-      <polygon points="12,4 20,19 4,19" fill="#f4e8c1" />
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style={{ transform: `rotate(${rotation}deg)`, display: "block", pointerEvents: "none" }}>
+      <polygon points="12,5 19,18 5,18" fill="#f4e8c1" />
     </svg>
   );
 }
@@ -960,6 +961,9 @@ export default function AlgysHouseInterior({
   const moveRef = useRef<HouseMove | null>(null);
   const descendingUpstairsRef = useRef(false);
   const heldDirectionsRef = useRef<Set<HouseDirection>>(new Set());
+  const sprintToggleRef = useRef(false);
+  const shiftHeldRef = useRef(false);
+  const [sprintActive, setSprintActive] = useState(false);
   const blockedDirectionsRef = useRef<Set<HouseDirection>>(new Set());
   const beginMoveRef = useRef<(direction: HouseDirection) => void>(() => undefined);
   const doorTransitionRef = useRef({
@@ -1142,6 +1146,7 @@ export default function AlgysHouseInterior({
       to: step.point,
       dir: direction,
       startedAt: performance.now(),
+      durationMs: MOVE_MS / (sprintToggleRef.current || shiftHeldRef.current ? 2 : 1),
       transition: step.transition,
     };
   }, [characterId, floor, leaveHouse, onPrepareDoorSound]);
@@ -1154,6 +1159,10 @@ export default function AlgysHouseInterior({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.altKey || event.metaKey) return;
       if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select")) return;
+      if (event.key === "Shift") {
+        if (!uiBlockingRef.current && !dialogueRef.current && !event.repeat) shiftHeldRef.current = true;
+        return;
+      }
       if (uiBlockingRef.current) {
         if (event.key === "Escape") {
           event.preventDefault();
@@ -1193,6 +1202,7 @@ export default function AlgysHouseInterior({
       beginMoveRef.current(direction);
     };
     const onKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Shift") shiftHeldRef.current = false;
       const direction = KEY_DIRECTION[event.key];
       if (direction) {
         heldDirectionsRef.current.delete(direction);
@@ -1200,6 +1210,7 @@ export default function AlgysHouseInterior({
       }
     };
     const clearHeld = () => {
+      shiftHeldRef.current = false;
       heldDirectionsRef.current.clear();
       blockedDirectionsRef.current.clear();
     };
@@ -1209,11 +1220,13 @@ export default function AlgysHouseInterior({
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("blur", clearHeld);
+    window.addEventListener("pagehide", clearHeld);
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("blur", clearHeld);
+      window.removeEventListener("pagehide", clearHeld);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [closeDialogue, infoOpen, interact]);
@@ -1246,7 +1259,7 @@ export default function AlgysHouseInterior({
       context.setTransform(1, 0, 0, 1, 0, 0);
 
       const move = moveRef.current;
-      if (move && now - move.startedAt >= MOVE_MS) {
+      if (move && now - move.startedAt >= move.durationMs) {
         const player = playerRef.current;
         player.x = move.to.x;
         player.y = move.to.y;
@@ -1475,7 +1488,7 @@ export default function AlgysHouseInterior({
           if (event.key === "Tab") { event.preventDefault(); infoCloseRef.current?.focus(); }
         }} style={{ position: "fixed", zIndex: 8, top: 64, right: 12, width: 260, maxWidth: "calc(100vw - 24px)", boxSizing: "border-box", padding: 12, border: "2px solid #c89838", background: "rgba(28, 18, 12, 0.96)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", fontSize: 9, lineHeight: 1.8 }}>
           <strong>KEY</strong>
-          <p>Arrow keys or WASD: move<br />Enter, Space, or E: interact<br />Touch: use the onscreen GO button</p>
+          <p>Arrow keys or WASD: move<br />GO: toggle sprint. Hold Shift to sprint.<br />USE, Enter, Space, or E: interact</p>
           <p>Music starts when you enter. Some browsers need a tap or key press first.</p>
           <p>The top-left button mutes music. Face the upstairs speaker to adjust its volume.</p>
           <p style={{ marginBottom: 0 }}>Environment art licensed from LimeZu.</p>
@@ -1511,16 +1524,17 @@ export default function AlgysHouseInterior({
 
       {!dialogueOpen && !infoOpen && !pickerOpen && nearHost && (
         <aside aria-label="Interaction" role="status" style={{ position: "fixed", left: 14, bottom: nearStereo ? 254 : 194, maxWidth: "calc(100vw - 28px)", padding: "10px 12px", border: "2px solid #c89838", background: "rgba(28, 18, 34, 0.94)", color: "#e2b45c", fontSize: 9, lineHeight: 1.8 }}>
-          GO / Enter: talk to Algy
+          USE / Enter: talk to Algy
         </aside>
       )}
 
       <div
         aria-label="Room controls"
+        onContextMenu={(event) => event.preventDefault()}
         style={{
           ...HUB_DPAD_LAYOUT_STYLE,
           visibility: !artReady || dialogueOpen || infoOpen || pickerOpen ? "hidden" : "visible",
-          gridTemplateAreas: '". up ." "left action right" ". down ."',
+          gridTemplateAreas: '". up ." "left sprint right" ". down ."',
           zIndex: 5,
         }}
       >
@@ -1548,6 +1562,7 @@ export default function AlgysHouseInterior({
                 releaseDirection(direction);
               }}
               onPointerCancel={() => releaseDirection(direction)}
+              onLostPointerCapture={() => releaseDirection(direction)}
               onPointerLeave={(event) => {
                 if (event.buttons === 0) releaseDirection(direction);
               }}
@@ -1558,16 +1573,55 @@ export default function AlgysHouseInterior({
           );
         })}
         <button
-          ref={interactButtonRef}
           type="button"
           aria-label="Go"
-          title="Interact (Enter / E)"
-          onClick={interact}
-          style={{ ...HUB_DPAD_GO_STYLE, gridArea: "action" }}
+          title={sprintActive ? "Sprint on" : "Sprint off"}
+          aria-pressed={sprintActive}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            if (event.button !== 0) return;
+            event.currentTarget.setPointerCapture?.(event.pointerId);
+            sprintToggleRef.current = !sprintToggleRef.current;
+            setSprintActive(sprintToggleRef.current);
+          }}
+          onClick={(event) => {
+            // Pointer presses toggle above. Keyboard and assistive clicks have no press.
+            if (event.detail !== 0) return;
+            sprintToggleRef.current = !sprintToggleRef.current;
+            setSprintActive(sprintToggleRef.current);
+          }}
+          onKeyDown={(event) => {
+            if (event.repeat && (event.key === "Enter" || event.key === " ")) event.preventDefault();
+          }}
+          style={{
+            ...HUB_DPAD_GO_STYLE,
+            gridArea: "sprint",
+            background: sprintActive ? "rgba(0, 255, 255, 0.22)" : "rgba(28, 18, 12, 0.72)",
+            border: sprintActive ? "2px solid #00FFFF" : "2px solid #c89838",
+            boxShadow: sprintActive ? "0 0 12px rgba(0, 255, 255, 0.65), 2px 2px 0 rgba(0,0,0,0.45)" : "2px 2px 0 rgba(0,0,0,0.45)",
+            color: sprintActive ? "#00FFFF" : "#f4e8c1",
+          }}
         >
           GO
         </button>
       </div>
+
+      <button
+        ref={interactButtonRef}
+        type="button"
+        aria-label="Use"
+        title="Interact (Enter / E)"
+        onPointerDown={(event) => event.preventDefault()}
+        onContextMenu={(event) => event.preventDefault()}
+        onClick={interact}
+        style={{
+          ...HUB_DPAD_GO_STYLE,
+          position: "fixed", left: "max(16px, env(safe-area-inset-left))", bottom: "max(16px, env(safe-area-inset-bottom))", zIndex: 5,
+          visibility: !artReady || dialogueOpen || infoOpen || pickerOpen ? "hidden" : "visible",
+        }}
+      >
+        USE
+      </button>
 
       {dialogueOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 10 }}>

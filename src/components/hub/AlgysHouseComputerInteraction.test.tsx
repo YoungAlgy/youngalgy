@@ -69,16 +69,16 @@ describe("Algy's House computer interaction", () => {
 
   it.each([
     ["algy", "Enter"],
-    ["algy", "Go"],
+    ["algy", "Use"],
     ["mitch", "Enter"],
-    ["mitch", "Go"],
+    ["mitch", "Use"],
   ] as const)("opens the exact computer dialogue for %s through %s only after interaction", async (characterId, activation) => {
     savePlayer("upstairs", { x: 10, y: 2, dir: "n", frame: 0 });
     await renderRoom(characterId);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     if (activation === "Enter") fireEvent.keyDown(window, { key: "Enter" });
-    else fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    else fireEvent.click(screen.getByRole("button", { name: "Use" }));
     expectComputerDialogue();
   });
 
@@ -104,22 +104,26 @@ describe("Algy's House computer interaction", () => {
     expect(props.onPrepareDoorSound).not.toHaveBeenCalled();
   });
 
-  it("closes with Escape or OK, restores Go focus, and can reopen", async () => {
+  it("keeps GO as sprint at the computer and restores Use focus after dialogue", async () => {
     savePlayer("upstairs", { x: 10, y: 2, dir: "n", frame: 0 });
     await renderRoom("mitch");
     const go = screen.getByRole("button", { name: "Go" });
+    const use = screen.getByRole("button", { name: "Use" });
 
-    fireEvent.click(go);
+    fireEvent.click(go, { detail: 0 });
+    expect(go).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    fireEvent.click(use);
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(document.activeElement).toBe(go);
+    expect(document.activeElement).toBe(use);
 
-    fireEvent.click(go);
+    fireEvent.click(use);
     fireEvent.click(screen.getByRole("button", { name: "Close conversation" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(document.activeElement).toBe(go);
+    expect(document.activeElement).toBe(use);
 
-    fireEvent.click(go);
+    fireEvent.click(use);
     expectComputerDialogue();
   });
 
@@ -137,7 +141,7 @@ describe("Algy's House computer interaction", () => {
 
     savePlayer("upstairs", { x: 10, y: 3, dir: "n", frame: 0 });
     await renderRoom("algy");
-    fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    fireEvent.click(screen.getByRole("button", { name: "Use" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

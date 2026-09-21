@@ -3,14 +3,16 @@ import type { CSSProperties } from "react";
 /** Shared town/house controls. Keep their geometry and idle appearance identical. */
 export const HUB_DPAD_LAYOUT_STYLE: CSSProperties = {
   position: "fixed",
-  right: 16,
-  bottom: 16,
+  right: "max(16px, env(safe-area-inset-right))",
+  bottom: "max(16px, env(safe-area-inset-bottom))",
   display: "grid",
   gridTemplateColumns: "56px 56px 56px",
   gridTemplateRows: "56px 56px 56px",
   gap: 4,
   touchAction: "none",
   userSelect: "none",
+  WebkitUserSelect: "none",
+  WebkitTouchCallout: "none",
 };
 
 export const HUB_DPAD_BUTTON_STYLE: CSSProperties = {
@@ -29,6 +31,9 @@ export const HUB_DPAD_BUTTON_STYLE: CSSProperties = {
   boxShadow: "2px 2px 0 rgba(0,0,0,0.45)",
   touchAction: "none",
   userSelect: "none",
+  WebkitUserSelect: "none",
+  WebkitTouchCallout: "none",
+  WebkitTapHighlightColor: "transparent",
 };
 
 export const HUB_DPAD_GO_STYLE: CSSProperties = {

@@ -95,6 +95,8 @@ describe("Algy's House background music", () => {
   it("speaker interaction focuses volume and never stops the music", async () => {
     const { play, pause } = installAudio(); savePlayer("upstairs", { x: 8, y: 2, dir: "e", frame: 0 }); renderRoom(); await settle();
     fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    expect(screen.getByRole("slider", { name: "Music volume" })).not.toHaveFocus();
+    fireEvent.click(screen.getByRole("button", { name: "Use" }));
     expect(screen.getByRole("slider", { name: "Music volume" })).toHaveFocus();
     expect(play).toHaveBeenCalledTimes(1); expect(pause).not.toHaveBeenCalled();
   });

@@ -37,6 +37,7 @@ import {
   type HouseDoorTransitionPhase,
 } from "./algyHouseDoor";
 import { useHouseStereo } from "./useHouseStereo";
+import { ALGY_HOUSE_COMPUTER_APPROACH, algyHouseComputerRoute } from "./algyHouseComputerRoute";
 import { HUB_DPAD_BUTTON_STYLE, HUB_DPAD_GO_STYLE, HUB_DPAD_LAYOUT_STYLE } from "./hubDpadStyles";
 import { useHouseArt } from "./useHouseArt";
 import type { HouseCharacterId } from "./algyHouseVisitor";
@@ -937,10 +938,12 @@ export default function AlgysHouseInterior({
   const [paintedImages, setPaintedImages] = useState<typeof images | null>(null);
   const artReady = artStatus === "ready" && paintedImages === images;
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const playerRef = useRef<HousePlayer>(readSavedPlayer(floor, characterId));
   const hostDirectionRef = useRef<HouseDirection>("s");
   const dialogueRef = useRef(false);
-  const doorApproachLatchedRef = useRef(false);
+  const computerRouteRef = useRef<HouseDirection[] | null>(null);
+  const advanceComputerRouteRef = useRef<() => void>(() => undefined);
   const restoreDialogueFocusRef = useRef(false);
   const dialogueCloseRef = useRef<HTMLButtonElement>(null);
   const interactButtonRef = useRef<HTMLButtonElement>(null);
@@ -1001,6 +1004,7 @@ export default function AlgysHouseInterior({
       startedAt: performance.now(),
     };
     if (doorTransitionPhase !== "idle") {
+      computerRouteRef.current = null;
       for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
       heldDirectionsRef.current.clear();
       moveRef.current = null;
@@ -1008,6 +1012,10 @@ export default function AlgysHouseInterior({
   }, [doorTransitionPhase]);
 
   useEffect(() => {
+    computerRouteRef.current = null;
+    moveRef.current = null;
+    for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
+    heldDirectionsRef.current.clear();
     if (persistTownScene) {
       safeSessionSet(ALGY_HOUSE_SCENE_KEY, ALGY_HOUSE_SCENE);
     } else {
@@ -1021,8 +1029,6 @@ export default function AlgysHouseInterior({
     if (floorRef.current !== floor) {
       floorRef.current = floor;
       playerRef.current = algyHouseArrivalForFloor(floor);
-      moveRef.current = null;
-      heldDirectionsRef.current.clear();
       safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...playerRef.current }));
     }
     if (!isAlgyHouseWalkable(floor, playerRef.current.x, playerRef.current.y, characterId)) {
@@ -1068,9 +1074,19 @@ export default function AlgysHouseInterior({
     heldDirectionsRef.current.clear();
   }, []);
 
+  const openDialogue = useCallback((kind: keyof typeof HOUSE_DIALOGUE) => {
+    computerRouteRef.current = null;
+    for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
+    heldDirectionsRef.current.clear();
+    setDialogueKind(kind);
+    dialogueRef.current = true;
+    setDialogueOpen(true);
+  }, []);
+
   const leaveHouse = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
+    computerRouteRef.current = null;
     heldDirectionsRef.current.clear();
     moveRef.current = null;
     stopStereo();
@@ -1079,50 +1095,31 @@ export default function AlgysHouseInterior({
   }, [onLeave, stopStereo]);
 
   const interact = useCallback(() => {
+    computerRouteRef.current = null;
     if (dialogueRef.current) { closeDialogue(); return; }
     if (leaving || uiBlockingRef.current || moveRef.current || doorTransitionRef.current.phase !== "idle") return;
-    if (
-      floor === "upstairs" &&
-      playerRef.current.x === ALGY_HOUSE_UPSTAIRS_DOOR.x &&
-      playerRef.current.y === ALGY_HOUSE_UPSTAIRS_DOOR.y - 1 &&
-      playerRef.current.dir === "s"
-    ) {
-      heldDirectionsRef.current.clear();
-      setDialogueKind("door");
-      dialogueRef.current = true;
-      setDialogueOpen(true);
-      return;
-    }
     if (algyHouseHostFacing(floor, playerRef.current, characterId)) {
-      for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
-      heldDirectionsRef.current.clear();
       const opposite: Record<HouseDirection, HouseDirection> = { n: "s", s: "n", e: "w", w: "e" };
       hostDirectionRef.current = opposite[playerRef.current.dir];
-      setDialogueKind("host");
-      dialogueRef.current = true;
-      setDialogueOpen(true);
+      openDialogue("host");
       return;
     }
     if (algyHouseComputerFacing(floor, playerRef.current)) {
-      for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
-      heldDirectionsRef.current.clear();
-      setDialogueKind("computer");
-      dialogueRef.current = true;
-      setDialogueOpen(true);
+      openDialogue("computer");
       return;
     }
     if (algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo") {
       volumeInputRef.current?.focus({ preventScroll: true });
     }
-  }, [characterId, closeDialogue, floor, leaving]);
+  }, [characterId, closeDialogue, floor, leaving, openDialogue]);
 
-  const beginMove = useCallback((direction: HouseDirection) => {
+  const beginMove = useCallback((direction: HouseDirection, automatic = false) => {
     if (
       leavingRef.current ||
       dialogueRef.current ||
       uiBlockingRef.current ||
       doorTransitionRef.current.phase !== "idle" ||
-      blockedDirectionsRef.current.has(direction) ||
+      (!automatic && blockedDirectionsRef.current.has(direction)) ||
       moveRef.current
     ) return;
     const player = playerRef.current;
@@ -1130,6 +1127,11 @@ export default function AlgysHouseInterior({
     player.dir = direction;
     setNearStereo(algyHouseFeatureFacing(floor, player)?.id === "stereo");
     setNearHost(algyHouseHostFacing(floor, player, characterId));
+    if (floor === "upstairs" && direction === "s" &&
+      player.x === ALGY_HOUSE_UPSTAIRS_DOOR.x && player.y === ALGY_HOUSE_UPSTAIRS_DOOR.y - 1) {
+      openDialogue("door");
+      return;
+    }
     if (!step) return;
     if (step.transition === "outside") {
       // Fade from the inside doorway. Never animate a step beyond the room.
@@ -1149,11 +1151,49 @@ export default function AlgysHouseInterior({
       durationMs: MOVE_MS / (sprintToggleRef.current || shiftHeldRef.current ? 2 : 1),
       transition: step.transition,
     };
-  }, [characterId, floor, leaveHouse, onPrepareDoorSound]);
+  }, [characterId, floor, leaveHouse, onPrepareDoorSound, openDialogue]);
+
+  const advanceComputerRoute = useCallback(() => {
+    const route = computerRouteRef.current;
+    if (!route || moveRef.current) return;
+    if (floor !== "upstairs" || leavingRef.current || dialogueRef.current || uiBlockingRef.current || doorTransitionRef.current.phase !== "idle") {
+      computerRouteRef.current = null;
+      return;
+    }
+    const direction = route.shift();
+    if (direction) {
+      // Recheck every edge through the ordinary movement rules before stepping.
+      const step = algyHouseStep(floor, playerRef.current, direction, characterId);
+      if (!step || step.transition) { computerRouteRef.current = null; return; }
+      beginMove(direction, true);
+    } else {
+      const player = playerRef.current;
+      computerRouteRef.current = null;
+      if (player.x !== ALGY_HOUSE_COMPUTER_APPROACH.x || player.y !== ALGY_HOUSE_COMPUTER_APPROACH.y) return;
+      player.dir = ALGY_HOUSE_COMPUTER_APPROACH.dir;
+      safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...player }));
+      setNearStereo(false);
+      setNearHost(false);
+      openDialogue("computer");
+    }
+  }, [beginMove, characterId, floor, openDialogue]);
+
+  const walkToComputer = () => {
+    if (floor !== "upstairs" || leavingRef.current || dialogueRef.current || uiBlockingRef.current ||
+      doorTransitionRef.current.phase !== "idle" || moveRef.current?.transition) return;
+    // Finish an in-flight step, then follow the route from its landing tile.
+    const route = algyHouseComputerRoute(floor, moveRef.current?.to ?? playerRef.current, characterId);
+    if (!route) return;
+    for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
+    heldDirectionsRef.current.clear();
+    computerRouteRef.current = route;
+    advanceComputerRoute();
+  };
 
   useEffect(() => {
     beginMoveRef.current = beginMove;
-  }, [beginMove]);
+    advanceComputerRouteRef.current = advanceComputerRoute;
+  }, [beginMove, advanceComputerRoute]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -1189,6 +1229,7 @@ export default function AlgysHouseInterior({
       // Menus and tab changes clear movement. A key still held from before
       // that pause must be released before it can start another step.
       if (event.repeat && !heldDirectionsRef.current.has(direction)) return;
+      computerRouteRef.current = null;
       if (dialogueRef.current) {
         blockedDirectionsRef.current.add(direction);
         return;
@@ -1210,6 +1251,7 @@ export default function AlgysHouseInterior({
       }
     };
     const clearHeld = () => {
+      computerRouteRef.current = null;
       shiftHeldRef.current = false;
       heldDirectionsRef.current.clear();
       blockedDirectionsRef.current.clear();
@@ -1249,6 +1291,7 @@ export default function AlgysHouseInterior({
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
+        setViewport({ width, height });
       }
     };
 
@@ -1268,16 +1311,6 @@ export default function AlgysHouseInterior({
         moveRef.current = null;
         setNearStereo(algyHouseFeatureFacing(floor, player)?.id === "stereo");
         setNearHost(algyHouseHostFacing(floor, player, characterId));
-        const atLockedDoorApproach = floor === "upstairs" &&
-          player.x === ALGY_HOUSE_UPSTAIRS_DOOR.x && player.y === ALGY_HOUSE_UPSTAIRS_DOOR.y - 1;
-        if (!atLockedDoorApproach) doorApproachLatchedRef.current = false;
-        if (atLockedDoorApproach && !doorApproachLatchedRef.current) {
-          doorApproachLatchedRef.current = true;
-          setDialogueKind("door");
-          dialogueRef.current = true;
-          heldDirectionsRef.current.clear();
-          setDialogueOpen(true);
-        }
         if (move.transition === "outside") {
           leaveHouse();
         } else if (move.transition === "ground" || move.transition === "upstairs") {
@@ -1286,7 +1319,8 @@ export default function AlgysHouseInterior({
           safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...player }));
           const held = Array.from(heldDirectionsRef.current);
           const nextDirection = held[held.length - 1];
-          if (nextDirection) beginMoveRef.current(nextDirection);
+          if (computerRouteRef.current) advanceComputerRouteRef.current();
+          else if (nextDirection) beginMoveRef.current(nextDirection);
         }
       }
 
@@ -1326,6 +1360,7 @@ export default function AlgysHouseInterior({
   }, [artStatus, images, characterId, floor, leaveHouse, onChangeFloor]);
 
   const pressDirection = (direction: HouseDirection) => {
+    computerRouteRef.current = null;
     if (dialogueRef.current || uiBlockingRef.current) return;
     if (blockedDirectionsRef.current.has(direction)) return;
     if (doorTransitionRef.current.phase !== "idle") {
@@ -1358,6 +1393,9 @@ export default function AlgysHouseInterior({
     cursor: "pointer",
   };
 
+  const computerArt = algyHouseFurnitureForFloor(floor).find((item) => item.id === "computer-desk")?.art;
+  const computerView = algyHouseGroundView(viewport.width, viewport.height);
+
   return (
     <main
       data-testid="algys-house-interior"
@@ -1380,6 +1418,25 @@ export default function AlgysHouseInterior({
         aria-label={floor === "upstairs" ? "Algy's House upstairs room, return staircase and closed lower-right door" : "Algy's House ground-floor room and staircase"}
         style={{ width: "100%", height: "100%", display: "block", imageRendering: "pixelated", visibility: artReady ? "visible" : "hidden" }}
       />
+
+      {computerArt && viewport.width > 0 && (
+        <button
+          type="button"
+          aria-label="Walk to computer"
+          title="Use computer"
+          disabled={!artReady || dialogueOpen || infoOpen || pickerOpen || leaving || doorTransitionPhase !== "idle"}
+          onClick={walkToComputer}
+          onContextMenu={(event) => event.preventDefault()}
+          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c89838]"
+          style={{ position: "absolute", padding: 0, border: 0, background: "transparent", cursor: "pointer",
+            left: computerView.centerX + (computerArt.x * ALGY_HOUSE_TILE - computerView.cameraX) * computerView.zoom,
+            top: computerView.centerY + (computerArt.y * ALGY_HOUSE_TILE - computerView.cameraY) * computerView.zoom,
+            width: computerArt.width * ALGY_HOUSE_TILE * computerView.zoom,
+            height: computerArt.height * ALGY_HOUSE_TILE * computerView.zoom,
+            touchAction: "manipulation", userSelect: "none", WebkitTouchCallout: "none",
+            visibility: artReady ? "visible" : "hidden" }}
+        />
+      )}
 
       {!artReady && (
         <section data-testid="house-art-cover" aria-label="House loading" style={{ position: "fixed", inset: 0, zIndex: 90, display: "grid", placeContent: "center", justifyItems: "center", gap: 20, padding: 24, background: "#120b1d", textAlign: "center", fontSize: 12, lineHeight: 2 }}>
@@ -1433,6 +1490,7 @@ export default function AlgysHouseInterior({
       >
         <div data-testid="house-top-row" style={{ display: "flex", alignItems: "flex-start", justifyContent: "flex-end", gap: 6, width: "fit-content", maxWidth: "calc(100vw - 80px)" }}>
           <button ref={infoButtonRef} type="button" disabled={infoOpen || pickerOpen} aria-label="Open info" aria-expanded={infoOpen} onClick={() => {
+            computerRouteRef.current = null;
             heldDirectionsRef.current.clear();
             moveRef.current = null;
             setPickerOpen(false);
@@ -1452,6 +1510,7 @@ export default function AlgysHouseInterior({
         </nav>
         {onChangeCharacter && (
           <button ref={characterButtonRef} type="button" disabled={infoOpen || pickerOpen || characterChangePending} aria-label="Change character" aria-expanded={pickerOpen} onClick={() => {
+            computerRouteRef.current = null;
             heldDirectionsRef.current.clear();
             moveRef.current = null;
             if (dialogueRef.current) closeDialogue();
@@ -1550,7 +1609,10 @@ export default function AlgysHouseInterior({
               onClick={(event) => {
                 // Pointer movement already starts on press. Native keyboard
                 // and assistive clicks have no pointer press, so take one step.
-                if (event.detail === 0) beginMoveRef.current(direction);
+                if (event.detail === 0) {
+                  computerRouteRef.current = null;
+                  beginMoveRef.current(direction);
+                }
               }}
               onPointerDown={(event) => {
                 event.preventDefault();

@@ -657,23 +657,25 @@ describe("Algy's House compact two-floor interface", () => {
     });
   });
 
-  it("opens the locked-door message once on approach and allows an explicit reopen", () => {
+  it("opens the locked-door message only when attempting to walk down from its approach tile", () => {
     window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor: "upstairs", x: 11, y: 7, dir: "s", frame: 0 }));
     renderRoom({ floor: "upstairs" });
 
     fireEvent.keyDown(window, { key: "ArrowDown" });
-    completeCurrentMove();
-    expect(screen.getByRole("dialog")).toHaveTextContent("DOOR");
-    expect(screen.getByRole("dialog")).toHaveTextContent("This door is locked...");
     fireEvent.keyUp(window, { key: "ArrowDown" });
-    fireEvent.click(screen.getByRole("button", { name: "Close conversation" }));
+    completeCurrentMove();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Enter" });
+    fireEvent.click(screen.getByRole("button", { name: "Use" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: "ArrowDown" });
+    expect(screen.getByRole("dialog")).toHaveTextContent("This door is locked...");
+    fireEvent.click(screen.getByRole("button", { name: "Close conversation" }));
+    fireEvent.keyDown(window, { key: "ArrowDown", repeat: true });
+    completeCurrentMove();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     fireEvent.keyUp(window, { key: "ArrowDown" });
-    fireEvent.keyDown(window, { key: "Enter" });
-    expect(screen.getByRole("dialog")).toHaveTextContent("This door is locked...");
-    fireEvent.keyDown(window, { key: "Enter" });
     fireEvent.keyDown(window, { key: "ArrowUp" });
     fireEvent.keyUp(window, { key: "ArrowUp" });
     completeCurrentMove();
@@ -682,6 +684,23 @@ describe("Algy's House compact two-floor interface", () => {
     fireEvent.keyUp(window, { key: "ArrowDown" });
     completeCurrentMove();
     expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 11, y: 8 });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    const down = screen.getByRole("button", { name: "Move down" });
+    fireEvent.pointerDown(down, { pointerId: 1, pointerType: "touch" });
     expect(screen.getByRole("dialog")).toHaveTextContent("This door is locked...");
+    fireEvent.pointerUp(down, { pointerId: 1, pointerType: "touch" });
+    fireEvent.click(screen.getByRole("button", { name: "Close conversation" }));
+    completeCurrentMove();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("lets the player cross the locked-door approach sideways without a popup", () => {
+    window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor: "upstairs", x: 10, y: 8, dir: "e", frame: 0 }));
+    renderRoom({ floor: "upstairs" });
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    fireEvent.keyUp(window, { key: "ArrowRight" });
+    completeCurrentMove();
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 11, y: 8 });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AlgysHouseInterior from "./AlgysHouseInterior";
-import { ALGY_HOUSE_PLAYER_KEY } from "./algyHouseScene";
+import { hubStepDuration } from "./hubMovement";
+import { ALGY_HOUSE_PLAYER_KEY, ALGY_HOUSE_TILE } from "./algyHouseScene";
 
 type TransitionPhase = "idle" | "out" | "hold" | "in";
 type CharacterId = "algy" | "mitch";
@@ -41,6 +42,7 @@ function props(overrides: Partial<{
 describe("Algy's House exterior-door transition", () => {
   let scheduledFrame: FrameRequestCallback | null;
   let avatarFrames: Array<{ y: number; alpha: number }>;
+  let spriteDraws: Array<{ x: number; sourceX: number }>;
 
   beforeEach(() => {
     window.sessionStorage.clear();
@@ -49,6 +51,7 @@ describe("Algy's House exterior-door transition", () => {
     }));
     scheduledFrame = null;
     avatarFrames = [];
+    spriteDraws = [];
     vi.spyOn(performance, "now").mockReturnValue(0);
     Object.defineProperty(window, "requestAnimationFrame", {
       configurable: true,
@@ -63,6 +66,7 @@ describe("Algy's House exterior-door transition", () => {
       const image = args[0] as { src?: string } | undefined;
       if (args.length === 9 && /(?:algy|mitch)_run\.png$/.test(image?.src ?? "")) {
         avatarFrames.push({ y: args[6] as number, alpha: context.globalAlpha });
+        spriteDraws.push({ x: args[5] as number, sourceX: args[1] as number });
       }
     } };
     const alphaStack: number[] = [];
@@ -138,15 +142,46 @@ describe("Algy's House exterior-door transition", () => {
     frame(0);
     act(() => fireEvent.keyDown(window, { key: "ArrowDown" }));
     expect(onLeave).not.toHaveBeenCalled();
-    frame(75);
+    frame(hubStepDuration(false, ALGY_HOUSE_TILE) / 2);
     expect(avatarFrames.at(-1)?.y).toBeGreaterThan(320);
     expect(avatarFrames.at(-1)?.y).toBeLessThan(368);
-    frame(150);
+    frame(hubStepDuration(false, ALGY_HOUSE_TILE));
     expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({
       floor: "ground", x: 3, y: 8,
     });
     expect(onLeave).toHaveBeenCalledTimes(1);
     act(() => fireEvent.keyDown(window, { key: "ArrowDown", repeat: true }));
     expect(onLeave).toHaveBeenCalledTimes(1);
+  });
+
+  it("moves linearly and advances the gait with visible distance", () => {
+    render(<AlgysHouseInterior {...props()} />);
+    const frame = (now: number) => act(() => scheduledFrame?.(now));
+    const duration = hubStepDuration(false, ALGY_HOUSE_TILE);
+    frame(0);
+    const startX = spriteDraws.at(-1)!.x;
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+
+    for (const [progress, expectedFrame] of [[0.25, 1], [0.5, 2], [0.75, 3]] as const) {
+      frame(duration * progress);
+      expect(spriteDraws.at(-1)?.x).toBeCloseTo(startX + 48 * progress, 5);
+      expect(spriteDraws.at(-1)?.sourceX).toBe(expectedFrame * 16);
+    }
+    frame(duration);
+    expect(spriteDraws.at(-1)).toMatchObject({ x: startX + 48, sourceX: 4 * 16 });
+
+    for (const [progress, expectedFrame] of [[0.25, 5], [0.5, 0], [0.75, 1]] as const) {
+      frame(duration * (1 + progress));
+      expect(spriteDraws.at(-1)?.x).toBeCloseTo(startX + 48 * (1 + progress), 5);
+      expect(spriteDraws.at(-1)?.sourceX).toBe(expectedFrame * 16);
+    }
+    fireEvent.keyUp(window, { key: "ArrowRight" });
+    frame(duration * 2);
+    expect(spriteDraws.at(-1)).toMatchObject({ x: startX + 96, sourceX: 0 });
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 5, y: 8 });
+    vi.mocked(performance.now).mockReturnValue(duration * 2);
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    frame(duration * 2.1);
+    expect(spriteDraws.at(-1)?.sourceX).toBe(0);
   });
 });

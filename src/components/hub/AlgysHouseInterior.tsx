@@ -39,6 +39,7 @@ import {
 import { useHouseStereo } from "./useHouseStereo";
 import { ALGY_HOUSE_COMPUTER_APPROACH, algyHouseComputerRoute } from "./algyHouseComputerRoute";
 import { HUB_DPAD_BUTTON_STYLE, HUB_DPAD_GO_STYLE, HUB_DPAD_LAYOUT_STYLE } from "./hubDpadStyles";
+import { hubMovementFrame, hubStepDuration } from "./hubMovement";
 import { useHouseArt } from "./useHouseArt";
 import type { HouseCharacterId } from "./algyHouseVisitor";
 import { algyHouseFurnitureForFloor, algyHouseGroundView, houseDecorDepth, HOUSE_COUCH_TV_ART, HOUSE_COUCH_TV_POSITION } from "./algyHouseLayout";
@@ -60,7 +61,6 @@ const KEY_DIRECTION: Record<string, HouseDirection | undefined> = {
 };
 
 const FONT = "'Press Start 2P', monospace";
-const MOVE_MS = 150;
 const HOUSE_DIALOGUE = {
   host: { speaker: "ALGY", line: ALGY_HOUSE_MITCH_GREETING },
   door: { speaker: "DOOR", line: "This door is locked..." },
@@ -809,9 +809,8 @@ function drawRoom(
   hostDirection: HouseDirection,
 ): void {
   const progress = move ? Math.min(1, (now - move.startedAt) / move.durationMs) : 1;
-  const ease = progress * progress * (3 - 2 * progress);
-  const drawTileX = move ? move.from.x + (move.to.x - move.from.x) * ease : player.x;
-  const drawTileY = move ? move.from.y + (move.to.y - move.from.y) * ease : player.y;
+  const drawTileX = move ? move.from.x + (move.to.x - move.from.x) * progress : player.x;
+  const drawTileY = move ? move.from.y + (move.to.y - move.from.y) * progress : player.y;
 
   context.fillStyle = "#120b1d";
   context.fillRect(0, 0, viewportW, viewportH);
@@ -841,7 +840,7 @@ function drawRoom(
   const avatarX = drawTileX * ALGY_HOUSE_TILE;
   const avatarY = drawTileY * ALGY_HOUSE_TILE + algyHouseStairFootOffset(floor, drawTileX, drawTileY);
   const moving = move !== null;
-  const animationFrame = moving ? Math.floor(now / 95) % 6 : player.frame % 6;
+  const animationFrame = hubMovementFrame(player.frame, progress, moving, ALGY_HOUSE_TILE);
   const drawX = avatarX + (ALGY_HOUSE_TILE - 32) / 2;
   const drawY = avatarY + ALGY_HOUSE_TILE - 64;
   const drawStereo = () => {
@@ -943,7 +942,7 @@ export default function AlgysHouseInterior({
   const hostDirectionRef = useRef<HouseDirection>("s");
   const dialogueRef = useRef(false);
   const computerRouteRef = useRef<HouseDirection[] | null>(null);
-  const advanceComputerRouteRef = useRef<() => void>(() => undefined);
+  const advanceComputerRouteRef = useRef<(startedAt?: number) => void>(() => undefined);
   const restoreDialogueFocusRef = useRef(false);
   const dialogueCloseRef = useRef<HTMLButtonElement>(null);
   const interactButtonRef = useRef<HTMLButtonElement>(null);
@@ -968,7 +967,7 @@ export default function AlgysHouseInterior({
   const shiftHeldRef = useRef(false);
   const [sprintActive, setSprintActive] = useState(false);
   const blockedDirectionsRef = useRef<Set<HouseDirection>>(new Set());
-  const beginMoveRef = useRef<(direction: HouseDirection) => void>(() => undefined);
+  const beginMoveRef = useRef<(direction: HouseDirection, automatic?: boolean, startedAt?: number) => void>(() => undefined);
   const doorTransitionRef = useRef({
     phase: doorTransitionPhase,
     startedAt: typeof performance === "undefined" ? 0 : performance.now(),
@@ -1008,12 +1007,14 @@ export default function AlgysHouseInterior({
       for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
       heldDirectionsRef.current.clear();
       moveRef.current = null;
+      playerRef.current.frame = 0;
     }
   }, [doorTransitionPhase]);
 
   useEffect(() => {
     computerRouteRef.current = null;
     moveRef.current = null;
+    playerRef.current.frame = 0;
     for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
     heldDirectionsRef.current.clear();
     if (persistTownScene) {
@@ -1089,6 +1090,7 @@ export default function AlgysHouseInterior({
     computerRouteRef.current = null;
     heldDirectionsRef.current.clear();
     moveRef.current = null;
+    playerRef.current.frame = 0;
     stopStereo();
     setLeaving(true);
     onLeave();
@@ -1113,7 +1115,7 @@ export default function AlgysHouseInterior({
     }
   }, [characterId, closeDialogue, floor, leaving, openDialogue]);
 
-  const beginMove = useCallback((direction: HouseDirection, automatic = false) => {
+  const beginMove = useCallback((direction: HouseDirection, automatic = false, startedAt = performance.now()) => {
     if (
       leavingRef.current ||
       dialogueRef.current ||
@@ -1147,13 +1149,13 @@ export default function AlgysHouseInterior({
       from: { x: player.x, y: player.y },
       to: step.point,
       dir: direction,
-      startedAt: performance.now(),
-      durationMs: MOVE_MS / (sprintToggleRef.current || shiftHeldRef.current ? 2 : 1),
+      startedAt,
+      durationMs: hubStepDuration(sprintToggleRef.current || shiftHeldRef.current, ALGY_HOUSE_TILE),
       transition: step.transition,
     };
   }, [characterId, floor, leaveHouse, onPrepareDoorSound, openDialogue]);
 
-  const advanceComputerRoute = useCallback(() => {
+  const advanceComputerRoute = useCallback((startedAt?: number) => {
     const route = computerRouteRef.current;
     if (!route || moveRef.current) return;
     if (floor !== "upstairs" || leavingRef.current || dialogueRef.current || uiBlockingRef.current || doorTransitionRef.current.phase !== "idle") {
@@ -1165,7 +1167,7 @@ export default function AlgysHouseInterior({
       // Recheck every edge through the ordinary movement rules before stepping.
       const step = algyHouseStep(floor, playerRef.current, direction, characterId);
       if (!step || step.transition) { computerRouteRef.current = null; return; }
-      beginMove(direction, true);
+      beginMove(direction, true, startedAt);
     } else {
       const player = playerRef.current;
       computerRouteRef.current = null;
@@ -1284,6 +1286,7 @@ export default function AlgysHouseInterior({
 
     let frameId = 0;
     let firstFramePainted = false;
+    let lastFrameAt: number | null = null;
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       const width = Math.max(1, Math.round(rect.width));
@@ -1296,6 +1299,8 @@ export default function AlgysHouseInterior({
     };
 
     const render = (now: number) => {
+      const frameGap = lastFrameAt === null ? 0 : now - lastFrameAt;
+      lastFrameAt = now;
       resize();
       const viewportW = canvas.width;
       const viewportH = canvas.height;
@@ -1307,20 +1312,28 @@ export default function AlgysHouseInterior({
         player.x = move.to.x;
         player.y = move.to.y;
         player.dir = move.dir;
-        player.frame = (player.frame + 1) % 6;
+        player.frame += 1;
         moveRef.current = null;
         setNearStereo(algyHouseFeatureFacing(floor, player)?.id === "stereo");
         setNearHost(algyHouseHostFacing(floor, player, characterId));
         if (move.transition === "outside") {
+          player.frame = 0;
           leaveHouse();
         } else if (move.transition === "ground" || move.transition === "upstairs") {
+          player.frame = 0;
           onChangeFloor(move.transition);
         } else {
-          safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...player }));
           const held = Array.from(heldDirectionsRef.current);
           const nextDirection = held[held.length - 1];
-          if (computerRouteRef.current) advanceComputerRouteRef.current();
-          else if (nextDirection) beginMoveRef.current(nextDirection);
+          // Carry only a missed display frame into a continuous route. A tab
+          // resume can finish the current tile, but cannot jump through more.
+          const remainder = frameGap >= 0 && frameGap <= 100
+            ? Math.min(34, Math.max(0, now - move.startedAt - move.durationMs))
+            : 0;
+          if (computerRouteRef.current) advanceComputerRouteRef.current(now - remainder);
+          else if (nextDirection) beginMoveRef.current(nextDirection, false, now - remainder);
+          if (!moveRef.current) player.frame = 0;
+          safeSessionSet(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...player }));
         }
       }
 
@@ -1495,6 +1508,7 @@ export default function AlgysHouseInterior({
             computerRouteRef.current = null;
             heldDirectionsRef.current.clear();
             moveRef.current = null;
+            playerRef.current.frame = 0;
             setPickerOpen(false);
             restoreMenuFocusRef.current = infoOpen ? "info" : null;
             setInfoOpen((open) => !open);
@@ -1515,6 +1529,7 @@ export default function AlgysHouseInterior({
             computerRouteRef.current = null;
             heldDirectionsRef.current.clear();
             moveRef.current = null;
+            playerRef.current.frame = 0;
             if (dialogueRef.current) closeDialogue();
             setInfoOpen(false);
             restoreMenuFocusRef.current = pickerOpen ? "character" : null;

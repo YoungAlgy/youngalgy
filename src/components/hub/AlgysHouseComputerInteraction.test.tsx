@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AlgysHouseInterior from "./AlgysHouseInterior";
+import { hubStepDuration } from "./hubMovement";
 
 const houseArtMock = vi.hoisted(() => ({
   images: { atlas: null, avatar: null, hostAvatar: null, groundStairArt: null, upstairsStairArt: null },
@@ -13,6 +14,7 @@ vi.mock("./useHouseArt", () => ({
 
 import {
   ALGY_HOUSE_PLAYER_KEY,
+  ALGY_HOUSE_TILE,
   algyHouseComputerFacing,
   type AlgyHouseFloor,
   type HousePlayer,
@@ -22,6 +24,12 @@ import { algyHouseGroundView } from "./algyHouseLayout";
 const COMPUTER_LINE = "Codex is thinking...";
 
 let scheduledFrame: FrameRequestCallback | null = null;
+let testNow = 0;
+
+function frameNext(): void {
+  testNow += hubStepDuration(false, ALGY_HOUSE_TILE);
+  act(() => scheduledFrame?.(testNow));
+}
 
 function savePlayer(floor: AlgyHouseFloor, player: HousePlayer): void {
   window.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, JSON.stringify({ floor, ...player }));
@@ -54,7 +62,8 @@ describe("Algy's House computer interaction", () => {
   beforeEach(() => {
     window.sessionStorage.clear();
     scheduledFrame = null;
-    vi.spyOn(performance, "now").mockReturnValue(0);
+    testNow = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => testNow);
     vi.spyOn(HTMLCanvasElement.prototype, "getBoundingClientRect").mockReturnValue({
       x: 0, y: 0, left: 0, top: 0, right: 1280, bottom: 800, width: 1280, height: 800, toJSON: () => ({}),
     });
@@ -157,7 +166,7 @@ describe("Algy's House computer interaction", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).toMatchObject({ x: 1, y: 2 });
     for (let step = 0; step < 40 && !screen.queryByRole("dialog"); step++) {
-      act(() => scheduledFrame?.(200));
+      frameNext();
     }
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).toMatchObject({ floor: "upstairs", x: 10, y: 2, dir: "n" });
     expectComputerDialogue();
@@ -182,9 +191,9 @@ describe("Algy's House computer interaction", () => {
     fireEvent.click(screen.getByRole("button", { name: "Walk to computer" }));
     fireEvent.click(screen.getByRole("button", { name: "Walk to computer" }));
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).toMatchObject({ x: 8, y: 4 });
-    act(() => scheduledFrame?.(200));
+    frameNext();
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).toMatchObject({ x: 9, y: 4 });
-    for (let step = 0; step < 15 && !screen.queryByRole("dialog"); step++) act(() => scheduledFrame?.(200));
+    for (let step = 0; step < 15 && !screen.queryByRole("dialog"); step++) frameNext();
     expectComputerDialogue();
     fireEvent.click(screen.getByRole("button", { name: "Close conversation" }));
     const stepCount = props.onPrepareDoorSound.mock.calls.length;
@@ -209,7 +218,7 @@ describe("Algy's House computer interaction", () => {
     else if (cancel === "character") fireEvent.click(screen.getByRole("button", { name: "Change character" }));
     else if (cancel === "use") fireEvent.click(screen.getByRole("button", { name: "Use" }));
     else fireEvent(window, new Event(cancel));
-    for (let step = 0; step < 30; step++) act(() => scheduledFrame?.(200));
+    for (let step = 0; step < 30; step++) frameNext();
     expect(screen.queryByText(COMPUTER_LINE)).not.toBeInTheDocument();
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).not.toMatchObject({ x: 10, y: 2 });
   });
@@ -222,7 +231,7 @@ describe("Algy's House computer interaction", () => {
       floor={change === "ground" ? "ground" : "upstairs"}
       characterId={change === "character" ? "mitch" : "algy"}
       doorTransitionPhase={change === "transition" ? "out" : "idle"} />);
-    for (let step = 0; step < 30; step++) act(() => scheduledFrame?.(200));
+    for (let step = 0; step < 30; step++) frameNext();
     expect(screen.queryByText(COMPUTER_LINE)).not.toBeInTheDocument();
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).toMatchObject(
       change === "ground" ? { floor: "ground", x: 5, y: 1 } : { floor: "upstairs", x: 7, y: 7 },
@@ -245,7 +254,7 @@ describe("Algy's House computer interaction", () => {
     fireEvent.pointerUp(target, { pointerType: "touch", pointerId: 2 });
     fireEvent.click(target);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    act(() => scheduledFrame?.(200));
+    frameNext();
     expectComputerDialogue();
   });
 
@@ -274,7 +283,7 @@ describe("Algy's House computer interaction", () => {
     const right = screen.getByRole("button", { name: "Move right" });
     fireEvent.pointerDown(right, { pointerType: "touch", pointerId: 1 });
     fireEvent.click(screen.getByRole("button", { name: "Walk to computer" }));
-    for (let step = 0; step < 20 && !screen.queryByRole("dialog"); step++) act(() => scheduledFrame?.(200));
+    for (let step = 0; step < 20 && !screen.queryByRole("dialog"); step++) frameNext();
     expectComputerDialogue();
     fireEvent.click(screen.getByRole("button", { name: "Close conversation" }));
     act(() => scheduledFrame?.(500));
@@ -286,7 +295,7 @@ describe("Algy's House computer interaction", () => {
     const down = screen.getByRole("button", { name: "Move down" });
     fireEvent.pointerDown(down, { pointerType: "touch", pointerId: 2 });
     fireEvent.pointerUp(down, { pointerType: "touch", pointerId: 2 });
-    act(() => scheduledFrame?.(200));
+    frameNext();
     expect(JSON.parse(sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)!)).toMatchObject({ x: 10, y: 3 });
   });
 });

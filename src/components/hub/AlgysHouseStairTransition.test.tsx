@@ -1,8 +1,10 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AlgysHouseInterior from "./AlgysHouseInterior";
+import { hubStepDuration } from "./hubMovement";
 import {
   ALGY_HOUSE_PLAYER_KEY,
+  ALGY_HOUSE_TILE,
   ALGY_HOUSE_UPSTAIRS_SPAWN,
 } from "./algyHouseScene";
 
@@ -159,11 +161,11 @@ describe("Algy's House upstairs stair descent transition", () => {
     expect(avatarClipped.at(-1)).toBe(true);
 
     fireEvent.keyDown(window, { key: "ArrowRight" });
-    frame(75);
+    frame(hubStepDuration(false, ALGY_HOUSE_TILE) / 2);
     expect(avatarAlphas.at(-1)).toBeCloseTo(0.5, 5);
     expect(shadowAlphas.at(-1)).toBeCloseTo(0.5, 5);
 
-    frame(150);
+    frame(hubStepDuration(false, ALGY_HOUSE_TILE));
     expect(onChangeFloor).toHaveBeenCalledTimes(1);
     expect(onChangeFloor).toHaveBeenCalledWith("ground");
     expect(avatarAlphas.at(-1)).toBe(0);

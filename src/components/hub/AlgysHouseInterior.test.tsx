@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AlgysHouseInterior from "./AlgysHouseInterior";
+import { hubStepDuration } from "./hubMovement";
 
 const houseArtMock = vi.hoisted(() => ({
   images: { atlas: null, avatar: null, hostAvatar: null, groundStairArt: null, upstairsStairArt: null },
@@ -29,6 +30,7 @@ import {
   ALGY_HOUSE_STAIRS_DOWN,
   ALGY_HOUSE_STAIRS_UP,
   ALGY_HOUSE_STAIRS_UP_ORIGIN,
+  ALGY_HOUSE_TILE,
   ALGY_HOUSE_UPSTAIRS_GRID,
   ALGY_HOUSE_UPSTAIRS_DOOR,
   ALGY_HOUSE_UPSTAIRS_SPAWN,
@@ -128,11 +130,13 @@ function renderRoom(overrides?: Parameters<typeof roomProps>[0]) {
 }
 
 let scheduledFrame: FrameRequestCallback | null = null;
+let testNow = 0;
 
 function completeCurrentMove(): void {
   const callback = scheduledFrame;
   expect(callback).not.toBeNull();
-  act(() => callback?.(200));
+  testNow += hubStepDuration(false, ALGY_HOUSE_TILE);
+  act(() => callback?.(testNow));
 }
 
 describe("Algy's House compact two-floor map", () => {
@@ -342,7 +346,8 @@ describe("Algy's House compact two-floor interface", () => {
   beforeEach(() => {
     window.sessionStorage.clear();
     scheduledFrame = null;
-    vi.spyOn(performance, "now").mockReturnValue(0);
+    testNow = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => testNow);
     Object.defineProperty(window, "requestAnimationFrame", {
       configurable: true,
       value: vi.fn((callback: FrameRequestCallback) => {
@@ -610,7 +615,7 @@ describe("Algy's House compact two-floor interface", () => {
     renderRoom();
     if (mode === "go") fireEvent.click(screen.getByRole("button", { name: "Go" }));
     if (mode === "shift") fireEvent.keyDown(window, { key: "Shift" });
-    const duration = mode === "walk" ? 150 : 75;
+    const duration = hubStepDuration(mode !== "walk", ALGY_HOUSE_TILE);
     fireEvent.keyDown(window, { key: "ArrowRight" });
     fireEvent.keyUp(window, { key: "ArrowRight" });
     act(() => scheduledFrame?.(duration - 1));
@@ -628,9 +633,9 @@ describe("Algy's House compact two-floor interface", () => {
     else fireEvent(window, new Event(event));
     fireEvent.keyDown(window, { key: "ArrowRight" });
     fireEvent.keyUp(window, { key: "ArrowRight" });
-    act(() => scheduledFrame?.(75));
+    act(() => scheduledFrame?.(hubStepDuration(true, ALGY_HOUSE_TILE)));
     expect(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
-    act(() => scheduledFrame?.(150));
+    act(() => scheduledFrame?.(hubStepDuration(false, ALGY_HOUSE_TILE)));
     expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 4, y: 8 });
   });
 

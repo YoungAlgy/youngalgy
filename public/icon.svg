@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Alex Holmes">
-  <rect width="64" height="64" rx="13" fill="#F4EFE0"/>
-  <text x="32" y="43" text-anchor="middle" font-family="Georgia, 'Source Serif 4', 'Times New Roman', serif" font-weight="700" font-size="31" letter-spacing="-0.5" fill="#1F3D2E">AH<tspan fill="#C9A961">.</tspan></text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" role="img" aria-label="Toggle"><rect width="16" height="16" fill="#1F3D2E"/><path fill="#F4EFE0" d="M4 5h8v1H4zM3 6h10v1H3zM2 7h12v1H2zM2 8h12v1H2zM3 9h10v1H3zM4 10h8v1H4z"/><path fill="#C9A961" d="M10 6h2v1H10zM9 7h4v1H9zM9 8h4v1H9zM10 9h2v1H10z"/></svg>

@@ -157,7 +157,7 @@ describe("Algy's House visitor host", () => {
   it("keeps GO as sprint at the host and preserves Use dialogue focus restoration", () => {
     savePlayer("upstairs", { x: 9, y: 4, dir: "n", frame: 0 });
     renderRoom({ characterId: "mitch", floor: "upstairs" });
-    const go = screen.getByRole("button", { name: "Go" });
+    const go = screen.getByRole("button", { name: "Sprint" });
     const interact = screen.getByRole("button", { name: "Use" });
 
     expect(go).toHaveAttribute("aria-pressed", "false");

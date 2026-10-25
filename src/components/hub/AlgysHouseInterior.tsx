@@ -83,7 +83,7 @@ interface AlgysHouseInteriorProps {
   volume?: number;
   onVolumeChange?: (volume: number) => void;
   onToggleMute: () => void;
-  onLeave: () => void;
+  onLeave: () => void | boolean | Promise<boolean>;
   onChangeFloor: (floor: AlgyHouseFloor) => void;
   onChangeCharacter?: (characterId: HouseCharacterId) => void;
   characterChangePending?: boolean;
@@ -974,6 +974,15 @@ export default function AlgysHouseInterior({
   });
   const [leaving, setLeaving] = useState(false);
   const leavingRef = useRef(false);
+  const leaveLifecycleRef = useRef({ mounted: true, request: 0 });
+  useEffect(() => {
+    const lifecycle = leaveLifecycleRef.current;
+    lifecycle.mounted = true;
+    return () => {
+      lifecycle.mounted = false;
+      lifecycle.request += 1;
+    };
+  }, []);
   const [nearStereo, setNearStereo] = useState(() => algyHouseFeatureFacing(floor, playerRef.current)?.id === "stereo");
   const [musicReady, setMusicReady] = useState(false);
   // Keep music alive across floor/character art loads after the first reveal.
@@ -1087,13 +1096,29 @@ export default function AlgysHouseInterior({
   const leaveHouse = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
+    const request = ++leaveLifecycleRef.current.request;
     computerRouteRef.current = null;
+    for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
     heldDirectionsRef.current.clear();
+    shiftHeldRef.current = false;
     moveRef.current = null;
     playerRef.current.frame = 0;
     stopStereo();
     setLeaving(true);
-    onLeave();
+    const recover = () => {
+      if (!leaveLifecycleRef.current.mounted || request !== leaveLifecycleRef.current.request) return;
+      for (const direction of heldDirectionsRef.current) blockedDirectionsRef.current.add(direction);
+      heldDirectionsRef.current.clear();
+      moveRef.current = null;
+      playerRef.current.frame = 0;
+      leavingRef.current = false;
+      setLeaving(false);
+    };
+    try {
+      const result = onLeave();
+      if (result === false) recover();
+      else if (result) void Promise.resolve(result).then((accepted) => { if (!accepted) recover(); }, recover);
+    } catch { recover(); }
   }, [onLeave, stopStereo]);
 
   const interact = useCallback(() => {
@@ -1564,7 +1589,7 @@ export default function AlgysHouseInterior({
           if (event.key === "Tab") { event.preventDefault(); infoCloseRef.current?.focus(); }
         }} style={{ position: "fixed", zIndex: 8, top: 64, right: 12, width: 260, maxWidth: "calc(100vw - 24px)", boxSizing: "border-box", padding: 12, border: "2px solid #c89838", background: "rgba(28, 18, 12, 0.96)", boxShadow: "2px 2px 0 rgba(0,0,0,0.5)", color: "#f4e8c1", fontSize: 9, lineHeight: 1.8 }}>
           <strong>KEY</strong>
-          <p>Arrow keys or WASD: move<br />GO: toggle sprint. Hold Shift to sprint.<br />USE, Enter, Space, or E: interact</p>
+          <p>Arrow keys or WASD: move<br />SPRINT: toggle sprint. Hold Shift to sprint.<br />USE, Enter, Space, or E: interact</p>
           <p>Music starts when you enter. Some browsers need a tap or key press first.</p>
           <p>The top-left button mutes music. Face the upstairs speaker to adjust its volume.</p>
           <p style={{ marginBottom: 0 }}>Environment art licensed from LimeZu.</p>
@@ -1653,7 +1678,7 @@ export default function AlgysHouseInterior({
         })}
         <button
           type="button"
-          aria-label="Go"
+          aria-label="Sprint"
           title={sprintActive ? "Sprint on" : "Sprint off"}
           aria-pressed={sprintActive}
           onPointerDown={(event) => {
@@ -1681,7 +1706,7 @@ export default function AlgysHouseInterior({
             color: sprintActive ? "#00FFFF" : "#f4e8c1",
           }}
         >
-          GO
+          SPRINT
         </button>
       </div>
 
@@ -1696,6 +1721,7 @@ export default function AlgysHouseInterior({
         style={{
           ...HUB_DPAD_GO_STYLE,
           position: "fixed", left: "max(16px, env(safe-area-inset-left))", bottom: "max(16px, env(safe-area-inset-bottom))", zIndex: 5,
+          fontSize: 8,
           visibility: !artReady || dialogueOpen || infoOpen || pickerOpen ? "hidden" : "visible",
         }}
       >

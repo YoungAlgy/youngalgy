@@ -39,9 +39,10 @@ export const HUB_DPAD_BUTTON_STYLE: CSSProperties = {
 export const HUB_DPAD_GO_STYLE: CSSProperties = {
   ...HUB_DPAD_BUTTON_STYLE,
   fontFamily: "'Press Start 2P', monospace",
-  fontSize: 8,
+  fontSize: 6,
   fontWeight: 400,
   lineHeight: 1,
   letterSpacing: "0.05em",
+  whiteSpace: "nowrap",
   transition: "background 120ms ease, border-color 120ms ease, box-shadow 120ms ease",
 };

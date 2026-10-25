@@ -121,7 +121,7 @@ describe("Algy's House computer interaction", () => {
   it("keeps GO as sprint at the computer and restores Use focus after dialogue", async () => {
     savePlayer("upstairs", { x: 10, y: 2, dir: "n", frame: 0 });
     await renderRoom("mitch");
-    const go = screen.getByRole("button", { name: "Go" });
+    const go = screen.getByRole("button", { name: "Sprint" });
     const use = screen.getByRole("button", { name: "Use" });
 
     fireEvent.click(go, { detail: 0 });

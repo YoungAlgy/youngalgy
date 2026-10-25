@@ -49,6 +49,21 @@ export function algyHouseTownReturnHref(localPreview: boolean, characterId: Hous
   );
 }
 
+/** Only the exact local House preview joins the separate local Town app. */
+export function algyHouseExitHref(
+  localPreview: boolean,
+  origin: string,
+  characterId: HouseCharacterId,
+  explicitVisitor: boolean,
+): string {
+  if (localPreview && origin === "http://127.0.0.1:4185") {
+    return algyHouseVisitorHref("http://127.0.0.1:4182/pixel", characterId);
+  }
+  return explicitVisitor
+    ? algyHouseTownReturnHref(localPreview, characterId)
+    : (localPreview ? "/pixel" : "https://toggle.town/");
+}
+
 /** Remove only the one-time arrival marker after it has reset the old room visit. */
 export function houseVisitorReloadHref(href: string): string {
   const url = new URL(href, "https://youngalgy.com");

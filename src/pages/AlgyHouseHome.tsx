@@ -11,7 +11,7 @@ import {
 } from "@/components/hub/algyHouseScene";
 import { HOUSE_DOOR_FADE_MS } from "@/components/hub/algyHouseDoor";
 import {
-  algyHouseTownReturnHref,
+  algyHouseExitHref,
   hasExplicitHouseVisitor,
   houseCharacterFromSearch,
   houseVisitorReloadHref,
@@ -20,6 +20,7 @@ import {
   type HouseCharacterId,
 } from "@/components/hub/algyHouseVisitor";
 import { useHouseTransition } from "@/components/hub/useHouseTransition";
+import { attemptLocalHouseExit, LOCAL_HOUSE_ORIGIN } from "@/components/hub/localHouseExit";
 import { useRouteHead } from "@/components/landing/useRouteHead";
 import "../youngalgy-house.css";
 
@@ -102,6 +103,12 @@ export default function AlgyHouseHome() {
   const [settings, setSettings] = useState(initialSettings);
   const [characterPending, setCharacterPending] = useState(false);
   const [characterError, setCharacterError] = useState<string | null>(null);
+  const [exitPending, setExitPending] = useState(false);
+  const [exitNotice, setExitNotice] = useState<string | null>(null);
+  const localExitRef = useRef<Promise<boolean> | null>(null);
+  const localExitAbortRef = useRef<AbortController | null>(null);
+  const localExitDepartedRef = useRef(false);
+  const exitNoticeTimerRef = useRef<number | undefined>();
   const { phase, start, prepareSound } = useHouseTransition(settings.muted);
 
   useEffect(() => {
@@ -117,7 +124,20 @@ export default function AlgyHouseHome() {
     return () => {
       mountedRef.current = false;
       characterRequestRef.current += 1;
+      localExitAbortRef.current?.abort();
+      window.clearTimeout(exitNoticeTimerRef.current);
     };
+  }, []);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV || window.location.origin !== LOCAL_HOUSE_ORIGIN) return;
+    const onPageShow = (event: PageTransitionEvent) => {
+      // Back from a completed local departure must not restore the old input
+      // lock from the browser's page cache. Reload at the safe room entrance.
+      if (event.persisted && localExitDepartedRef.current) window.location.reload();
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
   }, []);
 
   useEffect(() => {
@@ -137,13 +157,14 @@ export default function AlgyHouseHome() {
   }, [townArrival]);
 
   const changeFloor = useCallback((target: AlgyHouseFloor) => {
-    if (target === floor) return;
+    if (localExitRef.current || target === floor) return;
     characterRequestRef.current += 1;
     setCharacterPending(false);
     start(() => setFloor(target), target === "upstairs" ? "stairs-up" : "stairs-down");
   }, [floor, start]);
 
   const changeCharacter = useCallback(async (target: HouseCharacterId) => {
+    if (localExitRef.current) return;
     const request = ++characterRequestRef.current;
     setCharacterError(null);
     if (target === characterId) {
@@ -173,15 +194,51 @@ export default function AlgyHouseHome() {
   const leave = useCallback(() => {
     characterRequestRef.current += 1;
     setCharacterPending(false);
-    start(() => {
+    const clearResume = () => {
       try {
         window.sessionStorage.removeItem(ALGY_HOUSE_SCENE_KEY);
         window.sessionStorage.removeItem(ALGY_HOUSE_FLOOR_KEY);
         window.sessionStorage.removeItem(ALGY_HOUSE_PLAYER_KEY);
       } catch { /* Storage is optional. */ }
-      window.location.assign((townArrival || explicitVisitor || hasExplicitHouseVisitor(window.location.search))
-        ? algyHouseTownReturnHref(import.meta.env.DEV, characterId)
-        : (import.meta.env.DEV ? "/pixel" : "https://toggle.town/"));
+    };
+    if (import.meta.env.DEV && window.location.origin === LOCAL_HOUSE_ORIGIN) {
+      if (localExitRef.current) return localExitRef.current;
+      const controller = new AbortController();
+      localExitAbortRef.current = controller;
+      window.clearTimeout(exitNoticeTimerRef.current);
+      setExitNotice(null);
+      setExitPending(true);
+      const attempt = attemptLocalHouseExit(characterId, {
+        signal: controller.signal,
+        beginTransition: (commit) => start(commit, "door"),
+        navigate: (href) => window.location.assign(href),
+        onDeparture: () => {
+          clearResume();
+          localExitDepartedRef.current = true;
+        },
+      });
+      localExitRef.current = attempt;
+      void attempt.then((departed) => {
+        if (localExitRef.current !== attempt) return;
+        localExitRef.current = null;
+        localExitAbortRef.current = null;
+        if (!mountedRef.current) return;
+        setExitPending(false);
+        if (!departed) {
+          setExitNotice("Town isn't available right now. You're still in the house.");
+          exitNoticeTimerRef.current = window.setTimeout(() => setExitNotice(null), 4000);
+        }
+      });
+      return attempt;
+    }
+    start(() => {
+      clearResume();
+      window.location.assign(algyHouseExitHref(
+        import.meta.env.DEV,
+        window.location.origin,
+        characterId,
+        townArrival || explicitVisitor || hasExplicitHouseVisitor(window.location.search),
+      ));
     }, "door");
   }, [characterId, explicitVisitor, start, townArrival]);
 
@@ -189,6 +246,7 @@ export default function AlgyHouseHome() {
     <div
       className="youngalgy-house"
       data-testid="youngalgy-house-home"
+      aria-busy={exitPending}
       // Keep the loading/door-fade surface protected too, outside the room itself.
       style={{ position: "fixed", inset: 0, userSelect: "none", WebkitUserSelect: "none",
         WebkitTouchCallout: "none", WebkitTapHighlightColor: "transparent" }}
@@ -207,7 +265,7 @@ export default function AlgyHouseHome() {
           onLeave={leave}
           onChangeFloor={changeFloor}
           onChangeCharacter={changeCharacter}
-          characterChangePending={characterPending}
+          characterChangePending={characterPending || exitPending}
           characterChangeStatus={characterError}
           onPrepareDoorSound={prepareSound}
           doorTransitionPhase={phase}
@@ -219,8 +277,15 @@ export default function AlgyHouseHome() {
         data-phase={phase}
         style={{ position: "fixed", inset: 0, background: "#08040d", opacity: phase === "out" || phase === "hold" ? 1 : 0,
           transition: phase === "hold" ? "none" : `opacity ${HOUSE_DOOR_FADE_MS}ms linear`,
-          pointerEvents: phase === "idle" ? "none" : "auto", zIndex: 100 }}
+          pointerEvents: phase === "idle" && !exitPending ? "none" : "auto", zIndex: 100 }}
       />
+      {(exitPending || exitNotice) && (
+        <div role="status" style={{ position: "fixed", left: 14, bottom: 194, maxWidth: "calc(100vw - 28px)",
+          padding: "10px 12px", border: "2px solid #c89838", background: "rgba(28, 18, 34, 0.94)",
+          color: "#f4e8c1", fontSize: 10, lineHeight: 1.8, zIndex: 101, pointerEvents: "none" }}>
+          {exitPending ? "Opening Town..." : exitNotice}
+        </div>
+      )}
     </div>
   );
 }

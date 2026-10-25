@@ -35,26 +35,27 @@ describe("shared Toggle Town D-pad styles", () => {
     });
     expect(HUB_DPAD_GO_STYLE).toMatchObject({
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: 8,
+      fontSize: 6,
       fontWeight: 400,
       lineHeight: 1,
       letterSpacing: "0.05em",
+      whiteSpace: "nowrap",
     });
   });
 
-  it("wires the shared layout, arrows, and GO button into the personal house", () => {
+  it("wires the shared layout, arrows, and Sprint button into the personal house", () => {
     for (const source of [houseSource]) {
       expect(source).toContain("...HUB_DPAD_LAYOUT_STYLE");
       expect(source).toContain("...HUB_DPAD_BUTTON_STYLE");
       expect(source).toContain("...HUB_DPAD_GO_STYLE");
-      expect(source).toContain('aria-label="Go"');
-      expect(source).toMatch(/>\s*GO\s*<\/button>/);
+      expect(source).toContain('aria-label="Sprint"');
+      expect(source).toMatch(/>\s*SPRINT\s*<\/button>/);
     }
   });
 
-  it("keeps sprint GO pointer-first, cyan when active, and separate from house interaction", () => {
+  it("keeps Sprint pointer-first, cyan when active, and separate from house interaction", () => {
     for (const source of [houseSource]) {
-      const goStart = source.indexOf('aria-label="Go"');
+      const goStart = source.indexOf('aria-label="Sprint"');
       const goEnd = source.indexOf("</button>", goStart);
       const go = source.slice(goStart, goEnd);
       expect(goStart).toBeGreaterThan(-1);
@@ -67,7 +68,7 @@ describe("shared Toggle Town D-pad styles", () => {
       expect(go).toContain('color: sprintActive ? "#00FFFF" : "#f4e8c1"');
       expect(go.indexOf("...HUB_DPAD_GO_STYLE")).toBeLessThan(go.indexOf("background: sprintActive"));
     }
-    const houseGoStart = houseSource.indexOf('aria-label="Go"');
+    const houseGoStart = houseSource.indexOf('aria-label="Sprint"');
     const houseGoEnd = houseSource.indexOf("</button>", houseGoStart);
     const houseGo = houseSource.slice(houseGoStart, houseGoEnd);
     expect(houseGo).not.toContain("interact");

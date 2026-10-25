@@ -184,4 +184,41 @@ describe("Algy's House exterior-door transition", () => {
     frame(duration * 2.1);
     expect(spriteDraws.at(-1)?.sourceX).toBe(0);
   });
+
+  it.each(["algy", "mitch"] as const)("restores movement after a refused async exit for %s", async (characterId) => {
+    const onLeave = vi.fn().mockResolvedValue(false);
+    render(<AlgysHouseInterior {...props({ characterId, onLeave })} />);
+    const frame = (now: number) => act(() => scheduledFrame?.(now));
+    frame(0);
+    fireEvent.keyDown(window, { key: "ArrowDown" });
+    expect(onLeave).toHaveBeenCalledTimes(1);
+    await act(async () => { await Promise.resolve(); });
+    fireEvent.keyUp(window, { key: "ArrowDown" });
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    frame(hubStepDuration(false, ALGY_HOUSE_TILE));
+    expect(JSON.parse(window.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY) ?? "null")).toMatchObject({ x: 4, y: 8 });
+  });
+
+  it.each(["keyboard", "dpad"] as const)("does not repeat a failed exit while the %s direction remains held", async (input) => {
+    let refuse: (accepted: boolean) => void = () => undefined;
+    const onLeave = vi.fn(() => new Promise<boolean>((resolve) => { refuse = resolve; }));
+    render(<AlgysHouseInterior {...props({ onLeave })} />);
+    act(() => scheduledFrame?.(0));
+    const down = screen.getByRole("button", { name: "Move down" });
+    if (input === "keyboard") fireEvent.keyDown(window, { key: "ArrowDown" });
+    else fireEvent.pointerDown(down);
+    expect(onLeave).toHaveBeenCalledTimes(1);
+    await act(async () => { refuse(false); await Promise.resolve(); });
+    if (input === "keyboard") fireEvent.keyDown(window, { key: "ArrowDown", repeat: true });
+    else act(() => scheduledFrame?.(1000));
+    expect(onLeave).toHaveBeenCalledTimes(1);
+    if (input === "keyboard") {
+      fireEvent.keyUp(window, { key: "ArrowDown" });
+      fireEvent.keyDown(window, { key: "ArrowDown" });
+    } else {
+      fireEvent.pointerUp(down);
+      fireEvent.pointerDown(down);
+    }
+    expect(onLeave).toHaveBeenCalledTimes(2);
+  });
 });

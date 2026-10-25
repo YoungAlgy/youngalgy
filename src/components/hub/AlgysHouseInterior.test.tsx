@@ -386,7 +386,7 @@ describe("Algy's House compact two-floor interface", () => {
     expect(room).toHaveAttribute("data-feature-count", "0");
     expect(room).toHaveAttribute("data-transition-phase", "idle");
     expect(screen.getByLabelText("Algy's House ground-floor room and staircase")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Go" })).toHaveTextContent("GO");
+    expect(screen.getByRole("button", { name: "Sprint" })).toHaveTextContent("SPRINT");
     expect(screen.getByRole("button", { name: "Use" })).toHaveTextContent("USE");
     expect(screen.getByRole("button", { name: "Mute" })).toBeInTheDocument();
     expect(onToggleMute).not.toHaveBeenCalled();
@@ -520,7 +520,7 @@ describe("Algy's House compact two-floor interface", () => {
     renderRoom({ floor: "upstairs" });
     const automaticPlayCalls = play.mock.calls.length;
     fireEvent.keyDown(window, { key: "Enter" });
-    const go = screen.getByRole("button", { name: "Go" });
+    const go = screen.getByRole("button", { name: "Sprint" });
     expect(go).toHaveAttribute("aria-pressed", "false");
     const press = new MouseEvent("pointerdown", { bubbles: true, cancelable: true, button: 0 });
     fireEvent(go, press);
@@ -613,7 +613,7 @@ describe("Algy's House compact two-floor interface", () => {
 
   it.each(["walk", "go", "shift"] as const)("keeps one-tile timing exact for %s", (mode) => {
     renderRoom();
-    if (mode === "go") fireEvent.click(screen.getByRole("button", { name: "Go" }));
+    if (mode === "go") fireEvent.click(screen.getByRole("button", { name: "Sprint" }));
     if (mode === "shift") fireEvent.keyDown(window, { key: "Shift" });
     const duration = hubStepDuration(mode !== "walk", ALGY_HOUSE_TILE);
     fireEvent.keyDown(window, { key: "ArrowRight" });

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { attemptLocalHouseExit, LOCAL_TOWN_ENTRY, LOCAL_TOWN_PROBE_MS, LOCAL_TOWN_DEPARTURE_MS } from "./localHouseExit";
+import { attemptLocalHouseExit, confirmHouseDeparture, LOCAL_TOWN_ENTRY, LOCAL_TOWN_PROBE_MS, LOCAL_TOWN_DEPARTURE_MS } from "./localHouseExit";
 
 const townHtml = '<title>Toggle Town</title><div id="root"></div>';
 function response(overrides: Record<string, unknown> = {}) {
@@ -137,6 +137,61 @@ describe("local House departure transport", () => {
     });
     expect(await result).toBe(false);
     expect(fetchMock).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe("shared actual House departure confirmation", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
+  const href = "https://toggle.town/pixel?character=mitch&return=algy-porch";
+
+  it("navigates once even if a transition repeats its commit and clears only on actual departure", async () => {
+    const navigate = vi.fn(), onDeparture = vi.fn();
+    const result = confirmHouseDeparture(href, { signal: new AbortController().signal,
+      beginTransition: commit => { commit(); commit(); }, navigate, onDeparture });
+    expect(navigate).toHaveBeenCalledExactlyOnceWith(href);
+    expect(onDeparture).not.toHaveBeenCalled();
+    window.dispatchEvent(new Event("pagehide"));
+    expect(await result).toBe(true);
+    window.dispatchEvent(new Event("pagehide"));
+    expect(onDeparture).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["refused-transition", "canceled-navigation", "aborted"])("ignores late commits and pagehide after %s", async mode => {
+    const controller = new AbortController();
+    let commit: () => void = () => undefined;
+    const navigate = vi.fn(), onDeparture = vi.fn();
+    const result = confirmHouseDeparture(href, { signal: controller.signal,
+      beginTransition: callback => { commit = callback; if (mode === "canceled-navigation") callback(); }, navigate, onDeparture });
+    if (mode === "aborted") controller.abort();
+    else await vi.advanceTimersByTimeAsync(LOCAL_TOWN_DEPARTURE_MS);
+    expect(await result).toBe(false);
+    commit();
+    window.dispatchEvent(new Event("pagehide"));
+    expect(navigate).toHaveBeenCalledTimes(mode === "canceled-navigation" ? 1 : 0);
+    expect(onDeparture).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["transition", "navigation"])("recovers a synchronous %s rejection", async target => {
+    const onDeparture = vi.fn();
+    const result = confirmHouseDeparture(href, { signal: new AbortController().signal,
+      beginTransition: commit => { if (target === "transition") throw Error("refused"); commit(); },
+      navigate: () => { throw Error("refused"); }, onDeparture });
+    expect(await result).toBe(false);
+    window.dispatchEvent(new Event("pagehide"));
+    expect(onDeparture).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("does not start an already aborted transition", async () => {
+    const controller = new AbortController(); controller.abort();
+    const beginTransition = vi.fn(), navigate = vi.fn();
+    expect(await confirmHouseDeparture(href, { signal: controller.signal, beginTransition, navigate, onDeparture: vi.fn() })).toBe(false);
+    expect(beginTransition).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
     expect(vi.getTimerCount()).toBe(0);
   });
 });

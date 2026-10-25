@@ -5,37 +5,64 @@ export const LOCAL_TOWN_ENTRY = "http://127.0.0.1:4182/pixel";
 export const LOCAL_TOWN_PROBE_MS = 1500;
 export const LOCAL_TOWN_DEPARTURE_MS = 6000;
 
-/** DEV-only transport. A failed or canceled exit leaves the room resumable. */
-export function attemptLocalHouseExit(character: HouseCharacterId, options: {
+interface HouseExitOptions {
   signal: AbortSignal;
   beginTransition: (commit: () => void) => void;
   navigate: (href: string) => void;
   onDeparture: () => void;
-}): Promise<boolean> {
-  return new Promise((resolve) => {
+}
+
+/** Confirm actual departure without fetching or changing room resume state early. */
+export function confirmHouseDeparture(href: string, options: HouseExitOptions): Promise<boolean> {
+  return new Promise(resolve => {
+    let finished = false;
+    let committed = false;
+    const finish = (departed: boolean) => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(timer);
+      window.removeEventListener("pagehide", onDeparture);
+      options.signal.removeEventListener("abort", onAbort);
+      resolve(departed);
+    };
+    const onAbort = () => finish(false);
+    const onDeparture = () => {
+      if (finished) return;
+      try { options.onDeparture(); }
+      finally { finish(true); }
+    };
+    const timer = window.setTimeout(() => finish(false), LOCAL_TOWN_DEPARTURE_MS);
+    if (options.signal.aborted) { finish(false); return; }
+    options.signal.addEventListener("abort", onAbort, { once: true });
+    try {
+      options.beginTransition(() => {
+        if (finished || committed) return;
+        committed = true;
+        window.addEventListener("pagehide", onDeparture, { once: true });
+        try { options.navigate(href); }
+        catch { finish(false); }
+      });
+    } catch { finish(false); }
+  });
+}
+
+/** DEV-only preflight, followed by the same departure confirmation as production. */
+export function attemptLocalHouseExit(character: HouseCharacterId, options: HouseExitOptions): Promise<boolean> {
+  return new Promise(resolve => {
     const request = new AbortController();
     let finished = false;
-    let departureTimer: number | undefined;
     const finish = (departed: boolean) => {
       if (finished) return;
       finished = true;
       window.clearTimeout(probeTimer);
-      window.clearTimeout(departureTimer);
-      window.removeEventListener("pagehide", onDeparture);
       options.signal.removeEventListener("abort", onAbort);
       request.abort();
       resolve(departed);
     };
     const onAbort = () => finish(false);
-    const onDeparture = () => {
-      // Only an actual page departure discards the old room resume position.
-      try { options.onDeparture(); }
-      finally { finish(true); }
-    };
     const probeTimer = window.setTimeout(() => finish(false), LOCAL_TOWN_PROBE_MS);
     if (options.signal.aborted) { finish(false); return; }
     options.signal.addEventListener("abort", onAbort, { once: true });
-
     void (async () => {
       const response = await fetch(LOCAL_TOWN_ENTRY, {
         cache: "no-store", credentials: "omit", redirect: "error", signal: request.signal,
@@ -46,15 +73,7 @@ export function attemptLocalHouseExit(character: HouseCharacterId, options: {
       if (finished) return;
       if (!/<title>Toggle Town<\/title>/i.test(html) || !/\bid=["']root["']/.test(html)) throw new Error("Unexpected local app");
       window.clearTimeout(probeTimer);
-      // Also bound a transition that is rejected or a browser navigation that
-      // is canceled. The original player and audio settings stay in place.
-      departureTimer = window.setTimeout(() => finish(false), LOCAL_TOWN_DEPARTURE_MS);
-      options.beginTransition(() => {
-        if (finished) return;
-        window.addEventListener("pagehide", onDeparture, { once: true });
-        try { options.navigate(algyHouseVisitorHref(LOCAL_TOWN_ENTRY, character)); }
-        catch { finish(false); }
-      });
+      finish(await confirmHouseDeparture(algyHouseVisitorHref(LOCAL_TOWN_ENTRY, character), options));
     })().catch(() => finish(false));
   });
 }

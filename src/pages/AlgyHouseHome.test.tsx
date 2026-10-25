@@ -67,7 +67,7 @@ function currentInterior() {
   return screen.getByTestId("mock-house-interior");
 }
 
-function localLoopWindow(search = "?character=mitch") {
+function localLoopWindow(search = "?character=mitch", origin = "http://127.0.0.1:4185") {
   const actualWindow = window;
   const assign = vi.fn();
   const reload = vi.fn();
@@ -76,7 +76,7 @@ function localLoopWindow(search = "?character=mitch") {
     sessionStorage: { value: actualWindow.sessionStorage }, localStorage: { value: actualWindow.localStorage },
     history: { value: actualWindow.history },
     setTimeout: { value: actualWindow.setTimeout.bind(actualWindow) }, clearTimeout: { value: actualWindow.clearTimeout.bind(actualWindow) },
-    location: { value: { assign, reload, origin: "http://127.0.0.1:4185", pathname: "/", search, hash: "" } },
+    location: { value: { assign, reload, origin, pathname: "/", search, hash: "" } },
   });
   vi.stubGlobal("window", localWindow);
   return { actualWindow, assign, reload };
@@ -108,6 +108,7 @@ describe("AlgyHouseHome", () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("keeps the outer house and door fade inside the selection protection", () => {
@@ -415,6 +416,8 @@ describe("AlgyHouseHome", () => {
     fireEvent.click(screen.getByRole("button", { name: "Leave" }));
     act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
 
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBe("player-state");
+    act(() => actualWindow.dispatchEvent(new Event("pagehide")));
     expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_SCENE_KEY)).toBeNull();
     expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBeNull();
     expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
@@ -560,6 +563,101 @@ describe("AlgyHouseHome", () => {
     await act(flushExitProbe);
     act(cachedPageShow);
     expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["algy", "mitch"] as const)("reloads the production %s House only after a committed departure returns from page cache", character => {
+    vi.stubEnv("DEV", false);
+    const { actualWindow, assign, reload } = localLoopWindow(`?character=${character}`, "https://youngalgy.com");
+    actualWindow.sessionStorage.setItem(ALGY_HOUSE_FLOOR_KEY, "upstairs");
+    actualWindow.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, "old-room-position");
+    render(<AlgyHouseHome />);
+    const pageShow = (persisted: boolean) => {
+      const event = new Event("pageshow");
+      Object.defineProperty(event, "persisted", { value: persisted });
+      actualWindow.dispatchEvent(event);
+    };
+    act(() => { pageShow(false); actualWindow.dispatchEvent(new Event("pagehide")); pageShow(true); });
+    expect(reload).not.toHaveBeenCalled();
+    expect(currentInterior()).toHaveAttribute("data-floor", "upstairs");
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    act(() => pageShow(true));
+    expect(assign).not.toHaveBeenCalled();
+    expect(reload).not.toHaveBeenCalled();
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+    expect(assign).toHaveBeenCalledExactlyOnceWith(`https://toggle.town/pixel?character=${character}&return=algy-porch`);
+    act(() => pageShow(true));
+    expect(reload).not.toHaveBeenCalled();
+    act(() => { actualWindow.dispatchEvent(new Event("pagehide")); pageShow(false); });
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_FLOOR_KEY)).toBeNull();
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
+    expect(reload).not.toHaveBeenCalled();
+    act(() => pageShow(true));
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(currentInterior()).toHaveAttribute("data-character", character);
+  });
+
+  it("recovers a synchronously rejected production navigation without discarding resume", async () => {
+    vi.stubEnv("DEV", false);
+    const { actualWindow, assign, reload } = localLoopWindow("?character=mitch", "https://youngalgy.com");
+    assign.mockImplementation(() => { throw Error("navigation denied"); });
+    actualWindow.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, "safe-public-position");
+    render(<AlgyHouseHome />);
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+    expect(assign).toHaveBeenCalledTimes(1);
+    await act(flushExitProbe);
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBe("safe-public-position");
+    expect(screen.getByTestId("youngalgy-house-home")).toHaveAttribute("aria-busy", "false");
+    expect(screen.getByRole("status")).toHaveTextContent("Couldn't open Town");
+    act(() => {
+      actualWindow.dispatchEvent(new Event("pagehide"));
+      const event = new Event("pageshow");
+      Object.defineProperty(event, "persisted", { value: true });
+      actualWindow.dispatchEvent(event);
+    });
+    expect(reload).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("bounds canceled production navigation, deduplicates attempts and permits a fresh retry", async () => {
+    vi.stubEnv("DEV", false);
+    const { actualWindow, assign } = localLoopWindow("?character=mitch", "https://youngalgy.com");
+    actualWindow.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, "safe-public-position");
+    render(<AlgyHouseHome />);
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    fireEvent.click(screen.getByRole("button", { name: "Upstairs" }));
+    fireEvent.click(screen.getByRole("button", { name: "Change character" }));
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+    expect(assign).toHaveBeenCalledTimes(1);
+    expect(currentInterior()).toHaveAttribute("data-character", "mitch");
+    expect(currentInterior()).toHaveAttribute("data-floor", "ground");
+    await act(async () => { await vi.advanceTimersByTimeAsync(6000); });
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBe("safe-public-position");
+    expect(screen.getByTestId("youngalgy-house-home")).toHaveAttribute("aria-busy", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    act(() => vi.advanceTimersByTime(HOUSE_DOOR_FADE_MS));
+    expect(assign).toHaveBeenCalledTimes(2);
+    act(() => actualWindow.dispatchEvent(new Event("pagehide")));
+    await act(flushExitProbe);
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBeNull();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("cancels an unmounted production exit before its queued navigation", async () => {
+    vi.stubEnv("DEV", false);
+    const { actualWindow, assign } = localLoopWindow("?character=mitch", "https://youngalgy.com");
+    actualWindow.sessionStorage.setItem(ALGY_HOUSE_PLAYER_KEY, "safe-public-position");
+    const view = render(<AlgyHouseHome />);
+    fireEvent.click(screen.getByRole("button", { name: "Leave" }));
+    view.unmount();
+    act(() => vi.advanceTimersByTime(6000));
+    await act(flushExitProbe);
+    act(() => actualWindow.dispatchEvent(new Event("pagehide")));
+    expect(assign).not.toHaveBeenCalled();
+    expect(actualWindow.sessionStorage.getItem(ALGY_HOUSE_PLAYER_KEY)).toBe("safe-public-position");
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("deduplicates pending exits, blocks scene changes and aborts on unmount", async () => {

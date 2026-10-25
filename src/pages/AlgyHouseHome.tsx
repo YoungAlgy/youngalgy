@@ -20,7 +20,7 @@ import {
   type HouseCharacterId,
 } from "@/components/hub/algyHouseVisitor";
 import { useHouseTransition } from "@/components/hub/useHouseTransition";
-import { attemptLocalHouseExit, LOCAL_HOUSE_ORIGIN } from "@/components/hub/localHouseExit";
+import { attemptLocalHouseExit, confirmHouseDeparture, LOCAL_HOUSE_ORIGIN } from "@/components/hub/localHouseExit";
 import { useRouteHead } from "@/components/landing/useRouteHead";
 import "../youngalgy-house.css";
 
@@ -105,9 +105,9 @@ export default function AlgyHouseHome() {
   const [characterError, setCharacterError] = useState<string | null>(null);
   const [exitPending, setExitPending] = useState(false);
   const [exitNotice, setExitNotice] = useState<string | null>(null);
-  const localExitRef = useRef<Promise<boolean> | null>(null);
-  const localExitAbortRef = useRef<AbortController | null>(null);
-  const localExitDepartedRef = useRef(false);
+  const exitRef = useRef<Promise<boolean> | null>(null);
+  const exitAbortRef = useRef<AbortController | null>(null);
+  const exitDepartedRef = useRef(false);
   const exitNoticeTimerRef = useRef<number | undefined>();
   const { phase, start, prepareSound } = useHouseTransition(settings.muted);
 
@@ -124,20 +124,21 @@ export default function AlgyHouseHome() {
     return () => {
       mountedRef.current = false;
       characterRequestRef.current += 1;
-      localExitAbortRef.current?.abort();
+      exitAbortRef.current?.abort();
       window.clearTimeout(exitNoticeTimerRef.current);
     };
   }, []);
 
   useEffect(() => {
-    if (!import.meta.env.DEV || window.location.origin !== LOCAL_HOUSE_ORIGIN) return;
     const onPageShow = (event: PageTransitionEvent) => {
-      // Back from a completed local departure must not restore the old input
+      // Back from a completed departure must not restore the old input
       // lock from the browser's page cache. Reload at the safe room entrance.
-      if (event.persisted && localExitDepartedRef.current) window.location.reload();
+      if (event.persisted && exitDepartedRef.current) window.location.reload();
     };
     window.addEventListener("pageshow", onPageShow);
-    return () => window.removeEventListener("pageshow", onPageShow);
+    return () => {
+      window.removeEventListener("pageshow", onPageShow);
+    };
   }, []);
 
   useEffect(() => {
@@ -157,14 +158,14 @@ export default function AlgyHouseHome() {
   }, [townArrival]);
 
   const changeFloor = useCallback((target: AlgyHouseFloor) => {
-    if (localExitRef.current || target === floor) return;
+    if (exitRef.current || target === floor) return;
     characterRequestRef.current += 1;
     setCharacterPending(false);
     start(() => setFloor(target), target === "upstairs" ? "stairs-up" : "stairs-down");
   }, [floor, start]);
 
   const changeCharacter = useCallback(async (target: HouseCharacterId) => {
-    if (localExitRef.current) return;
+    if (exitRef.current) return;
     const request = ++characterRequestRef.current;
     setCharacterError(null);
     if (target === characterId) {
@@ -201,45 +202,39 @@ export default function AlgyHouseHome() {
         window.sessionStorage.removeItem(ALGY_HOUSE_PLAYER_KEY);
       } catch { /* Storage is optional. */ }
     };
-    if (import.meta.env.DEV && window.location.origin === LOCAL_HOUSE_ORIGIN) {
-      if (localExitRef.current) return localExitRef.current;
-      const controller = new AbortController();
-      localExitAbortRef.current = controller;
-      window.clearTimeout(exitNoticeTimerRef.current);
-      setExitNotice(null);
-      setExitPending(true);
-      const attempt = attemptLocalHouseExit(characterId, {
-        signal: controller.signal,
-        beginTransition: (commit) => start(commit, "door"),
-        navigate: (href) => window.location.assign(href),
-        onDeparture: () => {
-          clearResume();
-          localExitDepartedRef.current = true;
-        },
-      });
-      localExitRef.current = attempt;
-      void attempt.then((departed) => {
-        if (localExitRef.current !== attempt) return;
-        localExitRef.current = null;
-        localExitAbortRef.current = null;
-        if (!mountedRef.current) return;
-        setExitPending(false);
-        if (!departed) {
-          setExitNotice("Town isn't available right now. You're still in the house.");
-          exitNoticeTimerRef.current = window.setTimeout(() => setExitNotice(null), 4000);
-        }
-      });
-      return attempt;
-    }
-    start(() => {
-      clearResume();
-      window.location.assign(algyHouseExitHref(
-        import.meta.env.DEV,
-        window.location.origin,
-        characterId,
-        townArrival || explicitVisitor || hasExplicitHouseVisitor(window.location.search),
-      ));
-    }, "door");
+    if (exitRef.current) return exitRef.current;
+    const controller = new AbortController();
+    exitAbortRef.current = controller;
+    window.clearTimeout(exitNoticeTimerRef.current);
+    setExitNotice(null);
+    setExitPending(true);
+    const options = {
+      signal: controller.signal,
+      beginTransition: (commit: () => void) => start(commit, "door"),
+      navigate: (href: string) => window.location.assign(href),
+      onDeparture: () => {
+        clearResume();
+        exitDepartedRef.current = true;
+      },
+    };
+    const local = import.meta.env.DEV && window.location.origin === LOCAL_HOUSE_ORIGIN;
+    const attempt = local ? attemptLocalHouseExit(characterId, options)
+      : confirmHouseDeparture(algyHouseExitHref(import.meta.env.DEV, window.location.origin,
+        characterId, townArrival || explicitVisitor || hasExplicitHouseVisitor(window.location.search)), options);
+    exitRef.current = attempt;
+    void attempt.then((departed) => {
+      if (exitRef.current !== attempt) return;
+      exitRef.current = null;
+      exitAbortRef.current = null;
+      if (!mountedRef.current) return;
+      setExitPending(false);
+      if (!departed) {
+        setExitNotice(local ? "Town isn't available right now. You're still in the house."
+          : "Couldn't open Town. You're still in the house.");
+        exitNoticeTimerRef.current = window.setTimeout(() => setExitNotice(null), 4000);
+      }
+    });
+    return attempt;
   }, [characterId, explicitVisitor, start, townArrival]);
 
   return (
